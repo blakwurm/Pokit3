@@ -11,44 +11,41 @@ html, body {
 body {
     height: 100vh;
     width: 100vw;
-    display: grid;
-    grid-template-columns: 10vw 40vw 10vw 40vw;
-    grid-template-rows: 100vw 12vw 40vw auto;
-    grid-template-areas:
-    "gamescreen gamescreen gamescreen  gamescreen"
-    ".          .          .           .         "
-    ".          dpad       .           rightbuttons"
-    ".          .          startselect          .           ";
     color: white;
 }
 
 #gamescreen {
-    grid-area: gamescreen;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 100vw;
+    width: 70vw;
+    height: 70vw;
+    background-image: url('/img/hbitface.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 15vw;
 }
 
 #startselect {
-    grid-area: startselect;
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
 }
 
-#dpad {
-    grid-area: dpad;
-}
-
-#rightbuttons {
-    grid-area: rightbuttons;
-}
 
 .buttongroup {
     text-align: center;
 }
 
-#gamescreen {
-    width: calc(100% - 10vw);
-    height: calc(100% - 10vw);
-    border: 5vw green solid;
-}
-
 #dpad {
+    position: fixed;
+    bottom: 30vw;
+    left: 10vw;
+    width: 30vw;
+    height: 30vw;
     display: grid;
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
@@ -68,20 +65,22 @@ body {
 }
 
 #rightbuttons {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-    ". . . . ."
-    "a . b . ."
-    ". . . . .";
+    position: fixed;
+    bottom: 40vw;
+    right: 10vw;
+    width: 40vw;
+    height: 20vw;
+}
+#rightbuttons button {
+    width: 15vw;
+    height: 15vw;
 }
 
 #rightbuttons #abutton {
-    grid-area: a;
+    padding-bottom: 8vw;
 }
 #rightbuttons #bbutton {
-    grid-area: b;
+    padding-top: 8vw;
 }
 
 @media (orientation:landscape) {
