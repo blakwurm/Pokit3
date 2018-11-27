@@ -13,8 +13,21 @@
 </head>
 
 <body>
-  <h1 id="pagetitle">Shooty Dungeon</h1>
-  <div id="pagecontent"></div>
+  <canvas id="gamescreen" height="128" width="128"></canvas>
+  <div id="dpad" class="buttongroup">
+    <button id="pad-up"></button>
+    <button id="pad-left"></button>
+    <button id="pad-down"></button>
+    <button id="pad-right"></button>
+  </div>
+  <div id="startselect" class="buttongroup">
+    <button id="startbutton">START</button>
+    <button id="selectbutton">SELECT</button>
+  </div>
+  <div id="rightbuttons" class="buttongroup">
+    <button id="abutton">A</button>
+    <button id="bbutton">B</button>
+  </div>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
