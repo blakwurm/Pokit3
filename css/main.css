@@ -5,7 +5,8 @@
 }
 
 html, body {
-    background: black;
+    background: #202022;
+    border-radius: 5px;
 }
 
 body {
@@ -42,21 +43,63 @@ body {
 
 #dpad {
     position: fixed;
-    bottom: 30vw;
+    top: 115vw;
     left: 10vw;
     width: 30vw;
     height: 30vw;
     display: grid;
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
-    transform: rotate(45deg);
+    transform: rotate(-45deg);
     padding: 2vw;
     max-height: 40vw;
+    background-image: url('/img/dpadback_raw.svg');
+    background-size: cover;
+    background-position: center;
 }
 
 #dpad button {
     height: 80%;
     width: 80%;
+    margin: auto;
+    border: none;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-position: center;
+    background-size: cover;
+}
+#dpad button#pad-up {
+    background-image: url('/img/button_up_raw.svg');
+    margin-left: 0;
+    margin-bottom: 0;
+}
+#dpad button#pad-down {
+    background-image: url('/img/button_down_raw.svg');
+    margin-right: 0;
+    margin-top: 0;
+}
+#dpad button#pad-right {
+    background-image: url('/img/button_right_raw.svg');
+    margin-left: 0;
+    margin-top: 0
+}
+#dpad button#pad-left {
+    background-image: url('/img/button_left_raw.svg');
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+#shoulder {
+    position: fixed;
+    top: 100vw;
+    height: 10vw;
+    width: 100vw;
+}
+
+#shoulder button {
+    height: 100%;
+    width: 40%;
 }
 
 #startselect button {
@@ -66,7 +109,7 @@ body {
 
 #rightbuttons {
     position: fixed;
-    bottom: 40vw;
+    top: 115vw;
     right: 10vw;
     width: 40vw;
     height: 20vw;
@@ -74,13 +117,19 @@ body {
 #rightbuttons button {
     width: 15vw;
     height: 15vw;
+    background: none;
+    border: none;
+    background-position: center;
+    background-size: cover;
 }
 
 #rightbuttons #abutton {
     padding-bottom: 8vw;
+    background-image: url('/img/button_a_raw.svg');
 }
 #rightbuttons #bbutton {
     padding-top: 8vw;
+    background-image: url('/img/button_a_raw.svg');
 }
 
 @media (orientation:landscape) {
