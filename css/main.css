@@ -10,9 +10,11 @@ html, body {
 }
 
 body {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 900;
 }
 
 #gamescreen {
@@ -21,8 +23,8 @@ body {
     left: 0px;
     right: 0px;
     bottom: 100vw;
-    width: 70vw;
-    height: 70vw;
+    width: 70vmin;
+    height: 70vmin;
     background-image: url('/img/hbitface.svg');
     background-position: center;
     background-repeat: no-repeat;
@@ -36,14 +38,13 @@ body {
     width: 100%;
 }
 
-
 .buttongroup {
     text-align: center;
+    position: fixed;
 }
 
 #dpad {
-    position: fixed;
-    top: 115vw;
+    top: 105vw;
     left: 10vw;
     width: 30vw;
     height: 30vw;
@@ -52,7 +53,6 @@ body {
     grid-template-columns: 50% 50%;
     transform: rotate(-45deg);
     padding: 2vw;
-    max-height: 40vw;
     background-image: url('/img/dpadback_raw.svg');
     background-size: cover;
     background-position: center;
@@ -90,67 +90,85 @@ body {
     margin-bottom: 0;
 }
 
-#shoulder {
-    position: fixed;
-    top: 100vw;
-    height: 10vw;
-    width: 100vw;
-}
-
-#shoulder button {
-    height: 100%;
-    width: 40%;
-}
-
 #startselect button {
-    height: 3vh;
-    width: 10vh
+    font-size: 2vmax;
+    height: 3vmax;
+    width: 10vmax;
+    border: none;
+    background-image: url('/img/startselect_raw.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
 }
 
 #rightbuttons {
-    position: fixed;
-    top: 115vw;
+    top: 105vw;
     right: 10vw;
-    width: 40vw;
-    height: 20vw;
+    width: 30vw;
+    height: 30vw;
+    transform: rotate(-30deg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
 #rightbuttons button {
-    width: 15vw;
-    height: 15vw;
     background: none;
     border: none;
     background-position: center;
     background-size: cover;
+    background-image: url('/img/button_a_raw.svg');
+    transform: rotate(30deg);
+    margin: 3px;
+    font-size: 4vw;
+    color: black;
+    text-shadow: 1px 1px white, -1px -1px black;
 }
 
-#rightbuttons #abutton {
-    padding-bottom: 8vw;
-    background-image: url('/img/button_a_raw.svg');
+#metabuttons {
+    bottom: 0;
+    left: 0;
 }
-#rightbuttons #bbutton {
-    padding-top: 8vw;
-    background-image: url('/img/button_a_raw.svg');
+
+#metabuttons #fullscreen {
+    color: transparent;
+    background-image: url('/img/startselect_raw.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
 }
 
 @media (orientation:landscape) {
-    body {
-        height: 100vh;
-        width: 100vw;
-        display: grid;
-        color: white;
-        grid-template-columns: 2vw 28vw 45vw 20vw 5vw;
-        grid-template-rows: 5vh 20vh 45vh 20vh 5vh;
-        grid-template-areas:
-        ".    .    .          .    ."
-        ".    .    gamescreen .    ."
-        ".    dpad gamescreen rightbuttons ."
-        ".    .    gamescreen startselect ."
-        ".    .    .          .    .";
+    #gamescreen {
+        position: static;
+        display: block;
+        width: 60vh;
+        height: 60vh;
+        padding: 13vh;
+        margin: 0 auto;
+        margin-top: 3vh;
     }
     #dpad {
-        max-height: 20vw;
-        max-width: 20vw;
-        min-height: 20vw;
-        min-width: 20vw;
+        /* size equation is ((screen-width - gamescreen-width - twice-the-gamescreen-padding)/ magic-number-2.5) - twice-the-dpad-padding */
+        --dpad-size: calc(calc(calc(100vw - 60vh - 26vh) / 2.5) - 4vw);
+        width: var(--dpad-size);
+        height: var(--dpad-size);
+        top: 22vh;
+        bottom: 0;
+        left: 3.5vw;
+    }
+    #rightbuttons {
+        /* size equation is ((screen-width - gamescreen-width - twice-the-gamescreen-padding)/ magic-number-2.5) - twice-the-dpad-padding */
+        --dpad-size: calc(calc(calc(100vw - 60vh - 26vh) / 2.5));
+        width: var(--dpad-size);
+        height: var(--dpad-size);
+        top: 22vh;
+        bottom: 0;
+        right: 4vw;
+    }
+    #rightbuttons button {
+        font-size: calc(--dpad-size);
     }
 }
