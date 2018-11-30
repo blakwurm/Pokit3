@@ -15,7 +15,7 @@
    version="1.1"
    id="svg846"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="button_up_raw.svg">
+   sodipodi:docname="button_up.svg">
   <defs
      id="defs840">
     <marker
@@ -97,17 +97,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8.0000001"
-     inkscape:cx="18.048654"
+     inkscape:cx="-27.826345"
      inkscape:cy="45.576205"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer4"
      showgrid="true"
      units="px"
      inkscape:pagecheckerboard="true"
-     inkscape:window-width="2560"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="767"
+     inkscape:window-width="2493"
+     inkscape:window-height="1385"
+     inkscape:window-x="67"
+     inkscape:window-y="27"
      inkscape:window-maximized="1">
     <inkscape:grid
        type="xygrid"
@@ -171,7 +171,7 @@
        id="path960"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#2e2a2b;fill-opacity:1;stroke:none;stroke-width:0.18898809px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:#5c5b60;fill-opacity:1;stroke:none;stroke-width:0.18898809px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 6.6145831,15.119048 11.339285,19.84375 V 18.898809 L 7.5595239,15.119048 Z"
        id="path964"
        inkscape:connector-curvature="0" />
@@ -186,7 +186,7 @@
        id="path970"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#45494d;fill-opacity:1;stroke:none;stroke-width:0.18898809px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:#403c41;fill-opacity:1;stroke:none;stroke-width:0.18898809px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 6.6145831,15.119048 3.7797619,-3.779763 h 0.94494 l -3.7797611,3.779763 z"
        id="path972"
        inkscape:connector-curvature="0" />

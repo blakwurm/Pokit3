@@ -32,6 +32,16 @@ body {
     padding: 15vw;
 }
 
+#debugreadout {
+    font-family: 'Courier New', Courier, monospace;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 100vw;
+    overflow: scroll;
+}
+
 #startselect {
     position: fixed;
     bottom: 10px;
@@ -53,7 +63,7 @@ body {
     grid-template-columns: 50% 50%;
     transform: rotate(-45deg);
     padding: 2vw;
-    background-image: url('/img/dpadback_raw.svg');
+    background-image: url('/img/dpadback.svg');
     background-size: cover;
     background-position: center;
 }
@@ -70,22 +80,22 @@ body {
     background-size: cover;
 }
 #dpad button#pad-up {
-    background-image: url('/img/button_up_raw.svg');
+    background-image: url('/img/button_up.svg');
     margin-left: 0;
     margin-bottom: 0;
 }
 #dpad button#pad-down {
-    background-image: url('/img/button_down_raw.svg');
+    background-image: url('/img/button_down.svg');
     margin-right: 0;
     margin-top: 0;
 }
 #dpad button#pad-right {
-    background-image: url('/img/button_right_raw.svg');
+    background-image: url('/img/button_right.svg');
     margin-left: 0;
     margin-top: 0
 }
 #dpad button#pad-left {
-    background-image: url('/img/button_left_raw.svg');
+    background-image: url('/img/button_left.svg');
     margin-right: 0;
     margin-bottom: 0;
 }
@@ -95,7 +105,7 @@ body {
     height: 3vmax;
     width: 10vmax;
     border: none;
-    background-image: url('/img/startselect_raw.svg');
+    background-image: url('/img/startselect.svg');
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -109,17 +119,16 @@ body {
     height: 30vw;
     transform: rotate(-30deg);
     display: grid;
-    grid-template-columns: 25fr 1fr 25fr;
-    grid-template-rows: 25fr 1fr 25fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
 #rightbuttons button {
     background: none;
     border: none;
     background-position: center;
     background-size: cover;
-    background-image: url('/img/button_a_raw.svg');
+    background-image: url('/img/button_a.svg');
     transform: rotate(30deg);
-    margin: 3px;
     font-size: 4vw;
     color: black;
 }
@@ -129,6 +138,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 2px;
+    background: none;
 }
 
 #metabuttons {
@@ -138,7 +148,7 @@ body {
 
 #metabuttons #fullscreen {
     color: transparent;
-    background-image: url('/img/startselect_raw.svg');
+    background-image: url('/img/startselect.svg');
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -155,6 +165,13 @@ body {
         padding: 13vh;
         margin: 0 auto;
         margin-top: 3vh;
+    }
+    #debugreadout {
+        position: absolute;
+        width: 60vh;
+        height: 60vh;
+        margin: 0 auto;
+        overflow: scroll;
     }
     #dpad {
         /* size equation is ((screen-width - gamescreen-width - twice-the-gamescreen-padding)/ magic-number-2.5) - twice-the-dpad-padding */
