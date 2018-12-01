@@ -30,7 +30,7 @@ let buttons_reset_vals = {
 
 let debug = true;
 
-let current_touches = Set([]);
+let current_touches = new Map();
 
 function debug_fill_canvas() {
     let c = document.getElementById('gamescreen');
@@ -85,14 +85,18 @@ function touchtargets(touchevent) {
 
 }
 
+function touches_rendered() {
+    let allout = ' ';
+    let touchentries = current_touches.entries();
+    current_touches.forEach((a) => allout += `[${a.target.id} => ${a.current.id}]`);
+    return allout;
+}
+
 let debug_readout = (debug_bundle) => html`
   <div id="debugreadout">
       <div>pressed:${JSON.stringify(debug_bundle.buttons, null, 2)}</div>
       <div>Touches: </div>
-      ${debug_bundle.touchevent ? html`
-            ${touchtargets(debug_bundle.touchevent).map((a) => `${a.source.id} -> ${a.current.id}, `)}
-      ` : '' }
-       
+      ${touches_rendered()}
   </div>
 `;
 
@@ -100,16 +104,22 @@ function render_controls() {
     render(controls(), document.querySelector('#controls'));
 }
 
+async function doasync(cb) {
+    return cb();
+}
+
 function render_debug_readout(touchevent) {
     if (debug) {
+        doasync(() =>
         render(debug_readout(
             {
                 'buttons': buttons,
                 'touchevent': touchevent
             }
         ),
-         document.querySelector('#debug_point'));
-    }
+         document.querySelector('#debug_point')))
+    };
+    return touchevent;
 }
 
 function reset_buttons(){
@@ -118,13 +128,14 @@ function reset_buttons(){
     }
 }
 
-function detect_buttons_pressed(targets) {
+function detect_buttons_pressed() {
     reset_buttons()
-    targets.map(function (a) {
+    current_touches.forEach(function (a) {
+        console.log(a);
         if (a.current.tagName === "BUTTON") {
             buttons[a.current.name] = true;
         }
-    })
+    } )
 }
 
 function touchcallback(touchevent) {
@@ -134,11 +145,48 @@ function touchcallback(touchevent) {
     targets.map((a) => current_touches.add(a))
 }
 
+async function map_touchlist(fn, touchlist) {
+    for (let i = 0; i < touchlist.length; i++) {
+        fn(touchlist.item(i));
+    }
+}
+
+function append_with_current(touch) {
+    let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+    touch.current = elem;
+    return touch
+}
+
+function handle_touchpresent(ev) {
+    map_touchlist(function (t) {
+        console.time('handletouchpressed');
+        current_touches.set(t.identifier, append_with_current(t))
+        console.timeEnd('handletouchpressed');
+    },
+        ev.changedTouches)
+    detect_buttons_pressed(current_touches.values());
+    render_debug_readout(ev);
+}
+function handle_touchstopped(ev) {
+    map_touchlist(function (t) {
+        current_touches.delete(t.identifier);
+    }, ev.changedTouches);
+    detect_buttons_pressed(current_touches.values());
+    render_debug_readout(ev);
+}
+
+
+
 function setup_touch() {
-    ['touchmove', 'touchstart', 'touchend', 'touchcancel'].map((a) =>
-        document.addEventListener(a, touchcallback))
-    ['touchend', 'touchcancel'].map((a) =>
-        document.addEventListener(a, reset_buttons))
+    // ['touchmove', 'touchstart', 'touchend', 'touchcancel'].map((a) =>
+        // document.addEventListener(a, touchcallback))
+    // ['touchend', 'touchcancel'].map((a) =>
+        // document.addEventListener(a, reset_buttons))
+    ['touchstart', 'touchmove'].map((a) => 
+        document.addEventListener(a, handle_touchpresent));
+    ['touchend', 'touchcancel'].map((a) => 
+        document.addEventListener(a, handle_touchstopped));
+
    
 }
 
