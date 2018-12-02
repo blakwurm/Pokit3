@@ -83,6 +83,8 @@ function main() {
         debug_fill_canvas()
         render_debug_readout();
     }
+    let can = document.querySelector('#gamescreen')
+    can.addEventListener('dblclick', () => screenfull.toggle(can))
 }
 
 main()
