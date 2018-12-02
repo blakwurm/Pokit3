@@ -77,7 +77,7 @@ function render_debug_readout() {
 function main() {
     console.log('testing');
     render_controls();
-    input.setup_touch();
+    input.full_setup();
     if (debug) {
         input.debug_callback = render_debug_readout;
         debug_fill_canvas()
