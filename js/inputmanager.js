@@ -34,7 +34,13 @@ const gamepadbuttonmap = new Map(Object.entries({
     2: 'y',
     3: 'x',
     7: 'select',
-    6: 'start'
+    6: 'start',
+    8: 'start',
+    9: 'select',
+    12: 'up',
+    13: 'down',
+    14: 'left',
+    15: 'right'
 }))
 
 const gamepaddpadaxis = new Map([
@@ -100,8 +106,10 @@ export class InputManager {
                 let gp = navigator.getGamepads()[i];
                 if (gp) {
                     this.cust_gamepadbuttonmap.forEach(function(code, ind) {
-                        let pre = gp.buttons[ind].pressed;
-                        buttons[code] = pre;
+                        let pre = (gp.buttons[ind] || {'pressed': false}).pressed;
+                        if (pre) {
+                            buttons[code] = pre;
+                        }
                     })
                     this.cust_gamepaddpadaxeis.forEach(function(dirs, ind) {
                         let axe = gp.axes[ind]
@@ -141,7 +149,6 @@ function make_handle_touchpresent(inputmanager) {
             inputmanager.current_touches.set(t.identifier, t)
         },
             ev.changedTouches)
-        inputmanager.detect_buttons_pressed();
             console.timeEnd('handletouchpressed');
         }
 }
@@ -150,21 +157,17 @@ function make_handle_touchstopped(inputmanager) {
         map_touchlist(function (t) {
            inputmanager.current_touches.delete(t.identifier);
         }, ev.changedTouches);
-        inputmanager.detect_buttons_pressed();
-
     }
 }
 function make_handle_keydown(inputmanager) {
     return function(ev) {
         inputmanager.current_keys.add(ev.code);
-        inputmanager.detect_buttons_pressed();
     }
 }
 
 function make_handle_keyup(inputmanager) {
     return function(ev) {
         inputmanager.current_keys.delete(ev.code);
-        inputmanager.detect_buttons_pressed();
     }
 }
 
