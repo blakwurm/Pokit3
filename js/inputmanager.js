@@ -97,6 +97,22 @@ export class InputManager {
         this.setup_button_polling();
     }
 
+    /**
+     * The most important function in the object.
+     * 
+     * Polls the various registers available to us to determine if a button is pressed. 
+     * 
+     * First polls any recognized gamepads. Button-codes are set up for both
+     * XBox One and PS4 controllers. No guarantee that other controllers will work.
+     * 
+     * Next grabs the touches on the screen, and determines if any buttons are pressed
+     * using the most advanced alogrythms this side of War Games
+     * 
+     * Finally gets the keys showing up as pressed.
+     * 
+     * If we have a debug callback, calls it. Useful for, say, rendering out a debug message
+     * to the screen
+     */
     detect_buttons_pressed() {
         this.reset_buttons();
         let buttons = this.buttons;
