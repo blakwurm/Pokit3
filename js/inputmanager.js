@@ -48,6 +48,10 @@ const gamepaddpadaxis = new Map([
     [6, {'-1': 'left', '1': 'right'}]
 ])
 
+/**
+ * Object for handling the state of the console's input. Afte constructing,
+ * call full_setup().
+ */
 export class InputManager {
     constructor () {
         this.buttons = {
@@ -82,6 +86,10 @@ export class InputManager {
         document.addEventListener('keyup', make_handle_keyup(this));
     }
 
+    /**
+     * Sets up regular polling of inputs. runs detect_buttons_pressed() once
+     * per frame.
+     */
     setup_button_polling() {
         let inputmanager = this;
         function yaaaaaaas() {
@@ -91,10 +99,16 @@ export class InputManager {
         requestAnimationFrame(yaaaaaaas);
     }
 
+    /**
+     * Sets up everything, simply.
+     * 
+     * @returns this
+     */
     full_setup() {
         this.setup_touch();
         this.setup_keyboard();
         this.setup_button_polling();
+        return this;
     }
 
     /**
@@ -137,11 +151,9 @@ export class InputManager {
         this.current_touches.forEach(function (a) {
             if (validbuttons.has(a.target.name)) {
                 buttons[a.target.name] = true;
-                if (rightbuttons.has(a.target.name)) {
-                    buttons[append_with_current(a).current.name] = true;
-                }
+                buttons[append_with_current(a).current.name] = true;
             }
-        } );
+        });
         this.current_keys.forEach(function (a) {
             buttons[cust_keymap[a]] = true;
         });
@@ -160,12 +172,11 @@ export class InputManager {
 
 function make_handle_touchpresent(inputmanager) {
         return function(ev) {
-            console.time('handletouchpressed');
-        map_touchlist(function (t) {
-            inputmanager.current_touches.set(t.identifier, t)
-        },
+            map_touchlist(function (t) {
+                inputmanager.current_touches.set(t.identifier, t)
+            },
             ev.changedTouches)
-            console.timeEnd('handletouchpressed');
+            inputmanager.dirty_touch = true;
         }
 }
 function make_handle_touchstopped(inputmanager) { 
@@ -173,17 +184,20 @@ function make_handle_touchstopped(inputmanager) {
         map_touchlist(function (t) {
            inputmanager.current_touches.delete(t.identifier);
         }, ev.changedTouches);
+        inputmanager.dirty_touch = true;
     }
 }
 function make_handle_keydown(inputmanager) {
     return function(ev) {
         inputmanager.current_keys.add(ev.code);
+        inputmanager.dirty_keys = true;
     }
 }
 
 function make_handle_keyup(inputmanager) {
     return function(ev) {
         inputmanager.current_keys.delete(ev.code);
+        inputmanager.dirty_keys = true;
     }
 }
 
