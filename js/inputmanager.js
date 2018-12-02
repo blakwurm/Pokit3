@@ -28,6 +28,19 @@ const keymap = {
     'KeyU': 'y',
     'KeyI': 'x'
 }
+const gamepadbuttonmap = new Map(Object.entries({
+    0: 'a',
+    1: 'b',
+    2: 'y',
+    3: 'x',
+    7: 'select',
+    6: 'start'
+}))
+
+const gamepaddpadaxis = new Map([
+    [7, {'-1': 'up', '1': 'down'}],
+    [6, {'-1': 'left', '1': 'right'}]
+])
 
 export class InputManager {
     constructor () {
@@ -47,6 +60,8 @@ export class InputManager {
         this.current_keys = new Set();
         this.debug_callback = null;
         this.cust_keymap = keymap;
+        this.cust_gamepadbuttonmap = gamepadbuttonmap;
+        this.cust_gamepaddpadaxeis = gamepaddpadaxis;
     }
 
     setup_touch() {
@@ -61,15 +76,40 @@ export class InputManager {
         document.addEventListener('keyup', make_handle_keyup(this));
     }
 
+    setup_button_polling() {
+        let inputmanager = this;
+        function yaaaaaaas() {
+            inputmanager.detect_buttons_pressed();
+            requestAnimationFrame(yaaaaaaas);
+        }
+        requestAnimationFrame(yaaaaaaas);
+    }
+
     full_setup() {
         this.setup_touch();
         this.setup_keyboard();
+        this.setup_button_polling();
     }
 
     detect_buttons_pressed() {
-        this.reset_buttons()
+        this.reset_buttons();
         let buttons = this.buttons;
         let cust_keymap = this.cust_keymap;
+        if (navigator.getGamepads) {
+            for (let i = 0; i < navigator.getGamepads().length; i++) {
+                let gp = navigator.getGamepads()[i];
+                if (gp) {
+                    this.cust_gamepadbuttonmap.forEach(function(code, ind) {
+                        let pre = gp.buttons[ind].pressed;
+                        buttons[code] = pre;
+                    })
+                    this.cust_gamepaddpadaxeis.forEach(function(dirs, ind) {
+                        let axe = gp.axes[ind]
+                        buttons[dirs[axe]] = true
+                    })
+                }
+            }
+        }
         this.current_touches.forEach(function (a) {
             if (validbuttons.has(a.target.name)) {
                 buttons[a.target.name] = true;
