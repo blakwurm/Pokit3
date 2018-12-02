@@ -39,7 +39,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    padding: 15vw;
+    padding: 15vmin;
 }
 
 #debugreadout {
@@ -139,6 +139,7 @@ body {
     background-size: cover;
     background-image: url('/img/button_a.svg');
     transform: rotate(30deg);
+    margin: 2px;
     font-size: 4vw;
     color: black;
 }
@@ -172,9 +173,13 @@ body {
         display: block;
         width: 60vh;
         height: 60vh;
-        padding: 13vh;
+        padding: 15vh;
         margin: 0 auto;
         margin-top: 3vh;
+        margin-bottom: 3vh;
+    }
+    #gamescreen:fullscreen, #gamescreen:-webkit-full-screen {
+        padding: 20vh;
     }
     #debugreadout {
         position: absolute;

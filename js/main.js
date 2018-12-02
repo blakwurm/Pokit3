@@ -1,7 +1,7 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
 
-let debug = true;
+let debug = false;
 let input = new InputManager();
 
 function debug_fill_canvas() {
@@ -11,6 +11,27 @@ function debug_fill_canvas() {
     ctx.fillRect(0, 0, c.width, c.height);
 }
 
+function begin_debug() {
+    if (debug) {
+        debug_fill_canvas()
+        render_debug_readout()
+        input.debug_callback = render_debug_readout;
+    }
+}
+
+function undo_debug() {
+    if (!debug) {
+        input.debug_callback = function() {
+            render(html``, document.querySelector('#debug_point'));
+        }
+    }
+}
+
+function toggle_debug() {
+    debug = !debug;
+    begin_debug();
+    undo_debug();
+}
 
 function controls() {
     return html`
@@ -23,7 +44,7 @@ function controls() {
   </div>
   <div id="startselect" class="buttongroup">
     <button id="startbutton" name="start">START</button>
-    <button id="selectbutton" name="select">SELECT</button>
+    <button id="selectbutton" name="select" @dblclick='${() => toggle_debug()}'>SELECT</button>
   </div>
   <div id="rightbuttons" class="buttongroup">
     <button id="ybutton" name="y">Y</button>
@@ -78,11 +99,7 @@ function main() {
     console.log('testing');
     render_controls();
     input.full_setup();
-    if (debug) {
-        input.debug_callback = render_debug_readout;
-        debug_fill_canvas()
-        render_debug_readout();
-    }
+    begin_debug();
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
 }
