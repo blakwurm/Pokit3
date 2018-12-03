@@ -1,5 +1,6 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
+import {Firmware} from '/js/firmware.js'
 
 let debug = false;
 let input = new InputManager();
@@ -13,7 +14,7 @@ function debug_fill_canvas() {
 
 function begin_debug() {
     if (debug) {
-        debug_fill_canvas()
+        // debug_fill_canvas()
         render_debug_readout()
         input.debug_callback = render_debug_readout;
     }
@@ -95,13 +96,16 @@ function render_debug_readout() {
     };
 }
 
-function main() {
+async function main() {
     console.log('testing');
     render_controls();
     input.full_setup();
     begin_debug();
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
+    let firmware = await new Firmware(kontra, can).init();
+    console.log(firmware);
+    firmware.boot();
 }
 
 main()
