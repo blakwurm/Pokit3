@@ -9,6 +9,7 @@ export class Firmware {
         this.bootscreen_top.src = "/img/bootscreen_top_dash.svg";
         this.bootscreen_bottom = new Image(320, 320);
         this.bootscreen_bottom.src = "/img/bootscreen_bottom_dash.svg";
+        this.boot_audio = new Audio("/sound/introtune.wav");
     }
 
     async init () {
@@ -49,6 +50,7 @@ export class Firmware {
                     return;
                 }
 
+
                 if (bootsprite.opacity > 0) {
                     [bootsprite, bootsprite_bottom, bootsprite_top].map(function (img) {
                         img.opacity -= 2;
@@ -71,6 +73,7 @@ export class Firmware {
             x: 320, y: 0, width: 320, height: 320, opacity: 100, image: this.bootscreen_bottom
         });
         let update_anim = this.setup_boot_anim(bootsprite, bootsprite_top, bootsprite_bottom);
+        this.boot_audio.play();
         this.bootloop = kontra.gameLoop({
             fps: 60,
             update:function () {
