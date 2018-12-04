@@ -9,7 +9,8 @@ export class Firmware {
         this.bootscreen_top.src = "/img/bootscreen_top_dash.svg";
         this.bootscreen_bottom = new Image(320, 320);
         this.bootscreen_bottom.src = "/img/bootscreen_bottom_dash.svg";
-        this.boot_audio = new Audio("/sound/introtune.wav");
+        this.boot_audio = new Audio("/sound/introtune.ogg");
+
     }
 
     async init () {
