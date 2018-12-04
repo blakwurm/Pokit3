@@ -167,6 +167,54 @@ body {
     border: none;
 }
 
+#powercase_left, #powercase_right {
+    position: fixed;
+    z-index: 1000;
+    background-image: url('/img/clasp.svg');
+    background-size: cover;
+    transition: top 1s, bottom 1s, left 1s, right 1s;
+}
+#powercase_left {
+    top:0;
+    right:0;
+    left: 0;
+    bottom: 45vh;
+    background-position: bottom;
+    z-index: 2100;
+}
+#powercase_left.hidden {
+    top: -50vh;
+    bottom: 100vh;
+}
+#powercase_left button {
+    margin: 0 auto;
+    position: relative;
+    top: 25vh;
+    left: 40vw;
+    right: 60vw;
+    width: 20vw;
+    height: 20vw;
+    background: none;
+    border: none;
+    background-image: url('/img/button_red.svg');
+    background-size: contain;
+    background-position: center;
+}
+#powercase_left.hidden button {
+    background-image: url('/img/button_green.svg');
+}
+#powercase_right {
+    top:14vh;
+    right:0;
+    left: 0;
+    bottom: 0;
+    background-position: top;
+}
+#powercase_right.hidden {
+    top: 100vh;
+    bottom: -14vh;
+}
+
 @media (orientation:landscape) {
     #gamescreen {
         position: static;
@@ -208,5 +256,14 @@ body {
     }
     #rightbuttons button {
         font-size: calc(--dpad-size);
+    }
+    #powercase_left, #powercase_right {
+    }
+    #powercase_left {
+        bottom: -25vh;
+    }
+    #powercase_left.hidden {
+        bottom: 120vh;
+        top: -100vh;
     }
 }

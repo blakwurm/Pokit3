@@ -4,6 +4,8 @@ import {Firmware} from '/js/firmware.js'
 
 let debug = false;
 let input = new InputManager();
+let powercase_state = 'active';
+let firmware = undefined;
 
 function debug_fill_canvas() {
     let c = document.getElementById('gamescreen');
@@ -34,6 +36,12 @@ function toggle_debug() {
     undo_debug();
 }
 
+function open_console() {
+    powercase_state = 'hidden';
+    setTimeout(() => firmware.boot(), 1000);
+    render_controls();
+}
+
 function controls() {
     return html`
   <div id="dpad" class="buttongroup">
@@ -57,6 +65,10 @@ function controls() {
     <button id="fullscreen" @click='${() => screenfull.toggle()}'>
       Fullscreen
     </button>
+  </div>
+  <div id="powercase_right" class="${powercase_state}"></div>
+  <div id="powercase_left" class="${powercase_state}">
+      <button @click='${open_console}'></button>
   </div>
     `
 }
@@ -103,9 +115,8 @@ async function main() {
     begin_debug();
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
-    let firmware = await new Firmware(kontra, can).init();
+    firmware = await new Firmware(kontra, can).init();
     console.log(firmware);
-    firmware.boot();
 }
 
 main()
