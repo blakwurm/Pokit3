@@ -116,6 +116,10 @@ async function main() {
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
     firmware = await new Firmware(kontra, can).init();
+    if (powercase_state === 'hidden') {
+        // For 'live-server' reloading.
+        firmware.boot();
+    }
     console.log(firmware);
 }
 
