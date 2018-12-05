@@ -118,10 +118,16 @@ async function main() {
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
     // firmware = await new Firmware(kontra, can, get_cart_location()).init();
+    let params = new URLSearchParams(window.location.search);
+    let skipintro = params.has('skipintro') ? true : false;
+    if (skipintro) {
+        powercase_state = 'hidden';
+        render_controls();
+    }
     if (powercase_state === 'hidden') {
         // For 'live-server' reloading.
         // firmware.boot();
-        boot(kontra, can, input);
+        boot(kontra, can, input, skipintro);
     }
     console.log(firmware);
 }

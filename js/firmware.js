@@ -10,8 +10,9 @@ let cartframe = document.getElementById('cartslot')
 let bootloop = {};
 let cart = null;
 let input = null;
+let skipintro = false;
 
-export async function boot (kontra_, canvas_, input_) {
+export async function boot (kontra_, canvas_, input_, skipintro_) {
     console.log('this bootted!');
     bootscreen.src = "/img/bootscreen_text.svg";
     bootscreen_top.src = "/img/bootscreen_top_dash.svg";
@@ -19,6 +20,10 @@ export async function boot (kontra_, canvas_, input_) {
     kontra = kontra_;
     canvas = canvas_;
     input = input_;
+    skipintro = skipintro_;
+    if (skipintro) {
+        boot_done = true;
+    }
     screen = canvas.getContext('2d');
     kontra.init(canvas);
     console.log(cartframe);
