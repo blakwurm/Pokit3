@@ -1,6 +1,6 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
-import {Firmware} from '/js/firmware.js'
+import {boot} from '/js/firmware.js'
 
 let debug = false;
 let input = new InputManager();
@@ -38,7 +38,8 @@ function toggle_debug() {
 
 function open_console() {
     powercase_state = 'hidden';
-    setTimeout(() => firmware.boot(), 1000);
+    let can = document.querySelector('#gamescreen')
+    setTimeout(() => boot(kontra, can), 1000);
     render_controls();
 }
 
@@ -108,6 +109,7 @@ function render_debug_readout() {
     };
 }
 
+
 async function main() {
     console.log('testing');
     render_controls();
@@ -115,10 +117,11 @@ async function main() {
     begin_debug();
     let can = document.querySelector('#gamescreen')
     can.addEventListener('dblclick', () => screenfull.toggle(can))
-    firmware = await new Firmware(kontra, can).init();
+    // firmware = await new Firmware(kontra, can, get_cart_location()).init();
     if (powercase_state === 'hidden') {
         // For 'live-server' reloading.
-        firmware.boot();
+        // firmware.boot();
+        boot(kontra, can);
     }
     console.log(firmware);
 }

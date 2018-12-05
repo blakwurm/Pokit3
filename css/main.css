@@ -8,6 +8,10 @@
     outline: none;
 }
 
+iframe {
+    display: none;
+}
+
 html, body {
     background: #202022;
     border-radius: 5px;
