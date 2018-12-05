@@ -9,14 +9,16 @@ let boot_done = false;
 let cartframe = document.getElementById('cartslot')
 let bootloop = {};
 let cart = null;
+let input = null;
 
-export async function boot (kontra_, canvas_) {
+export async function boot (kontra_, canvas_, input_) {
     console.log('this bootted!');
     bootscreen.src = "/img/bootscreen_text.svg";
     bootscreen_top.src = "/img/bootscreen_top_dash.svg";
     bootscreen_bottom.src = "/img/bootscreen_bottom_dash.svg";
     kontra = kontra_;
     canvas = canvas_;
+    input = input_;
     screen = canvas.getContext('2d');
     kontra.init(canvas);
     console.log(cartframe);
@@ -25,6 +27,7 @@ export async function boot (kontra_, canvas_) {
     cartframe.onload = function () {
         cart = cartframe.contentDocument.cart;
         cart.kontra = kontra;
+        cart.input = input;
         cart.init();
     };
     console.log(this);
@@ -33,7 +36,7 @@ export async function boot (kontra_, canvas_) {
 
 function get_cart_location() {
     let params = new URLSearchParams(window.location.search);
-    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/pong";
+    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/asteroids";
     return cartlocation
 }
 

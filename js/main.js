@@ -39,7 +39,7 @@ function toggle_debug() {
 function open_console() {
     powercase_state = 'hidden';
     let can = document.querySelector('#gamescreen')
-    setTimeout(() => boot(kontra, can), 1000);
+    setTimeout(() => boot(kontra, can, input), 1000);
     render_controls();
 }
 
@@ -121,7 +121,7 @@ async function main() {
     if (powercase_state === 'hidden') {
         // For 'live-server' reloading.
         // firmware.boot();
-        boot(kontra, can);
+        boot(kontra, can, input);
     }
     console.log(firmware);
 }
