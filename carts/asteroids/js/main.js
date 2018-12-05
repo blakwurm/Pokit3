@@ -50,6 +50,22 @@ function makePlayer () {
            if (input.buttons.right) {
                this.rotation += 4
            }
+           const cos = Math.cos(degreesToRadians(this.rotation));
+           const sin = Math.sin(degreesToRadians(this.rotation));
+           if (input.buttons.up) {
+               this.ddx = cos * 0.1;
+               this.ddy = sin * 0.1;
+           } else {
+               this.ddx = this.ddy = 0;
+           }
+
+           this.advance();
+
+           const magnitude = Math.sqrt(this.dx * this.dx + this.dy * this.dy);
+           if (magnitude > 10) {
+               this.dx *= 0.95;
+               this.dy *= 0.95;
+           }
        }
    })
    sprites.push(ship);

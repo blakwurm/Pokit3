@@ -26,7 +26,11 @@ const keymap = {
     'KeyJ': 'b',
     'KeyK': 'a',
     'KeyU': 'y',
-    'KeyI': 'x'
+    'KeyI': 'x',
+    'ArrowLeft': 'left',
+    'ArrowRight': 'right',
+    'ArrowUp': 'up',
+    'ArrowDown': 'down'
 }
 const gamepadbuttonmap = new Map(Object.entries({
     0: 'a',
@@ -150,7 +154,9 @@ export class InputManager {
         }
         this.current_touches.forEach(function (a) {
             if (validbuttons.has(a.target.name)) {
-                buttons[a.target.name] = true;
+                if (rightbuttons.has(a.target.name)) {
+                    buttons[a.target.name] = true;
+                }
                 buttons[append_with_current(a).current.name] = true;
             }
         });
@@ -189,6 +195,7 @@ function make_handle_touchstopped(inputmanager) {
 }
 function make_handle_keydown(inputmanager) {
     return function(ev) {
+        console.log(inputmanager.current_keys);
         inputmanager.current_keys.add(ev.code);
         inputmanager.dirty_keys = true;
     }
