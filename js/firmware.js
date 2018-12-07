@@ -1,4 +1,3 @@
-let kontra = null;
 let canvas = null;
 let screen = null;
 let bootscreen = new Image(320, 320);
@@ -6,18 +5,16 @@ let bootscreen_top = new Image(320, 320);
 let bootscreen_bottom = new Image(320, 320);
 let boot_audio = new Audio("/sound/fanfare.wav");
 let boot_done = false;
-let cartframe = document.getElementById('cartslot')
 let bootloop = {};
 let cart = null;
 let input = null;
 let skipintro = false;
 
-export async function boot (kontra_, canvas_, input_, skipintro_) {
+export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
     bootscreen.src = "/img/bootscreen_text.svg";
     bootscreen_top.src = "/img/bootscreen_top_dash.svg";
     bootscreen_bottom.src = "/img/bootscreen_bottom_dash.svg";
-    kontra = kontra_;
     canvas = canvas_;
     input = input_;
     skipintro = skipintro_;
@@ -26,22 +23,25 @@ export async function boot (kontra_, canvas_, input_, skipintro_) {
     }
     screen = canvas.getContext('2d');
     kontra.init(canvas);
-    console.log(cartframe);
-    cartframe.setAttribute('importance', 'high');
-    cartframe.setAttribute('src', get_cart_location());
-    cartframe.onload = function () {
-        cart = cartframe.contentDocument.cart;
-        cart.kontra = kontra;
-        cart.input = input;
+    document.pokitOS = {}
+    document.pokitOS.input = input;
+    let cartag = document.createElement('script');
+    cartag.src = get_cart_location();
+    document.querySelector('body').appendChild(cartag);
+    cartag.onload = function () {
+        cart = document.pokitOS.gamecart;
         cart.init();
     };
     console.log(this);
+}
+
+export async function boot() {
     begin_boot_sequence();
 }
 
 function get_cart_location() {
     let params = new URLSearchParams(window.location.search);
-    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/asteroids";
+    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/asteroids.js";
     return cartlocation
 }
 

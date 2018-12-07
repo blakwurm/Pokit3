@@ -1,7 +1,6 @@
 // following https://medium.com/web-maker/making-asteroids-with-kontra-js-and-web-maker-95559d39b45f
 
-let kontra = null;
-let input = null;
+let input = document.pokitOS.input;
 let asteroids = [];
 let sprites = [];
 let ship = null;
@@ -99,10 +98,8 @@ function makeBullet(ship) {
 }
 
 let cart = {
-    init: function() {
+    init: async function() {
        console.log("%c I AM ALIVE!", "color: red"); 
-       kontra = this.kontra;
-       input = this.input;
        for (var i = 0; i < 10; i++) {
            makeAsteroid();
        }
@@ -131,5 +128,5 @@ let cart = {
         sprites.map(sprite => sprite.render());
     }
 }
-document.cart = cart;
+document.pokitOS.gamecart = cart;
 document.debugflag = 'my name... is Beowulf!';

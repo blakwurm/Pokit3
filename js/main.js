@@ -1,6 +1,6 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
-import {boot} from '/js/firmware.js'
+import {preload, boot} from '/js/firmware.js'
 
 let debug = false;
 let input = new InputManager();
@@ -120,6 +120,7 @@ async function main() {
     // firmware = await new Firmware(kontra, can, get_cart_location()).init();
     let params = new URLSearchParams(window.location.search);
     let skipintro = params.has('skipintro') ? true : false;
+    preload(can, input, skipintro);
     if (skipintro) {
         powercase_state = 'hidden';
         render_controls();
@@ -127,7 +128,7 @@ async function main() {
     if (powercase_state === 'hidden') {
         // For 'live-server' reloading.
         // firmware.boot();
-        boot(kontra, can, input, skipintro);
+        boot();
     }
     console.log(firmware);
 }
