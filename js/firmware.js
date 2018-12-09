@@ -1,4 +1,5 @@
 import TrollyBelt from './trollybelt.js';
+import Ouroboros from '/ouroboros.js';
 
 let canvas = null;
 let screen = null;
@@ -27,7 +28,8 @@ export async function preload (canvas_, input_, skipintro_) {
     kontra.init(canvas);
     document.pokitOS = {}
     document.pokitOS.input = input;
-    document.pokitOS.trollybelt = new TrollyBelt();
+    document.pokitOS.trollybelt = new TrollyBelt(document.pokitOS);
+    document.pokitOS.ouroboros = new Ouroboros(document.pokitOS);
     let cartag = document.createElement('script');
     cartag.src = get_cart_location();
     document.querySelector('body').appendChild(cartag);
