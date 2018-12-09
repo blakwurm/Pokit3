@@ -8,7 +8,7 @@
     outline: none;
 }
 
-iframe {
+iframe, #cart_slot {
     display: none;
 }
 
