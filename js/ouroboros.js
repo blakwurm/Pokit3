@@ -6,7 +6,7 @@
 // Still needs testing.
 export default class Ouroboros {
     constructor(pokitOS) {
-        this.framerate = 60;
+        this.framerate = 120;
         this.timelapsed = 0;
         this.active = true;
         this.r = null;
@@ -21,6 +21,7 @@ export default class Ouroboros {
     render(){}
 
     raf() {
+        let t = this;
         this.r = requestAnimationFrame(() => this.frame.call(t));
     }
 
@@ -58,3 +59,11 @@ export default class Ouroboros {
     }
     
 }
+
+// let o = new Ouroboros(document.pokitOS);
+// o.update = function() {
+//     console.timeEnd('t');
+//     console.log('doing it again');
+//     console.time('t');
+// };
+// o.start();
