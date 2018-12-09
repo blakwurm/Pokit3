@@ -9,7 +9,7 @@ export default class TrollyBelt {
             console.log(entity);
             for (let key of entity.components.keys()) {
                 let script = this.scripts.get(key);
-                script.update(entity);
+                script.update(entity, this.entities);
             }
         }
     }
@@ -23,13 +23,13 @@ export default class TrollyBelt {
             enableComponent(key) {
                 console.log(this);
                 this.components.set(key, trollybelt.scripts.get(key).makebundle(newEnt));
-                trollybelt.scripts.get(key).init(this);
+                trollybelt.scripts.get(key).init(this, trollybelt.entities);
             },
             getComponent(key) {
                 this.components.get(key);
             },
             removeComponent(key) {
-                trollybelt.scripts.get(key).destroy(ent);
+                trollybelt.scripts.get(key).destroy(ent, trollybelt.entities);
                 this.components.delete(key);
             }
         }
