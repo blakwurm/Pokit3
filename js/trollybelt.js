@@ -37,7 +37,8 @@ export default class TrollyBelt {
         return newEnt;
     }
     registerScript(scriptname, scriptObj) {
-        this.scripts.set(scriptname, scriptObj);
+        let derscript = Object.assign({init(){}, update(){}, destroy(){}, makebundle(){return new Map()}}, scriptObj);
+        this.scripts.set(scriptname, derscript);
     }
 }
 
