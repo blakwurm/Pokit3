@@ -1,5 +1,5 @@
 import TrollyBelt from './trollybelt.js';
-import Ouroboros from '/ouroboros.js';
+import Ouroboros from './ouroboros.js';
 
 let canvas = null;
 let screen = null;
