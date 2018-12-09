@@ -2,10 +2,11 @@ export default class TrollyBelt {
     constructor() {
         this.scripts = new Map();
         this.entities = new Map();
-        this.entitySorter = null;
+        this.entitySort = (entitya, entityb) => entitya.priority - entityb.priority;
     }
     update() {
-        for (let entity of this.entities.values()) {
+        let sortedEnts = [...this.entities.values()].sort(this.entitySort);
+        for (let entity of sortedEnts) {
             console.log(entity);
             for (let key of entity.components.keys()) {
                 let script = this.scripts.get(key);
