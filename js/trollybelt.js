@@ -1,49 +1,76 @@
 export default class TrollyBelt {
     constructor(pokitOS) {
         this.scripts = new Map();
+        this.renderers = new Map();
         this.entities = new Map();
         this.prioritySort = (entitya, entityb) => entitya.priority - entityb.priority;
         this.pokitOS = pokitOS;
     }
-    update() {
-        let sortedEnts = [...this.entities.values()].sort(this.prioritySort);
-        let sortedScripts = [...this.scripts.values()].sort(this.prioritySort);
+    rendersort(entitya, entityb) {
+        return entitya.z - entityb.z;
+    }
+    _base_update(entities, scripts, entitySortFn, scriptSortfn) {
+        let sortedEnts = [...this.entities.values()].sort(entitySortFn);
+        let sortedScripts = [...this.scripts.values()].sort(scriptSortfn);
         for (let script of sortedScripts) {
             for (let entity of sortedEnts) {
                 if (entity.hasComponent(script.name)) {
                     script.update(entity);
                 }}}}
+    update() {
+        this._base_update(this.entities, this.scripts, this.prioritySort, this.prioritySort);
+    }
+    render() {
+        this._base_update(this.entities, this.renderers, this.rendersort, this.prioritySort);
+    }
 
-    makeEntity() {
+    makeEntity(transform, optprops) {
         let entID = 'ent' + (Math.random() * 10000);
         let trollybelt = this;
-        let newEnt = {
-            priority: 0,
+        let props = Object.assign(optprops || {}, {
             id: entID,
-            components: new Map(),
-            enableComponent(key) {
-                console.log(this);
-                this.components.set(key, trollybelt.scripts.get(key).makebundle(newEnt));
-                trollybelt.scripts.get(key).init(this, trollybelt.entities);
-            },
-            getComponent(key) {
-                this.components.get(key);
-            },
-            hasComponent(key) {
-                console.log('has key on ' + key);
-                return this.components.has(key);
-            },
-            removeComponent(key) {
-                trollybelt.scripts.get(key).destroy(ent, trollybelt.entities);
-                this.components.delete(key);
-            }
-        }
+            transform: Object.assign({x: 0, y: 0, z: 0, rotation: 0, width: 0, height: 0}, transform),
+            trollybelt: this
+        });
+        let newEnt = new Entity(props);
         this.entities.set(entID, newEnt);
         return newEnt;
     }
     registerScript(scriptObj) {
-        let derscript = Object.assign({priority: 0, init(){}, update(){}, destroy(){}, makebundle(){return new Map()}}, scriptObj);
-        this.scripts.set(derscript.name, derscript);
+        this.scripts.set(scriptObj.name, scriptObj);
+        if (scriptObj.render) {
+            this.renderers.set(derscript.name, scriptObj);
+        }
+    }
+    removeScript(scriptname) {
+        this.scripts.delete(scriptname);
+        this.renderers.delete(scriptname);
+    }
+}
+
+class Entity {
+    constructor(props) {
+        this.entID = 0;
+        this.priority = 0;
+        this.components = new Map();
+        Object.assign(this, props);
+    }
+    getComponent(key){return this.components.get(key);}
+    hasComponent(key){return this.components.has(key);}
+    enableComponent(key) {
+        console.log(this);
+        this.components.set(key, this.trollybelt.scripts.get(key).makebundle(this));
+        this.trollybelt.scripts.get(key).init(this, this.trollybelt.entities);
+        return this;
+    }
+    removeComponent(key) {
+        this.trollybelt.scripts.get(key).destroy(ent, this.trollybelt.entities);
+        this.components.delete(key);
+        return this;
+    }
+    modify(fn) {
+        fn(this);
+        return this;
     }
 }
 
@@ -66,8 +93,8 @@ tb.registerScript({
     },
     makebundle: ent => new Map([['ba', 'ne']])
 })
-let ent = tb.makeEntity();
-ent.enableComponent('foo');
-console.log(ent);
-tb.update();
+// let ent = tb.makeEntity();
+// ent.enableComponent('foo');
+// console.log(ent);
+// tb.update();
 // ent.removeComponent('foo');

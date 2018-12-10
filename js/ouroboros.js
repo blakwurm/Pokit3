@@ -6,7 +6,8 @@
 // Still needs testing.
 export default class Ouroboros {
     constructor(pokitOS) {
-        this.framerate = 120;
+        this.framerate = 60;
+        this.interval = 1000/this.framerate;
         this.timelapsed = 0;
         this.active = true;
         this.r = null;
@@ -18,7 +19,9 @@ export default class Ouroboros {
     update(){
         this.pokitOS.trollybelt.update();
     }
-    render(){}
+    render(){
+        this.pokitOS.trollybelt.render();
+    }
 
     raf() {
         let t = this;
@@ -43,18 +46,22 @@ export default class Ouroboros {
     }
 
     frame() {
+        console.timeEnd('ja');
         this.maketime();
+        this.raf();
         // prevent updating the game if over a second has passed 
         // (like when the game loses focus)
-        if (this.delta > 1E3) {return;}
-        this.raf();
+        if (this.delta > 1E3) {
+            this.timesince = 0;
+            return;}
 
-        while (this.timesince >= this.delta) {
+        while (this.timesince >= this.interval) {
             this.update(this.delta);
             this.timesince -= this.delta;
         }
 
         this.render();
+        console.time('ja');
 
     }
     

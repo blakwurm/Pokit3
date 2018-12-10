@@ -1,5 +1,6 @@
 import TrollyBelt from './trollybelt.js';
 import Ouroboros from './ouroboros.js';
+import {IMGRenderer} from './trollywheels.js';
 
 let canvas = null;
 let screen = null;
@@ -12,6 +13,7 @@ let bootloop = {};
 let cart = null;
 let input = null;
 let skipintro = false;
+let pokitOS = {};
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
@@ -26,10 +28,10 @@ export async function preload (canvas_, input_, skipintro_) {
     }
     screen = canvas.getContext('2d');
     kontra.init(canvas);
-    document.pokitOS = {}
-    document.pokitOS.input = input;
-    document.pokitOS.trollybelt = new TrollyBelt(document.pokitOS);
-    document.pokitOS.ouroboros = new Ouroboros(document.pokitOS);
+    pokitOS.input = input;
+    pokitOS.trollybelt = new TrollyBelt(document.pokitOS);
+    pokitOS.ouroboros = new Ouroboros(document.pokitOS);
+    document.pokitOS = pokitOS;
     let cartag = document.createElement('script');
     cartag.src = get_cart_location();
     document.querySelector('body').appendChild(cartag);
@@ -41,7 +43,8 @@ export async function preload (canvas_, input_, skipintro_) {
 }
 
 export async function boot() {
-    begin_boot_sequence();
+    // begin_boot_sequence();
+    pokitOS.ouroboros.start();
 }
 
 function get_cart_location() {
@@ -59,33 +62,47 @@ async function load_cart() {
 }
 
 async function begin_boot_sequence() {
-    let bootsprite = kontra.sprite({
-        x: 0, y: 320, width: 320, height: 320, opacity: 100, image: bootscreen
-    });
-    let bootsprite_top = kontra.sprite({
-        x: -320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_top
+    // let bootsprite = kontra.sprite({
+    //     x: 0, y: 320, width: 320, height: 320, opacity: 100, image: bootscreen
+    // });
+    // let bootsprite_top = kontra.sprite({
+    //     x: -320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_top
 
-    });
-    let bootsprite_bottom = kontra.sprite({
-        x: 320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_bottom
-    });
-    let update_anim = setup_boot_anim(bootsprite, bootsprite_top, bootsprite_bottom);
-    boot_audio.play();
-    bootloop = kontra.gameLoop({
-        fps: 60,
-        update:function () {
-            update_anim();
-            if (boot_done) {
-                load_cart();
-            }
-        },
-        render: function() {
-            bootsprite.render();
-            bootsprite_top.render();
-            bootsprite_bottom.render();
-        }
-    });
-    bootloop.start();
+    // });
+    // let bootsprite_bottom = kontra.sprite({
+    //     x: 320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_bottom
+    // });
+    // let update_anim = setup_boot_anim(bootsprite, bootsprite_top, bootsprite_bottom);
+    // boot_audio.play();
+    // bootloop = kontra.gameLoop({
+    //     fps: 60,
+    //     update:function () {
+    //         update_anim();
+    //         if (boot_done) {
+    //             load_cart();
+    //         }
+    //     },
+    //     render: function() {
+    //         bootsprite.render();
+    //         bootsprite_top.render();
+    //         bootsprite_bottom.render();
+    //     }
+    // });
+    // bootloop.start();
+    // pokitOS.ouroboros.update = function() {
+    //     console.timeEnd('jk');
+    //     update_anim();
+    //     if (boot_done) {
+    //         load_cart();
+    //     }
+    //     console.time('jk');
+    // }
+    // pokitOS.ouroboros.render = function() {
+    //     bootsprite.render();
+    //     bootsprite_top.render();
+    //     bootsprite_bottom.render();
+    // }
+    pokitOS.ouroboros.start();
 }
 
 function setup_boot_anim (bootsprite, bootsprite_top, bootsprite_bottom) {
