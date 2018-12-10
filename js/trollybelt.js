@@ -1,18 +1,19 @@
 export default class TrollyBelt {
-    constructor() {
+    constructor(pokitOS) {
         this.scripts = new Map();
         this.entities = new Map();
-        this.entitySorter = null;
+        this.prioritySort = (entitya, entityb) => entitya.priority - entityb.priority;
+        this.pokitOS = pokitOS;
     }
     update() {
-        for (let entity of this.entities.values()) {
-            console.log(entity);
-            for (let key of entity.components.keys()) {
-                let script = this.scripts.get(key);
-                script.update(entity);
-            }
-        }
-    }
+        let sortedEnts = [...this.entities.values()].sort(this.prioritySort);
+        let sortedScripts = [...this.scripts.values()].sort(this.prioritySort);
+        for (let script of sortedScripts) {
+            for (let entity of sortedEnts) {
+                if (entity.hasComponent(script.name)) {
+                    script.update(entity);
+                }}}}
+
     makeEntity() {
         let entID = 'ent' + (Math.random() * 10000);
         let trollybelt = this;
@@ -23,26 +24,33 @@ export default class TrollyBelt {
             enableComponent(key) {
                 console.log(this);
                 this.components.set(key, trollybelt.scripts.get(key).makebundle(newEnt));
-                trollybelt.scripts.get(key).init(this);
+                trollybelt.scripts.get(key).init(this, trollybelt.entities);
             },
             getComponent(key) {
                 this.components.get(key);
             },
+            hasComponent(key) {
+                console.log('has key on ' + key);
+                return this.components.has(key);
+            },
             removeComponent(key) {
-                trollybelt.scripts.get(key).destroy(ent);
+                trollybelt.scripts.get(key).destroy(ent, trollybelt.entities);
                 this.components.delete(key);
             }
         }
         this.entities.set(entID, newEnt);
         return newEnt;
     }
-    registerScript(scriptname, scriptObj) {
-        this.scripts.set(scriptname, scriptObj);
+    registerScript(scriptObj) {
+        let derscript = Object.assign({priority: 0, init(){}, update(){}, destroy(){}, makebundle(){return new Map()}}, scriptObj);
+        this.scripts.set(derscript.name, derscript);
     }
 }
 
 let tb = new TrollyBelt();
-tb.registerScript('foo', {
+tb.registerScript({
+    name: 'foo',
+    priority: 0,
     init(ent) {
         console.log("did a thing with ");
         console.log(ent);
@@ -60,5 +68,6 @@ tb.registerScript('foo', {
 })
 let ent = tb.makeEntity();
 ent.enableComponent('foo');
+console.log(ent);
 tb.update();
-ent.removeComponent('foo');
+// ent.removeComponent('foo');
