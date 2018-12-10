@@ -9,19 +9,26 @@ export default class TrollyBelt {
     rendersort(entitya, entityb) {
         return entitya.z - entityb.z;
     }
-    _base_update(entities, scripts, entitySortFn, scriptSortfn) {
+    _base_update(fnname, entities, scripts, entitySortFn, scriptSortfn, initializer) {
         let sortedEnts = [...this.entities.values()].sort(entitySortFn);
         let sortedScripts = [...this.scripts.values()].sort(scriptSortfn);
+        if (initializer) {
+            initializer(sortedScripts, sortedEnts);
+        }
         for (let script of sortedScripts) {
             for (let entity of sortedEnts) {
                 if (entity.hasComponent(script.name)) {
-                    script.update(entity);
+                    script[fnname](entity);
                 }}}}
     update() {
-        this._base_update(this.entities, this.scripts, this.prioritySort, this.prioritySort);
+        this._base_update('update', this.entities, this.scripts, this.prioritySort, this.prioritySort);
     }
     render() {
-        this._base_update(this.entities, this.renderers, this.rendersort, this.prioritySort);
+        this._base_update('render', this.entities, this.renderers, this.rendersort, this.prioritySort,
+        sortedScripts => sortedScripts.forEach(element => {
+            let pre = element.prerender() || function(){};
+            pre();
+        }))
     }
 
     makeEntity(transform, optprops) {
@@ -39,7 +46,7 @@ export default class TrollyBelt {
     registerScript(scriptObj) {
         this.scripts.set(scriptObj.name, scriptObj);
         if (scriptObj.render) {
-            this.renderers.set(derscript.name, scriptObj);
+            this.renderers.set(scriptObj.name, scriptObj);
         }
     }
     removeScript(scriptname) {
@@ -72,6 +79,14 @@ class Entity {
         fn(this);
         return this;
     }
+}
+
+export class TrollyComponent {
+    constructor(name){this.name = name;}
+    init(ent){}
+    update(ent){}
+    destroy(ent){}
+    makebundle(ent){return new Map();}
 }
 
 let tb = new TrollyBelt();

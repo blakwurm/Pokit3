@@ -46,7 +46,6 @@ export default class Ouroboros {
     }
 
     frame() {
-        console.timeEnd('ja');
         this.maketime();
         this.raf();
         // prevent updating the game if over a second has passed 
@@ -61,7 +60,6 @@ export default class Ouroboros {
         }
 
         this.render();
-        console.time('ja');
 
     }
     

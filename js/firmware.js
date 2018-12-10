@@ -14,6 +14,10 @@ let cart = null;
 let input = null;
 let skipintro = false;
 let pokitOS = {};
+let trollybelt = new TrollyBelt(pokitOS);
+let ouroboros = new Ouroboros(pokitOS);
+pokitOS.trollybelt = trollybelt;
+pokitOS.ouroboros = ouroboros;
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
@@ -28,10 +32,10 @@ export async function preload (canvas_, input_, skipintro_) {
     }
     screen = canvas.getContext('2d');
     kontra.init(canvas);
+    trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
-    pokitOS.trollybelt = new TrollyBelt(document.pokitOS);
-    pokitOS.ouroboros = new Ouroboros(document.pokitOS);
     document.pokitOS = pokitOS;
+    makeTestEntity();
     let cartag = document.createElement('script');
     cartag.src = get_cart_location();
     document.querySelector('body').appendChild(cartag);
@@ -40,6 +44,12 @@ export async function preload (canvas_, input_, skipintro_) {
         cart.init();
     };
     console.log(this);
+}
+
+function makeTestEntity() {
+    trollybelt.makeEntity({x: 320/2, y: 320/2, width: 320, height: 320})
+        .enableComponent('imgrenderer')
+        .modify(e => e.getComponent('imgrenderer').src = '/img/bootscreen_text.svg');
 }
 
 export async function boot() {
