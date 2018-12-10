@@ -22,7 +22,7 @@ export default class Ouroboros {
 
     raf() {
         let t = this;
-        this.r = requestAnimationFrame(() => this.frame.call(t));
+        this.r = requestAnimationFrame(() => t.frame.call(t));
     }
 
     maketime() {
@@ -44,6 +44,9 @@ export default class Ouroboros {
 
     frame() {
         this.maketime();
+        // prevent updating the game if over a second has passed 
+        // (like when the game loses focus)
+        if (this.delta > 1E3) {return;}
         this.raf();
 
         while (this.timesince >= this.delta) {
@@ -53,17 +56,6 @@ export default class Ouroboros {
 
         this.render();
 
-        // prevent updating the game if over a second has passed 
-        // (like when the game loses focus)
-        if (this.delta > 1E3) {return;}
     }
     
 }
-
-// let o = new Ouroboros(document.pokitOS);
-// o.update = function() {
-//     console.timeEnd('t');
-//     console.log('doing it again');
-//     console.time('t');
-// };
-// o.start();
