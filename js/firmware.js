@@ -35,15 +35,21 @@ export async function preload (canvas_, input_, skipintro_) {
     trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
     pokitOS = pokitOS;
+    import(get_cart_location()).then((module) => {
+            cart = new module.GameCart(pokitOS);
+            pokitOS.cart = cart;
+            cart.preload();
+        });
     makeBootAnim(trollybelt, () => pokitOS.cart.start());
     // makeTestEntity();
-    let cartag = document.createElement('script');
-    cartag.src = get_cart_location();
-    document.querySelector('body').appendChild(cartag);
-    cartag.onload = function () {
-        cart = pokitOS.cart;
-        cart.preload();
-    };
+    // let cartag = document.createElement('script');
+    // cartag.src = get_cart_location();
+    // document.querySelector('body').appendChild(cartag);
+    // cartag.onload = function () {
+    //     cart = pokitOS.cart;
+    //     cart.preload();
+    // };
+
     console.log(this);
 }
 
