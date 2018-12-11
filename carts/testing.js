@@ -1,6 +1,6 @@
-class TestCart extends GameCart {
-    constructor() {
-        super('Testing Game');
+export class GameCart {
+    constructor(pokitOS) {
+        this.pokitOS = pokitOS;
     }
     preload() {
         console.log('loaded!');
@@ -9,4 +9,3 @@ class TestCart extends GameCart {
         console.log('mainstart');
     }
 }
-let tc = new TestCart();
