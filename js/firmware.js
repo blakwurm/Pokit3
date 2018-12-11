@@ -1,6 +1,6 @@
 import TrollyBelt from './trollybelt.js';
 import Ouroboros from './ouroboros.js';
-import {IMGRenderer} from './trollywheels.js';
+import {IMGRenderer, makeBootAnim} from './trollywheels.js';
 
 let canvas = null;
 let screen = null;
@@ -34,14 +34,15 @@ export async function preload (canvas_, input_, skipintro_) {
     kontra.init(canvas);
     trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
-    document.pokitOS = pokitOS;
-    makeTestEntity();
+    pokitOS = pokitOS;
+    makeBootAnim(trollybelt, () => pokitOS.cart.start());
+    // makeTestEntity();
     let cartag = document.createElement('script');
     cartag.src = get_cart_location();
     document.querySelector('body').appendChild(cartag);
     cartag.onload = function () {
-        cart = document.pokitOS.gamecart;
-        cart.init();
+        cart = pokitOS.cart;
+        cart.preload();
     };
     console.log(this);
 }
@@ -53,113 +54,31 @@ function makeTestEntity() {
 }
 
 export async function boot() {
-    // begin_boot_sequence();
     pokitOS.ouroboros.start();
 }
 
 function get_cart_location() {
     let params = new URLSearchParams(window.location.search);
-    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/asteroids.js";
+    let cartlocation = params.has('cart') ? params.get('cart') : "/carts/testing.js";
     return cartlocation
 }
 
-async function load_cart() {
-    if (cart) {
-        console.log(cart);
-        bootloop.update = cart.update;
-        bootloop.render = cart.render;
+window.GameCart = class {
+    constructor(gamename) {
+        this.pokitOS = pokitOS;
+        this.name = gamename;
+        pokitOS.cart = this;
     }
-}
-
-async function begin_boot_sequence() {
-    // let bootsprite = kontra.sprite({
-    //     x: 0, y: 320, width: 320, height: 320, opacity: 100, image: bootscreen
-    // });
-    // let bootsprite_top = kontra.sprite({
-    //     x: -320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_top
-
-    // });
-    // let bootsprite_bottom = kontra.sprite({
-    //     x: 320, y: 0, width: 320, height: 320, opacity: 100, image: bootscreen_bottom
-    // });
-    // let update_anim = setup_boot_anim(bootsprite, bootsprite_top, bootsprite_bottom);
-    // boot_audio.play();
-    // bootloop = kontra.gameLoop({
-    //     fps: 60,
-    //     update:function () {
-    //         update_anim();
-    //         if (boot_done) {
-    //             load_cart();
-    //         }
-    //     },
-    //     render: function() {
-    //         bootsprite.render();
-    //         bootsprite_top.render();
-    //         bootsprite_bottom.render();
-    //     }
-    // });
-    // bootloop.start();
-    // pokitOS.ouroboros.update = function() {
-    //     console.timeEnd('jk');
-    //     update_anim();
-    //     if (boot_done) {
-    //         load_cart();
-    //     }
-    //     console.time('jk');
-    // }
-    // pokitOS.ouroboros.render = function() {
-    //     bootsprite.render();
-    //     bootsprite_top.render();
-    //     bootsprite_bottom.render();
-    // }
-    pokitOS.ouroboros.start();
-}
-
-function setup_boot_anim (bootsprite, bootsprite_top, bootsprite_bottom) {
-    let hold = 35;
-    let display_bootsprite = true;
-    console.log('booting');
-    function update_boot_anim() {
-            if (boot_done) {
-                return
-            }
-            let textin = false;
-            let topin = false;
-            let bottomin = false;
-            let opacity = 100;
-            if (bootsprite.y > 0) {
-                bootsprite.y -= 4;
-                console.log(bootsprite.x);
-                return;
-            } 
-
-            if (bootsprite_top.x < 0) {
-                bootsprite_top.x += 20;
-                console.log(bootsprite_top.x)
-                return;
-            }
-
-            if (bootsprite_bottom.x > 0) {
-                bootsprite_bottom.x -= 20;
-                console.log(bootsprite_bottom.x)
-                return;
-            }
-
-            if (hold > 0) {
-                console.log('hold is ' + hold);
-                hold -= 1;
-                return;
-            }
-
-
-            if (bootsprite.opacity > 0) {
-                [bootsprite, bootsprite_bottom, bootsprite_top].map(function (img) {
-                    img.opacity -= 2;
-                    console.log(img.opacity);
-                })
-                return;
-            }
-            boot_done = true;
-        }
-    return update_boot_anim;
+    preload() {
+        // Called as soon as the script loads, while the boot screen is animating
+    }
+    start() {
+        // Called when the game starts
+    }
+    suspend() {
+        // Called when the game is suspended
+    }
+    end() {
+        // Called when the game ends
+    }
 }
