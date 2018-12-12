@@ -32,7 +32,7 @@ export default class BaubleBox {
     }
     addComponentToEntity(entityID, componentName, initialvalue) {
         let fn = this.__componentMakers.get(componentName);
-        let realvalue = fn(initialvalue);
+        let realvalue = fn(initialvalue, entityID, this.__components);
         this.__components.get(componentName).set(entityID, realvalue);
         return function(otherComponentName, otherInitialValue) {
             this.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
