@@ -27,7 +27,28 @@ function imgComponent(opts, entityID, components) {
     return img;
 }
 
+class BootAnimationSystem extends Bauble {
+    constructor() {
+        super('bootanimation', 10);
+    }
+
+    update(components) {
+        let getpart = (partname) => components.get('transform').get(components.get('bootanimbottom').keys().next());
+        let boottop = part('bootanimtop');
+        let bootbottom = part('bootanimbottom');
+        let boottext = part('bootanimtext');
+    }
+}
+
+function bootAnimPart (opts, entityID, components) {
+        return '';
+}
+
 export default function setupBaubleBox(baublebox, canvas) {
     baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
     baublebox.initializeComponent('img', imgComponent);
+    baublebox.initializeSystem('bootanimation', new BootAnimationSystem());
+    baublebox.initializeComponent('bootanimtop', bootAnimPart);
+    baublebox.initializeComponent('bootanimbottom', bootAnimPart);
+    baublebox.initializeComponent('bootanimtext', bootAnimPart);
 }
