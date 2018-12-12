@@ -1,4 +1,4 @@
-class System {
+export class Bauble {
     constructor(name, priority) {
         this.name = name;
         this.priority = priority;
@@ -50,12 +50,12 @@ export default class BaubleBox {
         }
         return this;
     }
-    initializeSystem(systemName, newSystem) {
+    initializeSystem(systemname, newSystem) {
         if (newSystem.update){
-            this.__systems.add(systemname, newSystem);
+            this.__systems.set(systemname, newSystem);
         }
         if (newSystem.render) {
-            this.__renderers.add(systemname, newSystem);
+            this.__renderers.set(systemname, newSystem);
         }
         newSystem.baublebox = this;
     }
@@ -66,13 +66,13 @@ export default class BaubleBox {
 
 
     update() {
-        for (let system of this.__systems.values()) {
+        for (let system of [...this.__systems.values()].sort(this.prioritySort)) {
             system.update(this.__components);
         }
     }
 
     render() {
-        for (let system of this.__renderers.values()) {
+        for (let system of [...this.__renderers.values()].sort(this.prioritySort)) {
             system.render(this.__components);
         }
 

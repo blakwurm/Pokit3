@@ -2,6 +2,7 @@ import TrollyBelt from './trollybelt.js';
 import BaubleBox from './baublebox.js';
 import Ouroboros from './ouroboros.js';
 import {IMGRenderer, makeBootAnim} from './trollywheels.js';
+import setupBB from './baubles.js';
 
 let canvas = null;
 let screen = null;
@@ -21,6 +22,7 @@ let ouroboros = new Ouroboros(pokitOS);
 // pokitOS.trollybelt = trollybelt;
 pokitOS.ouroboros = ouroboros;
 pokitOS.baublebox = baublebox;
+setupBB(baublebox);
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
