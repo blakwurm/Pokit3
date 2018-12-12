@@ -1,6 +1,8 @@
 import TrollyBelt from './trollybelt.js';
+import BaubleBox from './baublebox.js';
 import Ouroboros from './ouroboros.js';
 import {IMGRenderer, makeBootAnim} from './trollywheels.js';
+import setupBB from './baubles.js';
 
 let canvas = null;
 let screen = null;
@@ -14,10 +16,13 @@ let cart = null;
 let input = null;
 let skipintro = false;
 let pokitOS = {};
-let trollybelt = new TrollyBelt(pokitOS);
+// let trollybelt = new TrollyBelt(pokitOS);
+let baublebox = new BaubleBox(pokitOS);
 let ouroboros = new Ouroboros(pokitOS);
-pokitOS.trollybelt = trollybelt;
+// pokitOS.trollybelt = trollybelt;
 pokitOS.ouroboros = ouroboros;
+pokitOS.baublebox = baublebox;
+setupBB(baublebox);
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
@@ -32,18 +37,24 @@ export async function preload (canvas_, input_, skipintro_) {
     }
     screen = canvas.getContext('2d');
     kontra.init(canvas);
-    trollybelt.registerScript(new IMGRenderer(canvas_));
+    // trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
     pokitOS = pokitOS;
-    makeBootAnim(trollybelt, () => pokitOS.cart.start());
+    import(get_cart_location()).then((module) => {
+            cart = new module.GameCart(pokitOS);
+            pokitOS.cart = cart;
+            cart.preload();
+        });
+    // makeBootAnim(trollybelt, () => pokitOS.cart.start());
     // makeTestEntity();
-    let cartag = document.createElement('script');
-    cartag.src = get_cart_location();
-    document.querySelector('body').appendChild(cartag);
-    cartag.onload = function () {
-        cart = pokitOS.cart;
-        cart.preload();
-    };
+    // let cartag = document.createElement('script');
+    // cartag.src = get_cart_location();
+    // document.querySelector('body').appendChild(cartag);
+    // cartag.onload = function () {
+    //     cart = pokitOS.cart;
+    //     cart.preload();
+    // };
+
     console.log(this);
 }
 
