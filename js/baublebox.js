@@ -34,8 +34,9 @@ export default class BaubleBox {
         let fn = this.__componentMakers.get(componentName);
         let realvalue = fn(initialvalue, entityID, this.__components);
         this.__components.get(componentName).set(entityID, realvalue);
+        let t = this;
         return function(otherComponentName, otherInitialValue) {
-            this.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
+            t.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
         }
     }
     makeEntity(transform) {

@@ -22,7 +22,6 @@ let ouroboros = new Ouroboros(pokitOS);
 // pokitOS.trollybelt = trollybelt;
 pokitOS.ouroboros = ouroboros;
 pokitOS.baublebox = baublebox;
-setupBB(baublebox);
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
@@ -32,6 +31,7 @@ export async function preload (canvas_, input_, skipintro_) {
     canvas = canvas_;
     input = input_;
     skipintro = skipintro_;
+    setupBB(baublebox, canvas);
     if (skipintro) {
         boot_done = true;
     }
@@ -59,9 +59,11 @@ export async function preload (canvas_, input_, skipintro_) {
 }
 
 function makeTestEntity() {
-    trollybelt.makeEntity({x: 320/2, y: 320/2, width: 320, height: 320})
-        .enableComponent('imgrenderer')
-        .modify(e => e.getComponent('imgrenderer').src = '/img/bootscreen_text.svg');
+    // trollybelt.makeEntity({x: 320/2, y: 320/2, width: 320, height: 320})
+    //     .enableComponent('imgrenderer')
+    //     .modify(e => e.getComponent('imgrenderer').src = '/img/bootscreen_text.svg');
+    baublebox.makeEntity({x: 320/2, y: 320/2, width: 320, height: 320})
+        ('img', {src: '/img/bootscreen_text.svg'})
 }
 
 export async function boot() {

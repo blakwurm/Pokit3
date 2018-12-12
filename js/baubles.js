@@ -7,7 +7,7 @@ class IMGRenderer extends Bauble {
         this.context = this.canvas.getContext('2d');
     }
     render(components) {
-        for (_tup of components.get('img').entries()) {
+        for (let _tup of components.get('img').entries()) {
             let entityID = _tup[0];
             let img = _tup[1];
             let t = components.get('transform').get(entityID);
