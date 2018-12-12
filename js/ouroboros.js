@@ -17,10 +17,10 @@ export default class Ouroboros {
         this.pokitOS = pokitOS;
     }
     update(n){
-        this.pokitOS.trollybelt.update();
+        this.pokitOS.baublebox.update();
     }
     render(){
-        this.pokitOS.trollybelt.render();
+        this.pokitOS.baublebox.render();
     }
 
     raf() {
