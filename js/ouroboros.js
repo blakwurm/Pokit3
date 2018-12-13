@@ -16,11 +16,11 @@ export default class Ouroboros {
         this.timesince = 0;
         this.pokitOS = pokitOS;
     }
-    update(){
-        this.pokitOS.trollybelt.update();
+    update(n){
+        this.pokitOS.baublebox.update();
     }
     render(){
-        this.pokitOS.trollybelt.render();
+        this.pokitOS.baublebox.render();
     }
 
     raf() {
@@ -45,22 +45,22 @@ export default class Ouroboros {
         cancelAnimationFrame(this.r);
     }
 
-    frame() {
+    frame(n) {
         this.maketime();
         this.raf();
         // prevent updating the game if over a second has passed 
         // (like when the game loses focus)
         if (this.delta > 1E3) {
             this.timesince = 0;
-            return;}
+            return;
+        }
 
         while (this.timesince >= this.interval) {
-            this.update(this.delta);
-            this.timesince -= this.delta;
+            this.update(this.interval);
+            this.timesince -= this.interval;
         }
 
         this.render();
-
     }
     
 }

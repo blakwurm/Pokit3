@@ -7,28 +7,32 @@ export default class TrollyBelt {
         this.pokitOS = pokitOS;
     }
     rendersort(entitya, entityb) {
-        return entitya.z - entityb.z;
+        return entitya.transform.z - entityb.transform.z;
     }
-    _base_update(fnname, entities, scripts, entitySortFn, scriptSortfn, initializer) {
-        let sortedEnts = [...this.entities.values()].sort(entitySortFn);
-        let sortedScripts = [...this.scripts.values()].sort(scriptSortfn);
-        if (initializer) {
-            initializer(sortedScripts, sortedEnts);
-        }
+    __base_update(entityInteraction, preScript, entities, scripts, entitySortFn, scriptSortFn) {
+        let sortedEnts = [...entities.values()].sort(entitySortFn);
+        let sortedScripts = [...scripts.values()].sort(scriptSortFn);
         for (let script of sortedScripts) {
+            preScript(script);
             for (let entity of sortedEnts) {
                 if (entity.hasComponent(script.name)) {
-                    script[fnname](entity);
-                }}}}
+                    entityInteraction(entity, script);
+                }}}
+
+    }
     update() {
-        this._base_update('update', this.entities, this.scripts, this.prioritySort, this.prioritySort);
+        // this._base_update('update', this.entities, this.scripts, this.prioritySort, this.prioritySort);
+        this.__base_update(
+            (entity, script) => {script.update(entity)},
+            script => script.preupdate(),
+            this.entities, this.scripts, this.prioritySort, this.prioritySort)
     }
     render() {
-        this._base_update('render', this.entities, this.renderers, this.rendersort, this.prioritySort,
-        sortedScripts => sortedScripts.forEach(element => {
-            let pre = element.prerender() || function(){};
-            pre();
-        }))
+        // this._base_update('render', this.entities, this.renderers, this.rendersort, this.prioritySort)
+        this.__base_update(
+            (entity, script) => {script.render(entity)},
+            script => {if (script.prerender) {script.prerender()}},
+            this.entities, this.renderers, this.prioritySort, this.prioritySort)
     }
 
     makeEntity(transform, optprops) {
@@ -43,11 +47,16 @@ export default class TrollyBelt {
         this.entities.set(entID, newEnt);
         return newEnt;
     }
+    destroyEntity(entityID) {
+        this.entities.delete(entityID);
+        return this;
+    }
     registerScript(scriptObj) {
         this.scripts.set(scriptObj.name, scriptObj);
         if (scriptObj.render) {
             this.renderers.set(scriptObj.name, scriptObj);
         }
+        scriptObj.trollybelt = this;
     }
     removeScript(scriptname) {
         this.scripts.delete(scriptname);
@@ -64,9 +73,9 @@ class Entity {
     }
     getComponent(key){return this.components.get(key);}
     hasComponent(key){return this.components.has(key);}
-    enableComponent(key) {
+    enableComponent(key, opt) {
         console.log(this);
-        this.components.set(key, this.trollybelt.scripts.get(key).makebundle(this));
+        this.components.set(key, this.trollybelt.scripts.get(key).makebundle(this, opt));
         this.trollybelt.scripts.get(key).init(this, this.trollybelt.entities);
         return this;
     }
@@ -79,15 +88,11 @@ class Entity {
         fn(this);
         return this;
     }
+    destroy() {
+        this.trollybelt.destroyEntity(this.id);
+    }
 }
 
-export class TrollyComponent {
-    constructor(name){this.name = name;}
-    init(ent){}
-    update(ent){}
-    destroy(ent){}
-    makebundle(ent){return new Map();}
-}
 
 let tb = new TrollyBelt();
 tb.registerScript({
