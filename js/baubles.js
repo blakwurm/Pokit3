@@ -106,6 +106,7 @@ function bootAnimPart (opts, entityID, components) {
 }
 
 function setupBootAnimation(baublebox, done_callback) {
+    baublebox.pokitOS.bellhop.loadSound('boot_sound', '/sound/fanfare.wav');
     baublebox.initializeSystem('bootanimation', new BootAnimationSystem(done_callback));
     baublebox.initializeComponent('bootanimtop', bootAnimPart);
     baublebox.initializeComponent('bootanimbottom', bootAnimPart);
