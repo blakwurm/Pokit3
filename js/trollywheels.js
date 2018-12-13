@@ -135,6 +135,6 @@ export function makeBootAnim(trollybelt, donefn) {
      .enableComponent('bootanimpart')
      .enableComponent('bootanim' + bitname)
     text = makeanimpart(160, 160 * 4, 1, '/img/bootscreen_text.svg', 'text');
-    top = makeanimpart(160 * -2, 160, 2, '/img/bootscreen_top_dash.svg', 'top');
-    bottom = makeanimpart(160 * 3, 160, 2, '/img/bootscreen_bottom_dash.svg', 'bottom');
+    top = makeanimpart(160 * -2, 160, 2, '/img/bootscreen_top.svg', 'top');
+    bottom = makeanimpart(160 * 3, 160, 2, '/img/bootscreen_bottom.svg', 'bottom');
 }
