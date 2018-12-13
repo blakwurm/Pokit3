@@ -13,8 +13,8 @@ export default class BaubleBox {
         this.__components = new Map();
         this.__systems = new Map();
         this.__renderers = new Map();
-        this.initializeComponent('transform', function(initialvalue) {
-            return Object.assign({x: 0, y: 0, z: 0, rotation: 0, width: 0, height: 0}, initialvalue);
+        this.initializeComponent('transform', function(initialvalue, entityID) {
+            return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, rotation: 0, width: 0, height: 0}, initialvalue);
         })
     }
     prioritySort(thinga, thingb) {
@@ -23,11 +23,14 @@ export default class BaubleBox {
     initializeComponent(componentName, componentMaker) {
         this.__componentMakers.set(componentName, componentMaker);
         this.__components.set(componentName, new Map());
+        let t = this;
+        this.__components['get_' + componentName] = entityID => t.__components.get(componentName).get(entityID);
         return this;
     }
     destroyComponent(componentName) {
         this.__componentMakers.delete(componentName);
         this.__components.delete(componentName);
+        this.__components['get_' + componentName] = x => null;
         return this;
     }
     addComponentToEntity(entityID, componentName, initialvalue) {
@@ -36,7 +39,7 @@ export default class BaubleBox {
         this.__components.get(componentName).set(entityID, realvalue);
         let t = this;
         return function(otherComponentName, otherInitialValue) {
-            t.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
+            return t.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
         }
     }
     makeEntity(transform) {
@@ -45,8 +48,9 @@ export default class BaubleBox {
         return this.addComponentToEntity(newID, 'transform', transform);
     }
     destroyEntity(entityID) {
-        this.__entities.delete(newID);
-        for (let componentMap of this.__components) {
+        this.__entities.delete(entityID);
+        for (let component of this.__components) {
+            let componentMap = component[1]
             componentMap.delete(entityID);
         }
         return this;

@@ -6,9 +6,6 @@ import setupBB from './baubles.js';
 
 let canvas = null;
 let screen = null;
-let bootscreen = new Image(320, 320);
-let bootscreen_top = new Image(320, 320);
-let bootscreen_bottom = new Image(320, 320);
 let boot_audio = new Audio("/sound/fanfare.wav");
 let boot_done = false;
 let bootloop = {};
@@ -25,13 +22,10 @@ pokitOS.baublebox = baublebox;
 
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
-    bootscreen.src = "/img/bootscreen_text.svg";
-    bootscreen_top.src = "/img/bootscreen_top_dash.svg";
-    bootscreen_bottom.src = "/img/bootscreen_bottom_dash.svg";
     canvas = canvas_;
     input = input_;
     skipintro = skipintro_;
-    setupBB(baublebox, canvas);
+    setupBB(baublebox, canvas, skipintro, () => cart.start());
     if (skipintro) {
         boot_done = true;
     }
@@ -44,6 +38,9 @@ export async function preload (canvas_, input_, skipintro_) {
             cart = new module.GameCart(pokitOS);
             pokitOS.cart = cart;
             cart.preload();
+            if (skipintro) {
+                cart.start();
+            }
         });
     // makeBootAnim(trollybelt, () => pokitOS.cart.start());
     // makeTestEntity();
