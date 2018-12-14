@@ -22,7 +22,7 @@ export default class Bellhop {
         let thing = await p;
         this.successfullyLoaded++;
         console.log(onloadthing);
-        this.__loadedAssets(assetname, thing);
+        this.__loadedAssets.set(assetname, thing);
         return thing;
     }
 
@@ -41,8 +41,35 @@ export default class Bellhop {
         a.src = soundurl;
         return p;
     }
+
+    async loadTiledMap(assetname, mapurl, imageurl) {
+        this.totalAssets++;
+        let rawmap = await fetch(mapurl).then((x) => x.json());
+        let layers = rawmap.layers.map(nabLayer);
+        console.log(layers);
+        rawmap.mapstructure = layers;
+        this.__loadedAssets.set(assetname, rawmap);
+        this.successfullyLoaded++;
+        return rawmap;
+    }
 }
 
-function handleAssetLoadFinished() {
+function nabLayer(layerdata) {
+    if (layerdata.type == "tilelayer") {
+        return processTileLayer(layerdata);
+    }
+}
 
+function processTileLayer({width, height, data}) {
+    let datapointer = 0;
+    let mapvec = [];
+    for (let x = 0; x < width; x++) {
+        let maprow = []
+        for (let y = 0; y < height; y++) {
+            maprow.push(data[datapointer]);
+            datapointer++;
+        }
+        mapvec.push(maprow);
+    }
+    return mapvec;
 }

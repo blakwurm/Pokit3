@@ -26,6 +26,7 @@ pokitOS.bellhop = bellhop;
 export async function preload (canvas_, input_, skipintro_) {
     console.log('this bootted!');
     canvas = canvas_;
+    pokitOS.gamescreen = canvas;
     input = input_;
     skipintro = skipintro_;
     setupBB(baublebox, canvas, skipintro, () => cart.start());
