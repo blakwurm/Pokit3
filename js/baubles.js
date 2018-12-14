@@ -79,7 +79,7 @@ class TileMapRenderer extends Tilerenderer {
         super(canvas, img, maptilewidth, maptileheight, tilepixelwidth, tilepixelheight);
         this.priority = 3;
         this.name = 'tilemaprenderer';
-        this.debug_next_render = true;
+        this.debug_next_render = false;
     }
     render(components) {
         let camera = components.get_transform([...components.get('camera').keys()][0])

@@ -1,8 +1,6 @@
-import TrollyBelt from './trollybelt.js';
 import BaubleBox from './baublebox.js';
 import Ouroboros from './ouroboros.js';
 import Bellhop from './bellhop.js';
-import {IMGRenderer, makeBootAnim} from './trollywheels.js';
 import setupBB from './baubles.js';
 
 let canvas = null;
