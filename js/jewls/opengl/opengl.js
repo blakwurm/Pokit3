@@ -51,6 +51,7 @@ export async function initContext(canvas) {
     let resolutionUniformLocation = _gl.getUniformLocation(program, "resolution");
     let modifierUniformLocation = _gl.getUniformLocation(program, "uvModifier");
     let translatorUniformLocation = _gl.getUniformLocation(program, "uvTranslator");
+    let imageUniformLocation = _gl.getUniformLocation(program, "image");
 
     programs.push({
         program: program,
@@ -62,50 +63,11 @@ export async function initContext(canvas) {
             resolution: resolutionUniformLocation,
             uvModifier: modifierUniformLocation,
             uvTranslator: translatorUniformLocation,
+            image: imageUniformLocation,
         },
     });
 
-    _gl.viewport(0, 0, canvas.width, canvas.height);
-}
-
-function createActor(texture) {
-    let vertexPosition = programs[0].attributes.vertexPosition;
-
-    let positionBuffer = _gl.createBuffer();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
-
-    let positions = [
-        0, 0,
-        0, texture.height,
-        texture.width, 0,
-        texture.width, 0,
-        texture.width, texture.height,
-        0, 0,
-    ];
-    _gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
-
-    let vao = _gl.createVertexArray();
-    _gl.bindVertexArray(vao);
-    _gl.enableVertexAttribArray(vertexPosition);
-
-    let size = 2;
-    let type = _gl.FLOAT;
-    let normalize = false;
-    let stride = 0;
-    let offset = 0;
-    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
-
-    let uvCoords = programs[0].attributes.uvCoords;
-}
-
-export function clear(r, g, b, a) {
-    _gl.clearColor(r, g, b, a)
-    _gl.clear(_gl.COLOR_BUFFER_BIT);
-}
-
-export function render() {
-    _gl.useProgram(programs[0].program);
-    _gl.uniform2f(programs[0].uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
+    return true;
 }
 
 export function createTexture(img) {
@@ -130,4 +92,90 @@ export function createTexture(img) {
         width: img.width,
         height: img.height,
     };
+}
+
+export function createActor(name, texture) {
+    let vertexPosition = programs[0].attributes.vertexPosition;
+
+    let positionBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
+
+    let positions = [
+        0.0, 0.0,
+        0.0, texture.height,
+        texture.width, 0.0,
+        texture.width, 0.0,
+        texture.width, texture.height,
+        0.0, 0.0,
+    ];
+    _gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
+
+    let vao = _gl.createVertexArray();
+    _gl.bindVertexArray(vao);
+    _gl.enableVertexAttribArray(vertexPosition);
+
+    let size = 2;
+    let type = _gl.FLOAT;
+    let normalize = false;
+    let stride = 0;
+    let offset = 0;
+    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
+
+    let uvCoords = programs[0].attributes.uvCoords;
+
+    let coordBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array([
+        0.0, 0.0,
+        0.0, 1.0,
+        1.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 0.0,
+    ]), _gl.STATIC_DRAW);
+
+    _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
+
+    _actors.set(name, {
+        texture: texture.texture,
+        vertexArray: vao,
+        uvBuffer: coordBuffer,
+        width: texture.width,
+        height: texture.height,
+        x_translation: 0,
+        y_translation: 0,
+        x_scale: 1,
+        y_scale: 1,
+        angle: 0,
+    });
+}
+
+export function clear(r, g, b, a) {
+    _gl.clearColor(r, g, b, a)
+    _gl.clear(_gl.COLOR_BUFFER_BIT);
+}
+
+export function render(r, g, b, a) {
+
+    let programData = programs[0];
+
+    _gl.viewport(0, 0, canvas.width, canvas.height);
+
+    clear(r, g, b, a);
+
+    _gl.useProgram(programData.program);
+
+    for (actor of _actors.keys()) {
+        _gl.bindVertexArray(actor.vertexArray);
+
+        _gl.activeTexture(_gl.TEXTURE0 + 0);
+        _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
+
+        _gl.uniform1i(programData.uniforms.image, 0);
+        _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
+        _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
+        _gl.uniform2f(programData.uniforms.uvTranslator, 0.0, 0.0);
+
+        _gl.drawArrays(_gl.TRIANGLES, 0, 6);
+    }
 }
