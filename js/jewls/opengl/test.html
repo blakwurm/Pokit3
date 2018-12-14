@@ -7,10 +7,11 @@
         <canvas id="c" height=512 width=512 style="width: 512px; height: 512px;">no canvas fo you</canvas>
         <script type="module">
             import * as gl from "./opengl.js";
+            console.log('this works')
 
             let c = document.getElementById("c");
             let i = new Image();
-            i.onLoad = () => { renderImg(i).then(() => { }) };
+            i.onload = () => { renderImg(i).then(() => { }) };
             i.src = "testimg.png";
 
             async function renderImg(img) {
