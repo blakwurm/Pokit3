@@ -17,12 +17,12 @@
                 let i1 = await loadImage('testimg.png');
                 let i2 = await loadImage('testimg2.png');
 
-                let tex1 = gl.createTexture(i1);
-                let tex2 = gl.createTexture(i2);
+                gl.createTexture("t1", i1);
+                gl.createTexture("t2", i2);
 
-                gl.createActor("a1", tex1);
+                gl.createActor("a1", "t1");
 
-                gl.createActor("a2", tex2);
+                gl.createActor("a2", "t2");
                 gl.scale("a2", 1, 1);
 
                 let i = 0;

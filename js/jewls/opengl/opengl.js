@@ -83,6 +83,8 @@ export async function initContext(canvas) {
     return true;
 }
 
+
+
 export function createTexture(name, image) {
     let texture = _gl.createTexture();
 
@@ -148,11 +150,11 @@ export function createActor(name, texture, priority = 0) {
     _gl.enableVertexAttribArray(uvCoords);
 
     _actors.set(name, {
-        texture: texture.texture,
+        texture: tex.texture,
         vertexArray: vao,
         uvBuffer: coordBuffer,
-        width: texture.width,
-        height: texture.height,
+        width: tex.width,
+        height: tex.height,
         x_translation: 0,
         y_translation: 0,
         x_scale: 1,
