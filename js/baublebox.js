@@ -68,6 +68,13 @@ export default class BaubleBox {
         return this;
     }
     initializeSystem(systemname, newSystem) {
+        if (newSystem.entityUpdate) {
+            newSystem.update = function(components) {
+                for (let dealio of components.entitiesFrom(this.componentsRequired)) {
+                    this.entityUpdate(dealio);
+                }
+            }
+        }
         if (newSystem.update){
             this.__systems.set(systemname, newSystem);
         }
