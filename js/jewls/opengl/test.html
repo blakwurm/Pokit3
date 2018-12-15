@@ -27,6 +27,7 @@
                 let i = 0;
                 while (true) {
                     let t0 = performance.now();
+                    gl.rotate("a1", 360-i)
                     gl.rotate("a2", i);
                     gl.render(1, 0, 0, 1);
                     let t1 = performance.now();
