@@ -9,22 +9,47 @@
             import * as gl from "./opengl.js";
 
             let c = document.getElementById("c");
-            let i = new Image();
-            i.onload = () => { renderImg(i).then(() => { }) };
-            i.src = "testimg.png";
+            render(c);
 
-            async function renderImg(img) {
-                let result = await gl.initContext(c).then(b => b);
+            async function render(c) {
+                await gl.initContext(c);
 
-                if (!result) {
-                    console.log("failed to initialize context");
-                    return;
+                let i1 = await loadImage('testimg.png');
+                let i2 = await loadImage('testimg2.png');
+
+                let tex1 = gl.createTexture(i1);
+                let tex2 = gl.createTexture(i2);
+
+                gl.createActor("a1", tex1);
+
+                gl.createActor("a2", tex2);
+
+                let i = 0;
+                while (true) {
+                    let t0 = performance.now();
+                    gl.rotate("a2", i);
+                    gl.render(1, 0, 0, 1);
+                    let t1 = performance.now();
+
+                    console.log("render took " + (t1 - t0) + " milliseconds");
+                    ++i;
+                    if (i === 360) i = 0;
+                    await sleep(5);
                 }
+            }
 
-                let tex = gl.createTexture(img);
-                
-                gl.createActor("actor", tex);
-                gl.render(1, 0, 0, 1);
+            function sleep(time) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(), time);
+                })
+            }
+
+            function loadImage(url) {
+                return new Promise((resolve, reject) => {
+                    let i = new Image();
+                    i.onload = () => resolve(i);
+                    i.src = url;
+                })
             }
         </script>
     </body>

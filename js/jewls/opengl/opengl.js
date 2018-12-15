@@ -49,8 +49,10 @@ export async function initContext(canvas) {
     let positionAttributeLocation = _gl.getAttribLocation(program, "a_vertexPosition");
     let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
 
+    let sizeUniformLocation = _gl.getUniformLocation(program, "u_size");
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
     let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
+    let rotationUniformLocation = _gl.getUniformLocation(program, "u_rotation");
     let modifierUniformLocation = _gl.getUniformLocation(program, "u_uvModifier");
     let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
     let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
@@ -62,8 +64,10 @@ export async function initContext(canvas) {
             uvCoords: uvAttributeLocation,
         },
         uniforms: {
+            size: sizeUniformLocation,
             resolution: resolutionUniformLocation,
             translation: translationUniformLocation,
+            rotation: rotationUniformLocation,
             uvModifier: modifierUniformLocation,
             uvTranslator: translatorUniformLocation,
             image: imageUniformLocation,
@@ -96,13 +100,16 @@ export function createActor(name, texture) {
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
+    let offsetX = _gl.canvas.width / 2 - texture.width / 2;
+    let offsetY = _gl.canvas.height / 2 - texture.height / 2;
+
     let positions = [
-        0.0, 0.0,
-        0.0, texture.height,
-        texture.width, 0.0,
-        0.0, texture.height,
-        texture.width, 0.0,
-        texture.width, texture.height,
+        offsetX, offsetY,
+        offsetX, offsetY + texture.height,
+        offsetX + texture.width, offsetY,
+        offsetX, offsetY + texture.height,
+        offsetX + texture.width, offsetY,
+        offsetX + texture.width, offsetY + texture.height,
     ];
     _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
 
@@ -152,6 +159,14 @@ export function clear(r, g, b, a) {
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 }
 
+function toRad(deg) {
+    return deg / 360 * 2 * Math.PI;
+}
+
+export function rotate(actor, degrees) {
+    _actors.get(actor).angle = degrees;
+}
+
 export function render(r, g, b, a) {
 
     let programData = _programs[0];
@@ -169,7 +184,10 @@ export function render(r, g, b, a) {
         _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
 
         _gl.uniform1i(programData.uniforms.image, 0);
+        _gl.uniform2f(programData.uniforms.size, actor.width, actor.height);
         _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
+        _gl.uniform2f(programData.uniforms.translation, actor.x_translation, actor.y_translation);
+        _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle)), Math.cos(toRad(actor.angle)));
         _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
         _gl.uniform2f(programData.uniforms.uvTranslator, 0.0, 0.0);
 
