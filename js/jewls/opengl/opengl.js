@@ -35,6 +35,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 
 export async function initContext(canvas) {
     _gl = canvas.getContext("webgl2");
+    _textures = new Map();
     _actors = new Map();
     _cameras = new Map();
 
