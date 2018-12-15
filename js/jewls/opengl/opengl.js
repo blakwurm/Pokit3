@@ -50,6 +50,7 @@ export async function initContext(canvas) {
     let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
 
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
+    let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
     let modifierUniformLocation = _gl.getUniformLocation(program, "u_uvModifier");
     let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
     let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
@@ -62,6 +63,7 @@ export async function initContext(canvas) {
         },
         uniforms: {
             resolution: resolutionUniformLocation,
+            translation: translationUniformLocation,
             uvModifier: modifierUniformLocation,
             uvTranslator: translatorUniformLocation,
             image: imageUniformLocation,
@@ -69,18 +71,6 @@ export async function initContext(canvas) {
     });
 
     return true;
-}
-
-function refactorImage(image) {
-    let canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 400;
-    
-    let ctx = canvas.getContext('2d');
-    ctx.drawImage(image, 0, 0);
-    image.style.display = "none";
-
-    return ctx.getImageData(0, 0, image.width, image.height);
 }
 
 export function createTexture(image) {
