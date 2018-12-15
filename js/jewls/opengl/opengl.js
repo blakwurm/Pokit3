@@ -48,7 +48,8 @@ export async function initContext(canvas) {
 
     let positionAttributeLocation = _gl.getAttribLocation(program, "a_vertexPosition");
     let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
-    
+
+    let priorityUniformLocation = _gl.getUniformLocation(program, "u_priority");
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
     let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
     let rotationUniformLocation = _gl.getUniformLocation(program, "u_rotation");
@@ -64,6 +65,7 @@ export async function initContext(canvas) {
             uvCoords: uvAttributeLocation,
         },
         uniforms: {
+            priority: priorityUniformLocation,
             resolution: resolutionUniformLocation,
             translation: translationUniformLocation,
             rotation: rotationUniformLocation,
@@ -94,7 +96,7 @@ export function createTexture(image) {
     };
 }
 
-export function createActor(name, texture) {
+export function createActor(name, texture, priority = 0) {
     let vertexPosition = _programs[0].attributes.vertexPosition;
 
     let positionBuffer = _gl.createBuffer();
@@ -151,6 +153,7 @@ export function createActor(name, texture) {
         x_scale: 1,
         y_scale: 1,
         angle: 0,
+        priority: priority,
     });
 }
 

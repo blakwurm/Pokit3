@@ -3,6 +3,7 @@
 in vec2 a_vertexPosition;
 in vec2 a_uvCoord;
 
+uniform float u_priority;
 uniform vec2 u_size;
 uniform vec2 u_resolution;
 uniform vec2 u_translation;
@@ -25,6 +26,6 @@ void main() {
 	vec2 clip = ztt - 1.0;
 	vec2 scaledClip = clip * u_scale;
 
-	gl_Position = vec4(scaledClip * vec2(1, -1), 0, 1);
+	gl_Position = vec4(scaledClip * vec2(1, -1), u_priority, 1);
 	v_uvCoord = a_uvCoord; //* u_uvModifier + u_uvTranslator;
 }
