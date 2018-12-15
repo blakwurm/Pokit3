@@ -146,7 +146,7 @@ class BootAnimationSystem extends Bauble {
         this.hold = 34;
     }
 
-    update(components) {
+    globalUpdate(components) {
         let part = (partname) => components.get_transform([...components.get('bootanim' + partname).keys()][0]);
         let bootsprite = part('text');
         let bootsprite_bottom = part('bottom');
