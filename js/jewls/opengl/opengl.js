@@ -52,6 +52,7 @@ export async function initContext(canvas) {
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
     let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
     let rotationUniformLocation = _gl.getUniformLocation(program, "u_rotation");
+    let scaleUniformLocation = _gl.getUniformLocation(program, "u_scale");
     let modifierUniformLocation = _gl.getUniformLocation(program, "u_uvModifier");
     let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
     let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
@@ -66,6 +67,7 @@ export async function initContext(canvas) {
             resolution: resolutionUniformLocation,
             translation: translationUniformLocation,
             rotation: rotationUniformLocation,
+            scale: scaleUniformLocation,
             uvModifier: modifierUniformLocation,
             uvTranslator: translatorUniformLocation,
             image: imageUniformLocation,
@@ -165,6 +167,16 @@ export function rotate(actor, degrees) {
     _actors.get(actor).angle = degrees;
 }
 
+export function translate(actor, x, y) {
+    _actors.get(actor).x_translation = x;
+    _actors.get(actor).y_translation = y;
+}
+
+export function scale(actor, x, y) {
+    _actors.get(actor).x_scale = x;
+    _actors.get(actor).y_scale = y;
+}
+
 export function render(r, g, b, a) {
 
     let programData = _programs[0];
@@ -185,6 +197,7 @@ export function render(r, g, b, a) {
         _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
         _gl.uniform2f(programData.uniforms.translation, actor.x_translation, actor.y_translation);
         _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle)), Math.cos(toRad(actor.angle)));
+        _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
         _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
         _gl.uniform2f(programData.uniforms.uvTranslator, 0.0, 0.0);
 

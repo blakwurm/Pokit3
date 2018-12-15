@@ -7,6 +7,7 @@ uniform vec2 u_size;
 uniform vec2 u_resolution;
 uniform vec2 u_translation;
 uniform vec2 u_rotation;
+uniform vec2 u_scale;
 uniform vec2 u_uvModifier;
 uniform vec2 u_uvTranslator;
 
@@ -22,7 +23,8 @@ void main() {
 	vec2 zto = position / u_resolution;
 	vec2 ztt = zto * 2.0;
 	vec2 clip = ztt - 1.0;
+	vec2 scaledClip = clip * u_scale;
 
-	gl_Position = vec4(clip * vec2(1, -1), 0, 1);
+	gl_Position = vec4(scaledClip * vec2(1, -1), 0, 1);
 	v_uvCoord = a_uvCoord; //* u_uvModifier + u_uvTranslator;
 }
