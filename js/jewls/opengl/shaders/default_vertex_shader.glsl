@@ -1,19 +1,19 @@
 ﻿#version 300 es
 
-in vec2 vertexPosition;
-in vec2 uvCoords;
+in vec2 a_vertexPosition;
+in vec2 a_uvCoord;
 
-out uvCoord;
+uniform vec2 u_resolution;
+uniform vec2 u_uvModifier;
+uniform vec2 u_uvTranslator;
 
-uniform vec2 resolution;
-uniform vec2 uvModifier;
-uniform vec2 uvTranslator;
+out vec2 v_uvCoord;
 
 void main() {
-	vec2 zto = vertexPosition / resolution;
+	vec2 zto = a_vertexPosition / u_resolution;
 	vec2 ztt = zto * 2.0;
 	vec2 clip = ztt - 1.0;
 
 	gl_Position = vec4(clip * vec2(1, -1), 0, 1);
-	uvCoord = uvCoords * uvModifier + uvTranslator;
+	v_uvCoord = a_uvCoord; //* u_uvModifier + u_uvTranslator;
 }

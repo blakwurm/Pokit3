@@ -2,12 +2,12 @@
 
 precision mediump float;
 
-uniform sampler2D image;
+in vec2 v_uvCoord;
 
-in uvCoord;
+uniform sampler2D u_image;
 
-out pixel;
+out vec4 pixel;
 
 void main() {
-	pixel = texture(image, uvCoord);
+	pixel = texture(u_image, v_uvCoord);
 }

@@ -1,7 +1,8 @@
-﻿let _programs = [];
+﻿"use strict";
+
+let _programs = [];
 let _gl = null;
 let _actors = null;
-let _texture = -1;
 
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
@@ -45,15 +46,15 @@ export async function initContext(canvas) {
     let fragmentShader = createShader(_gl, _gl.FRAGMENT_SHADER, fragmentShaderSource);
     let program = createProgram(_gl, vertexShader, fragmentShader);
 
-    let positionAttributeLocation = _gl.getAttribLocation(program, "vertexPosition");
-    let uvAttributeLocation = _gl.getAttribLocation(program, "uvCoords");
+    let positionAttributeLocation = _gl.getAttribLocation(program, "a_vertexPosition");
+    let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
 
-    let resolutionUniformLocation = _gl.getUniformLocation(program, "resolution");
-    let modifierUniformLocation = _gl.getUniformLocation(program, "uvModifier");
-    let translatorUniformLocation = _gl.getUniformLocation(program, "uvTranslator");
-    let imageUniformLocation = _gl.getUniformLocation(program, "image");
+    let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
+    let modifierUniformLocation = _gl.getUniformLocation(program, "u_uvModifier");
+    let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
+    let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
 
-    programs.push({
+    _programs.push({
         program: program,
         attributes: {
             vertexPosition: positionAttributeLocation,
@@ -70,32 +71,37 @@ export async function initContext(canvas) {
     return true;
 }
 
-export function createTexture(img) {
-    _texture += 1;
+function refactorImage(image) {
+    let canvas = document.createElement('canvas');
+    canvas.width = 500;
+    canvas.height = 400;
+    
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+    image.style.display = "none";
 
+    return ctx.getImageData(0, 0, image.width, image.height);
+}
+
+export function createTexture(image) {
     let texture = _gl.createTexture();
+
     _gl.bindTexture(_gl.TEXTURE_2D, texture);
+    _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, _gl.RGBA, _gl.UNSIGNED_BYTE, image);
 
-    _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE);
-    _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE);
-    _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, _gl.NEAREST);
     _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.NEAREST);
-
-    let mipLevel = 0;
-    let internalFormat = _gl.RGBA;
-    let srcFormat = _gl.RGBA;
-    let srcType = _gl.UNSIGNED_BYTE;
-    _gl.texImage2D(_gl.TEXTURE_2D, mipLevel, internalForamt, srcFormat, srcType, img);
+    _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, _gl.NEAREST);
+    _gl.bindTexture(_gl.TEXTURE_2D, null);
 
     return {
         texture: texture,
-        width: img.width,
-        height: img.height,
+        width: image.width,
+        height: image.height,
     };
 }
 
 export function createActor(name, texture) {
-    let vertexPosition = programs[0].attributes.vertexPosition;
+    let vertexPosition = _programs[0].attributes.vertexPosition;
 
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
@@ -104,11 +110,11 @@ export function createActor(name, texture) {
         0.0, 0.0,
         0.0, texture.height,
         texture.width, 0.0,
+        0.0, texture.height,
         texture.width, 0.0,
         texture.width, texture.height,
-        0.0, 0.0,
     ];
-    _gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
 
     let vao = _gl.createVertexArray();
     _gl.bindVertexArray(vao);
@@ -121,7 +127,7 @@ export function createActor(name, texture) {
     let offset = 0;
     _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
 
-    let uvCoords = programs[0].attributes.uvCoords;
+    let uvCoords = _programs[0].attributes.uvCoords;
 
     let coordBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
@@ -129,12 +135,13 @@ export function createActor(name, texture) {
         0.0, 0.0,
         0.0, 1.0,
         1.0, 0.0,
+        0.0, 1.0,
         1.0, 0.0,
         1.0, 1.0,
-        0.0, 0.0,
     ]), _gl.STATIC_DRAW);
 
     _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
+    _gl.enableVertexAttribArray(uvCoords);
 
     _actors.set(name, {
         texture: texture.texture,
@@ -157,18 +164,18 @@ export function clear(r, g, b, a) {
 
 export function render(r, g, b, a) {
 
-    let programData = programs[0];
+    let programData = _programs[0];
 
-    _gl.viewport(0, 0, canvas.width, canvas.height);
+    _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
 
     clear(r, g, b, a);
 
     _gl.useProgram(programData.program);
 
-    for (actor of _actors.keys()) {
+    for (var actor of _actors.values()) {
         _gl.bindVertexArray(actor.vertexArray);
 
-        _gl.activeTexture(_gl.TEXTURE0 + 0);
+        _gl.activeTexture(_gl.TEXTURE0);
         _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
 
         _gl.uniform1i(programData.uniforms.image, 0);

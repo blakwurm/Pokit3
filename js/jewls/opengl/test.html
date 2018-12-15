@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
     </head>
     <body>
-        <canvas id="c" height=512 width=512 style="width: 512px; height: 512px;">no canvas fo you</canvas>
+        <canvas id="c" height=600 width=600 style="width: 600px; height: 600px;">no canvas fo you</canvas>
         <script type="module">
             import * as gl from "./opengl.js";
-            console.log('this works')
 
             let c = document.getElementById("c");
             let i = new Image();
@@ -15,7 +14,6 @@
             i.src = "testimg.png";
 
             async function renderImg(img) {
-                console.log("i was logged");
                 let result = await gl.initContext(c).then(b => b);
 
                 if (!result) {
@@ -24,7 +22,7 @@
                 }
 
                 let tex = gl.createTexture(img);
-
+                
                 gl.createActor("actor", tex);
                 gl.render(1, 0, 0, 1);
             }
