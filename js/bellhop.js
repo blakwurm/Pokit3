@@ -1,15 +1,75 @@
 // refactored from https://github.com/straker/kontra/blob/master/src/assets.js
 
-class Bellhop {
-    constructor() {
-        this.promises = new Map();
+export default class Bellhop {
+    constructor(pokitOS) {
+        console.log('constructing bellhop')
+        this.pokitOS = pokitOS;
+        this.__promises = new Map();
+        this.__loadedAssets = new Map();
+        this.totalAssets = 0;
+        this.successfullyLoaded = 0;
     }
 
-    loadImage(assetname, imgurl) {
+    getAsset(assetname) {
+        return this.__loadedAssets.get(assetname);
+    }
 
+    async __handle_loader__(assetname, onloadthing) {
+        this.totalAssets++;
+        console.log('loading a new thing')
+        let p = new Promise((resolve, reject) => onloadthing.onload = () => resolve(onloadthing))
+        this.__promises.set(assetname, p);
+        let thing = await p;
+        this.successfullyLoaded++;
+        console.log(onloadthing);
+        this.__loadedAssets.set(assetname, thing);
+        return thing;
+    }
+
+    loadImage(assetname, imgurl, width, height) {
+        let i = new Image();
+        if (width) {i.width = width;}
+        if (height) {i.height = height;}
+        let p = this.__handle_loader__(assetname, i);
+        i.src = imgurl;
+        return p; 
+    }
+
+    loadSound(assetname, soundurl) {
+        let a = new Audio();
+        let p = this.__handle_loader__(assetname, a);
+        a.src = soundurl;
+        return p;
+    }
+
+    async loadTiledMap(assetname, mapurl, imageurl) {
+        this.totalAssets++;
+        let rawmap = await fetch(mapurl).then((x) => x.json());
+        let layers = rawmap.layers.map(nabLayer);
+        console.log(layers);
+        rawmap.mapstructure = layers;
+        this.__loadedAssets.set(assetname, rawmap);
+        this.successfullyLoaded++;
+        return rawmap;
     }
 }
 
-function handleAssetLoadFinished() {
+function nabLayer(layerdata) {
+    if (layerdata.type == "tilelayer") {
+        return processTileLayer(layerdata);
+    }
+}
 
+function processTileLayer({width, height, data}) {
+    let datapointer = 0;
+    let mapvec = [];
+    for (let x = 0; x < width; x++) {
+        let maprow = []
+        for (let y = 0; y < height; y++) {
+            maprow.push(data[datapointer]);
+            datapointer++;
+        }
+        mapvec.push(maprow);
+    }
+    return mapvec;
 }

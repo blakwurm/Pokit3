@@ -14,7 +14,7 @@ export default class BaubleBox {
         this.__systems = new Map();
         this.__renderers = new Map();
         this.initializeComponent('transform', function(initialvalue, entityID) {
-            return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, rotation: 0, width: 0, height: 0}, initialvalue);
+            return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, scale: 1, rotation: 0, width: 0, height: 0}, initialvalue);
         })
     }
     prioritySort(thinga, thingb) {
