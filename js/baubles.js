@@ -28,7 +28,6 @@ class IMGRenderer extends Bauble {
             let t = components.get_transform(entityID);
             this.context.save();
             this.context.translate(t.x - (camera.x - 160), t.y - (camera.y - 160));
-            console.log(camera.scale)
             this.context.scale(camera.scale, camera.scale);
             this.context.rotate(degreesToRadians(t.rotation));
             this.context.drawImage(img, -t.width/2, -t.height/2, t.width, t.height);
