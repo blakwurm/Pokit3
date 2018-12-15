@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <canvas id="c" height=600 width=600 style="width: 600px; height: 600px;">no canvas fo you</canvas>
+        <script type="module">
+            import * as gl from "./opengl.js";
+
+            let c = document.getElementById("c");
+            render(c);
+
+            async function render(c) {
+                await gl.initContext(c);
+
+                let i1 = await loadImage('testimg.png');
+                let i2 = await loadImage('testimg2.png');
+
+                let tex1 = gl.createTexture(i1);
+                let tex2 = gl.createTexture(i2);
+
+                gl.createActor("a1", tex1);
+
+                gl.createActor("a2", tex2);
+
+                let i = 0;
+                while (true) {
+                    console.time('render');
+                    gl.rotate("a1", 360-i)
+                    gl.rotate("a2", i);
+                    gl.render(1, 0, 0, 1);
+                    console.timeEnd('render');
+
+                    ++i;
+                    if (i === 360) i = 0;
+                    await sleep(5);
+                }
+            }
+
+            function sleep(time) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(), time);
+                })
+            }
+
+            function loadImage(url) {
+                return new Promise((resolve, reject) => {
+                    let i = new Image();
+                    i.onload = () => resolve(i);
+                    i.src = url;
+                })
+            }
+        </script>
+    </body>
+</html>
