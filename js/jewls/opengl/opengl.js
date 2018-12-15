@@ -48,8 +48,7 @@ export async function initContext(canvas) {
 
     let positionAttributeLocation = _gl.getAttribLocation(program, "a_vertexPosition");
     let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
-
-    let sizeUniformLocation = _gl.getUniformLocation(program, "u_size");
+    
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
     let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
     let rotationUniformLocation = _gl.getUniformLocation(program, "u_rotation");
@@ -64,7 +63,6 @@ export async function initContext(canvas) {
             uvCoords: uvAttributeLocation,
         },
         uniforms: {
-            size: sizeUniformLocation,
             resolution: resolutionUniformLocation,
             translation: translationUniformLocation,
             rotation: rotationUniformLocation,
@@ -184,7 +182,6 @@ export function render(r, g, b, a) {
         _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
 
         _gl.uniform1i(programData.uniforms.image, 0);
-        _gl.uniform2f(programData.uniforms.size, actor.width, actor.height);
         _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
         _gl.uniform2f(programData.uniforms.translation, actor.x_translation, actor.y_translation);
         _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle)), Math.cos(toRad(actor.angle)));
