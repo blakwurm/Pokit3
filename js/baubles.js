@@ -21,12 +21,15 @@ class IMGRenderer extends Bauble {
         this.context = this.canvas.getContext('2d');
     }
     render(components) {
+        let camera = components.get_transform([...components.get('camera').keys()][0])
         for (let _tup of entitiesSortedByZ('img', components)) {
             let entityID = _tup[0];
             let img = _tup[1];
             let t = components.get_transform(entityID);
             this.context.save();
-            this.context.translate(t.x, t.y);
+            this.context.translate(t.x - (camera.x - 160), t.y - (camera.y - 160));
+            console.log(camera.scale)
+            this.context.scale(camera.scale, camera.scale);
             this.context.rotate(degreesToRadians(t.rotation));
             this.context.drawImage(img, -t.width/2, -t.height/2, t.width, t.height);
             this.context.restore();
@@ -231,7 +234,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
     baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
     baublebox.initializeComponent('camera', cameraComponent);
-    baublebox.makeEntity({x: 260, y: 260, width: 320, height: 320})('camera');
+    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320})('camera');
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';

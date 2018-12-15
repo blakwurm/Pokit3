@@ -5,7 +5,22 @@ class BasicCameraMovement {
     update(entities) {
         let cam = entities.get_transform([...entities.get('camera').keys()][0])
         if (this.pokitOS.input.buttons.up) {
+            cam.y++;
+        }
+        if (this.pokitOS.input.buttons.down) {
             cam.y--;
+        }
+        if (this.pokitOS.input.buttons.left) {
+            cam.x++;
+        }
+        if (this.pokitOS.input.buttons.right) {
+            cam.x--;
+        }
+        if (this.pokitOS.input.buttons.a) {
+            cam.scale+= 0.1;
+        }
+        if (this.pokitOS.input.buttons.b) {
+            cam.scale-= 0.1;
         }
     }
 }
