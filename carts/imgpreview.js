@@ -1,9 +1,10 @@
 class BasicCameraMovement {
     constructor(pokitOS) {
         this.pokitOS = pokitOS;
+        this.componentsRequired = ['camera', 'transform'];
     }
-    update(entities) {
-        let cam = entities.get_transform([...entities.get('camera').keys()][0])
+
+    entityUpdate([entityID, _, cam]) {
         if (this.pokitOS.input.buttons.up) {
             cam.y++;
         }
@@ -22,6 +23,13 @@ class BasicCameraMovement {
         if (this.pokitOS.input.buttons.b) {
             cam.scale-= 0.1;
         }
+        if (this.pokitOS.input.buttons.y) {
+            cam.scale = 1;
+        }
+        if (this.pokitOS.input.buttons.x) {
+            cam.scale = 2;
+        }
+
     }
 }
 
