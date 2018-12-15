@@ -7,15 +7,27 @@ export class Bauble {
 
 export default class BaubleBox {
     constructor(pokitOS) {
+        let bb = this;
         this.pokitOS = pokitOS;
         this.__entities = new Set();
         this.__componentMakers = new Map();
         this.__components = new Map();
         this.__systems = new Map();
+        this.__entityUpdaters = new Map();
         this.__renderers = new Map();
         this.initializeComponent('transform', function(initialvalue, entityID) {
             return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, scale: 1, rotation: 0, width: 0, height: 0}, initialvalue);
         })
+        this.__components.entitiesFrom = function ([limiter, ...rest]) {
+            let self = this;
+            return [...this.get(limiter).entries()].map(([entityID, limiter_component]) => {
+                let a = [entityID, limiter_component];
+                for (let r of rest) {
+                    a.push(self.get(r).get(entityID));
+                }
+                return a;
+            })
+        }
     }
     prioritySort(thinga, thingb) {
         return thinga.priority - thingb.priority;
@@ -56,6 +68,22 @@ export default class BaubleBox {
         return this;
     }
     initializeSystem(systemname, newSystem) {
+        if (newSystem.entityUpdate) {
+            let existingUpdate = newSystem.update || function () {}
+            newSystem.update = function(components) {
+                existingUpdate(components);
+                for (let dealio of components.entitiesFrom(this.componentsRequired)) {
+                    this.entityUpdate(dealio);
+                }
+            }
+        }
+        if (newSystem.globalUpdate) {
+            let existingUpdate = newSystem.update || function () {}
+            newSystem.update = function(components) {
+                existingUpdate(components);
+                newSystem.globalUpdate(components);
+            }
+        }
         if (newSystem.update){
             this.__systems.set(systemname, newSystem);
         }

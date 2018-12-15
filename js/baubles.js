@@ -21,14 +21,10 @@ class IMGRenderer extends Bauble {
         this.context = this.canvas.getContext('2d');
     }
     render(components) {
-        let camera = components.get_transform([...components.get('camera').keys()][0])
-        for (let _tup of entitiesSortedByZ('img', components)) {
-            let entityID = _tup[0];
-            let img = _tup[1];
-            let t = components.get_transform(entityID);
+        let camera = components.entitiesFrom(['camera', 'transform'])[0][2];
+        for (let [entityID, img, t] of components.entitiesFrom(['img', 'transform'])) {
             this.context.save();
             this.context.translate(t.x - (camera.x - 160), t.y - (camera.y - 160));
-            console.log(camera.scale)
             this.context.scale(camera.scale, camera.scale);
             this.context.rotate(degreesToRadians(t.rotation));
             this.context.drawImage(img, -t.width/2, -t.height/2, t.width, t.height);
@@ -150,7 +146,7 @@ class BootAnimationSystem extends Bauble {
         this.hold = 34;
     }
 
-    update(components) {
+    globalUpdate(components) {
         let part = (partname) => components.get_transform([...components.get('bootanim' + partname).keys()][0]);
         let bootsprite = part('text');
         let bootsprite_bottom = part('bottom');

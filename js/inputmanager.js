@@ -195,7 +195,6 @@ function make_handle_touchstopped(inputmanager) {
 }
 function make_handle_keydown(inputmanager) {
     return function(ev) {
-        console.log(inputmanager.current_keys);
         inputmanager.current_keys.add(ev.code);
         inputmanager.dirty_keys = true;
     }
