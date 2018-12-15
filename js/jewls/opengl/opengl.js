@@ -2,6 +2,8 @@
 
 let _programs = [];
 let _gl = null;
+let _textures = null;
+let _cameras = null;
 let _actors = null;
 
 function createShader(gl, type, source) {
@@ -34,6 +36,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 export async function initContext(canvas) {
     _gl = canvas.getContext("webgl2");
     _actors = new Map();
+    _cameras = new Map();
 
     if (!_gl) {
         return false;
@@ -79,7 +82,7 @@ export async function initContext(canvas) {
     return true;
 }
 
-export function createTexture(image) {
+export function createTexture(name, image) {
     let texture = _gl.createTexture();
 
     _gl.bindTexture(_gl.TEXTURE_2D, texture);
@@ -89,29 +92,30 @@ export function createTexture(image) {
     _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, _gl.NEAREST);
     _gl.bindTexture(_gl.TEXTURE_2D, null);
 
-    return {
+    _textures.set(name, {
         texture: texture,
         width: image.width,
         height: image.height,
-    };
+    });
 }
 
 export function createActor(name, texture, priority = 0) {
+    let tex = _textures.get(texture);
     let vertexPosition = _programs[0].attributes.vertexPosition;
 
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
-    let offsetX = _gl.canvas.width / 2 - texture.width / 2;
-    let offsetY = _gl.canvas.height / 2 - texture.height / 2;
+    let offsetX = _gl.canvas.width / 2 - tex.width / 2;
+    let offsetY = _gl.canvas.height / 2 - tex.height / 2;
 
     let positions = [
         offsetX, offsetY,
-        offsetX, offsetY + texture.height,
-        offsetX + texture.width, offsetY,
-        offsetX, offsetY + texture.height,
-        offsetX + texture.width, offsetY,
-        offsetX + texture.width, offsetY + texture.height,
+        offsetX, offsetY + tex.height,
+        offsetX + tex.width, offsetY,
+        offsetX, offsetY + tex.height,
+        offsetX + tex.width, offsetY,
+        offsetX + tex.width, offsetY + tex.height,
     ];
     _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
 
