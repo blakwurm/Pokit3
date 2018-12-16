@@ -34,12 +34,12 @@ export async function preload (canvas_, input_, skipintro_) {
         boot_done = true;
     }
     screen = canvas.getContext('2d');
-    kontra.init(canvas);
     // trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
     pokitOS = pokitOS;
-    import(get_cart_location()).then((module) => {
-            cart = new module.GameCart(pokitOS);
+    import(get_cart_location()).then((themodule) => {
+        console.log(themodule.GameCart)
+            cart = new themodule.GameCart(pokitOS);
             pokitOS.cart = cart;
             cart.preload();
             if (skipintro) {

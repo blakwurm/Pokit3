@@ -39,7 +39,6 @@ function toggle_debug() {
 function open_console() {
     powercase_state = 'hidden';
     let can = document.querySelector('#gamescreen')
-    setTimeout(() => boot(kontra, can, input), 1000);
     render_controls();
 }
 

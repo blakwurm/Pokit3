@@ -1,4 +1,4 @@
-import { doRender } from './jewls/jewlsRenderer';
+import { doRender } from './jewls/jewlsRenderer.js';
 
 /*
 * Refactored into class form from 
