@@ -20,8 +20,8 @@ export function doRender(r, g, b, a) {
     backend.render(r, g, b, a);
 }
 
-function transformValues(transform) {
-    let parent = transform.parent || {
+function transformValues(identity) {
+    let parent = identity.parent || {
         x: 0,
         y: 0,
         z: 0,
@@ -31,26 +31,26 @@ function transformValues(transform) {
     };
 
     return {
-        x: transform.x + parent.x,
-        y: transform.y + parent.y,
-        z: transform.z + parent.z,
-        rotation: transform.rotation + parent.rotation,
-        scaleX: transform.scaleX * parent.scaleX,
-        scaleY: transform.scaleY * parent.scaleY,
+        x: identity.x + parent.x,
+        y: identity.y + parent.y,
+        z: identity.z + parent.z,
+        rotation: identity.rotation + parent.rotation,
+        scaleX: identity.scaleX * parent.scaleX,
+        scaleY: identity.scaleY * parent.scaleY,
     };
 }
 
 export class JewlsActor {
     constructor(engine) {
         this.engine = engine;
-        this.componentsRequired = ['jewlsActor', 'transform', 'jewlsTexture'];
+        this.componentsRequired = ['jewlsActor', 'identity', 'jewlsTexture'];
 
         let c = document.getElementById('gamescreen');
         backend.initContext(c);
     }
 
-    entityUpdate([entityID, actor, transform, texture]) {
-        let transformed = transformValues(transform);
+    entityUpdate([entityID, actor, identity, texture]) {
+        let transformed = transformValues(identity);
 
         if (!actor.initialized) {
             backend.createActor(entityID, texture.ID);
@@ -67,16 +67,16 @@ export class JewlsActor {
 export class JewlsCamera {
     constructor(engine) {
         this.engine = engine;
-        this.componentsRequired = ['camera', 'transform'];
+        this.componentsRequired = ['camera', 'identity'];
     }
 
-    entityUpdate([entityID, camera, transform]) {
+    entityUpdate([entityID, camera, identity]) {
         if (!camera.initialized) {
-            backend.createCamera(entityID, transform.width, camera.clear.R, camera.clear.G, camera.clear.B, camera.clear.A);
+            backend.createCamera(entityID, identity.width, camera.clear.R, camera.clear.G, camera.clear.B, camera.clear.A);
             camera.initialized = true;
         }
 
-        let transformed = transformValues(transform);
+        let transformed = transformValues(identity);
 
         rotateCamera(entityID, transformed.rotation);
         translateCamera(entityID, transformed.x, transformed.y);
@@ -86,10 +86,10 @@ export class JewlsCamera {
 export class JewlsCameraView {
     constructor(engine) {
         this.engine = engine;
-        this.componentsRequired = ['jewlsCameraView', 'transform'];
+        this.componentsRequired = ['jewlsCameraView', 'identity'];
     }
 
-    entityUpdate([entityID, jewlsCameraView, transform]) {
+    entityUpdate([entityID, jewlsCameraView, identity]) {
         if (!jewlsCameraView.initialized) {
             backend.createCameraView(entityID, jewlsCameraView.cameraID);
             jewlsCameraView.initialized = true;

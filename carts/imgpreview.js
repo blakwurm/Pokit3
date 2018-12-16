@@ -1,7 +1,7 @@
 class BasicCameraMovement {
     constructor(pokitOS) {
         this.pokitOS = pokitOS;
-        this.componentsRequired = ['camera', 'transform'];
+        this.componentsRequired = ['camera', 'identity'];
     }
 
     entityUpdate([entityID, _, cam]) {
