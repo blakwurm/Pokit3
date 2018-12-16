@@ -2,7 +2,7 @@ import * as jewls from './jewls/jewlsRenderer.js';
 
 function grabImage(imgsrc) {
     let img = new Image();
-    return Promise(allgood => img.onload = () => allgood(img));
+    return new Promise(allgood => img.onload = () => allgood(img));
 }
 
 async function loadBootImages() {
