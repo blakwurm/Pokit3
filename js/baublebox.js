@@ -15,8 +15,8 @@ export default class BaubleBox {
         this.__systems = new Map();
         this.__entityUpdaters = new Map();
         this.__renderers = new Map();
-        this.initializeComponent('identity', function(initialvalue, entityID) {
-            return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, scale: 1, scaleX: 1, scaleY: 1, rotation: 0, width: 0, height: 0}, initialvalue);
+        this.initializeComponent('identity', function (initialvalue, entityID) {
+            return Object.assign({ entityID: entityID, x: 0, y: 0, z: 0, scale: 1, scaleX: 1, scaleY: 1, rotation: 0, width: 0, height: 0, requestDelete: false, willDelete: true }, initialvalue);
         })
         this.__components.entitiesFrom = function ([limiter, ...rest]) {
             let self = this;
