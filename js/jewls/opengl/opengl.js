@@ -54,6 +54,7 @@ export async function initContext(canvas) {
     let uvAttributeLocation = _gl.getAttribLocation(program, "a_uvCoord");
 
     let priorityUniformLocation = _gl.getUniformLocation(program, "u_priority");
+    let yFlipUnifomLocation = _gl.getUniformLocation(program, "u_flip_y");
     let resolutionUniformLocation = _gl.getUniformLocation(program, "u_resolution");
     let translationUniformLocation = _gl.getUniformLocation(program, "u_translation");
     let rotationUniformLocation = _gl.getUniformLocation(program, "u_rotation");
@@ -70,6 +71,7 @@ export async function initContext(canvas) {
         },
         uniforms: {
             priority: priorityUniformLocation,
+            yFlip: yFlipUnifomLocation,
             resolution: resolutionUniformLocation,
             translation: translationUniformLocation,
             rotation: rotationUniformLocation,
@@ -113,7 +115,7 @@ function createTexture(width, height, data) {
 }
 
 
-export function createActor(name, texture, priority = 0, textureLiteral = false) {
+export function createActor(name, texture, textureLiteral = false) {
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
     let vertexPosition = _programs[0].attributes.vertexPosition;
@@ -172,7 +174,7 @@ export function createActor(name, texture, priority = 0, textureLiteral = false)
         x_scale: 1,
         y_scale: 1,
         angle: 0,
-        priority: priority,
+        priority: 0,
     });
 }
 
@@ -200,9 +202,9 @@ export function createCamera(name, width, height, clearR, clearG, clearB, clearA
     })
 }
 
-export function createCameraView(name, camera, priority = 0) {
+export function createCameraView(name, camera) {
     let tex = _cameras.get(camera).texture;
-    createActor(name, tex, priority, true);
+    createActor(name, tex, true);
 }
 
 export function clear(r, g, b, a) {
@@ -214,6 +216,10 @@ function toRad(deg) {
     return deg / 360 * 2 * Math.PI;
 }
 
+function distance(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
 export function rotateActor(actor, degrees) {
     _actors.get(actor).angle = degrees;
 }
@@ -222,9 +228,10 @@ export function rotateCamera(camera, degrees) {
     _cameras.get(camera).angle = degrees;
 }
 
-export function translateActor(actor, x, y) {
+export function translateActor(actor, x = 0, y = 0, z = 0) {
     _actors.get(actor).x_translation = x;
     _actors.get(actor).y_translation = y;
+    _actors.get(actor).priority = z;
 }
 
 export function translateCamera(camera, x, y) {
@@ -237,28 +244,63 @@ export function scaleActor(actor, x, y) {
     _actors.get(actor).y_scale = y;
 }
 
+function checkOverlap(ox1, oy1, w1, h1, ox2, oy2, w2, h2) {
+    let lx1 = ox1 - w1 / 2;
+    let ly1 = oy1 - h1 / 2;
+    let rx1 = lx1 + w1;
+    let ry1 = ly1 + h1;
+
+    let lx2 = ox2 - w2 / 2;
+    let ly2 = oy2 - h2 / 2;
+    let rx2 = lx2 + w2;
+    let ry2 = ly2 + h2;
+
+    if (lx1 > rx2 || ly1 > ry2 ||
+        lx2 > rx1 || ly2 > ry1) return false;
+    return true;
+}
+
+function filterMap(mapValues, filter) {
+    let r = [];
+    for (let v of mapValues) {
+        //console.log(v);
+        if (filter(v)) {
+            console.log("through");
+            r.push(v);
+        }
+    }
+    return r;
+}
+
 export function render(r, g, b, a) {
 
     let programData = _programs[0];
 
-    for (let camera of _cameras.values()) {
+    for (let cameraID of _cameras.keys()) {
+        if (cameraID === '_main')
+            continue;
+        let camera = _cameras.get(cameraID);
+
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
 
-        _gl.viewport(0, 0, camera.width, camera.height);
+        _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
 
         clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
 
         _gl.useProgram(programData.program);
 
-        for (let actor of _actors.values()) {
+        for (let actor of _actors.values()) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
+            if (actor.texture === camera.texture.texture) continue;
             _gl.bindVertexArray(actor.vertexArray);
 
             _gl.activeTexture(_gl.TEXTURE0);
             _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
 
             _gl.uniform1i(programData.uniforms.image, 0);
-            _gl.uniform2f(programData.uniforms.resolution, camera.width, camera.height);
-            _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x, actor.y_translation - camera.y);
+            _gl.uniform1f(programData.uniforms.priority, actor.priority);
+            _gl.uniform1f(programData.uniforms.yFlip, 1.0);
+            _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
+            _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x - (_gl.canvas.width / 2 - camera.width / 2), actor.y_translation - camera.y - (_gl.canvas.height/2 - camera.height /2));
             _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - camera.angle)), Math.cos(toRad(actor.angle - camera.angle)));
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
             _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
@@ -282,6 +324,8 @@ export function render(r, g, b, a) {
         _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
 
         _gl.uniform1i(programData.uniforms.image, 0);
+        _gl.uniform1f(programData.uniforms.priority, actor.priority);
+        _gl.uniform1f(programData.uniforms.yFlip, -1.0);
         _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
         _gl.uniform2f(programData.uniforms.translation, actor.x_translation, actor.y_translation);
         _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle)), Math.cos(toRad(actor.angle)));

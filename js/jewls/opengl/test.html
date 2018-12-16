@@ -24,21 +24,21 @@
                 gl.createActor("a2", "t2");
 
                 gl.translateActor("a1", 0, 0);
-                gl.translateActor("a2", 0, 0);
+                gl.translateActor("a2", -8000, 0);
 
-                gl.createCamera("cam1", c.width, c.height, 1, 0, 0, 1);
-                //gl.createCameraView("view1", "cam1");
+                gl.createCamera("cam1", c.width, i2.height, 1, 0, 0, 1);
+                gl.createCameraView("view1", "cam1");
 
-                gl.translateCamera("cam1", -400, 0);
+                gl.translateCamera("cam1", -8000, 0);
 
                 let i = 0;
                 while (true) {
                     console.time('render');
                     gl.rotateActor("a1", 360-i)
                     gl.rotateActor("a2", i);
-                    gl.translateCamera("cam1", -400 - i, 0);
                     gl.render(1, 0, 0, 1);
                     console.timeEnd('render');
+                    //return;
 
                     ++i;
                     if (i === 360) i = 0;
