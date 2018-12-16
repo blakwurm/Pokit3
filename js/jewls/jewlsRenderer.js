@@ -4,8 +4,8 @@ export function jewlsActor() {
     return {initialized:false};
 }
 
-export function jewlsTexture(texture) {
-    return {ID: texture};
+export function jewlsTexture(ops) {
+    return Object.assign({ID:null, width: 1, height: 1, x: 0, y: 0});
 }
 
 export function uploadTexture(name, image) {
@@ -16,8 +16,8 @@ export function jewlsCameraView() {
     return { initialized: false };
 }
 
-export function doRender(r, g, b, a) {
-    backend.render(r, g, b, a);
+export function doRender() {
+    backend.render(0,0,0,0);
 }
 
 function transformValues(identity) {
@@ -41,27 +41,44 @@ function transformValues(identity) {
 }
 
 export class JewlsActor {
-    constructor(engine) {
+    constructor(engine, canvas) {
         this.engine = engine;
         this.componentsRequired = ['jewlsActor', 'identity', 'jewlsTexture'];
+        this.canvas = canvas;
 
-        let c = document.getElementById('gamescreen');
-        backend.initContext(c);
+        onInitialize();
+    }
+
+    onInitialize() {
+        backend.initContext(this.canvas);
     }
 
     entityUpdate([entityID, actor, identity, texture]) {
         let transformed = transformValues(identity);
 
         if (!actor.initialized) {
-            backend.createActor(entityID, texture.ID);
+            backend.createActor(entityID, texture.ID, texture.width, texture.height);
             actor.initialized = true;
         }
 
+        backend.setActorSprite(entityID, texture.x, texture.y);
         backend.rotateActor(entityID, transformed.rotation);
         backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
         backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
     }
 
+}
+
+export class JewlsMainCamera {
+    constructor(engine) {
+        this.engine = engine;
+        this.componentsRequired = ['jewlsMainCamera', 'identity'];
+    }
+
+    entityUpdate([,identity]) {
+        backend.rotateCamera('_main', identity.rotation);
+        backend.translateCamera('_main', identity.x, identity.y);
+    }
 }
 
 export class JewlsCamera {

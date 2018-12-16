@@ -67,6 +67,17 @@ export async function initContext(canvas) {
     let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
     let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
 
+    _cameras.set("_main", {
+        x: 0,
+        y: 0,
+        angle: 0,
+        width: canvas.width,
+        height: canvas.height,
+        frameBuffer: null,
+        texture: null,
+        clear: null,
+    });
+
     _programs.push({
         program: program,
         attributes: {
@@ -332,6 +343,8 @@ export function render(r, g, b, a) {
     }
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
 
+    let mainCamera = _cameras.get("_main");
+
     _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
 
     clear(r, g, b, a);
@@ -348,12 +361,11 @@ export function render(r, g, b, a) {
         _gl.uniform1f(programData.uniforms.priority, actor.priority);
         _gl.uniform1f(programData.uniforms.yFlip, -1.0);
         _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
-        _gl.uniform2f(programData.uniforms.translation, actor.x_translation, actor.y_translation);
-        _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle)), Math.cos(toRad(actor.angle)));
+        _gl.uniform2f(programData.uniforms.translation, actor.x_translation - mainCamera.x, actor.y_translation - mainCamera.y);
+        _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - mainCamera.angle)), Math.cos(toRad(actor.angle - mainCamera.angle)));
         _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
-        _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
-        _gl.uniform2f(programData.uniforms.uvTranslator, 0.0, 0.0);
-
+        _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
+        _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
         _gl.drawArrays(_gl.TRIANGLES, 0, 6);
     }
 
