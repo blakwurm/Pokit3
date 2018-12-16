@@ -39,9 +39,15 @@ export class GameCart {
         this.img = new Image();
     }
     async preload() {
-        this.imgsrc = new URLSearchParams(window.location.search).get('img');
-        console.log(this.imgsrc);
+        let parma = new URLSearchParams(window.location.search)
+        this.imgsrc = parma.get('img');
+        this.width = parma.get('width');
+        this.height = parma.get('height');
+        this.img.width = this.width;
+        this.img.height = this.height;
         this.img.src = this.imgsrc;
+        
+        console.log(this.img);
         this.pokitOS.baublebox.initializeSystem('basiccameramove', new BasicCameraMovement(this.pokitOS));
     }
     async start() {
