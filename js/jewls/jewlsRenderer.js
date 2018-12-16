@@ -35,7 +35,10 @@ function transformValues(transform) {
 export class JewlsActor {
     constructor(engine) {
         this.engine = engine;
-        this.componentsRequired = ['jewlsActor','transform', 'jewlsTexture'];
+        this.componentsRequired = ['jewlsActor', 'transform', 'jewlsTexture'];
+
+        let c = document.getElementById('gamescreen');
+        backend.initContext(c);
     }
 
     entityUpdate([entityID, actor, transform, texture]) {
