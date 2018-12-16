@@ -1,7 +1,7 @@
 class BasicCameraMovement {
     constructor(pokitOS) {
         this.pokitOS = pokitOS;
-        this.componentsRequired = ['camera', 'transform'];
+        this.componentsRequired = ['camera', 'identity'];
     }
 
     entityUpdate([entityID, _, cam]) {
@@ -39,13 +39,19 @@ export class GameCart {
         this.img = new Image();
     }
     async preload() {
-        this.imgsrc = new URLSearchParams(window.location.search).get('img');
-        console.log(this.imgsrc);
+        let parma = new URLSearchParams(window.location.search)
+        this.imgsrc = parma.get('img');
+        this.width = parma.get('width');
+        this.height = parma.get('height');
+        this.img.width = this.width;
+        this.img.height = this.height;
         this.img.src = this.imgsrc;
+        
+        console.log(this.img);
         this.pokitOS.baublebox.initializeSystem('basiccameramove', new BasicCameraMovement(this.pokitOS));
     }
     async start() {
-        this.pokitOS.baublebox.makeEntity({x: 160, y: 160, width: this.img.width, height: this.img.height})
-            ('img', this.img);
+        this.pokitOS.baublebox.makeEntity({x: 160, y: 160, width: this.img.width, height: this.img.height},
+            ['img', this.img]);
     }
 }

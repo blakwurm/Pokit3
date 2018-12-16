@@ -1,3 +1,5 @@
+import { doRender } from './jewls/jewlsRenderer';
+
 /*
 * Refactored into class form from 
 * https://github.com/straker/kontra/blob/master/src/gameLoop.js
@@ -20,7 +22,7 @@ export default class Ouroboros {
         this.pokitOS.baublebox.update();
     }
     render(){
-        this.pokitOS.baublebox.render();
+        doRender();
     }
 
     raf() {

@@ -1,7 +1,7 @@
 import {Bauble} from './baublebox.js';
 
 function cameraComponent() {
-    return {}
+    return {initialized:false}
 }
 
 class CanvasClearer extends Bauble {
@@ -21,8 +21,8 @@ class IMGRenderer extends Bauble {
         this.context = this.canvas.getContext('2d');
     }
     render(components) {
-        let camera = components.entitiesFrom(['camera', 'transform'])[0][2];
-        for (let [entityID, img, t] of components.entitiesFrom(['img', 'transform'])) {
+        let camera = components.entitiesFrom(['camera', 'identity'])[0][2];
+        for (let [entityID, img, t] of components.entitiesFrom(['img', 'identity'])) {
             this.context.save();
             this.context.translate(t.x - (camera.x - 160), t.y - (camera.y - 160));
             this.context.scale(camera.scale, camera.scale);
@@ -37,8 +37,8 @@ function degreesToRadians(degrees) {
 }
 
 function imgComponent(opts, entityID, components) {
-    let transform = components.get('transform').get(entityID);
-    let img = new Image(opts.width || transform.width, opts.height || transform.height)
+    let identity = components.get('identity').get(entityID);
+    let img = new Image(opts.width || identity.width, opts.height || identity.height)
     img.src = opts.src || '';
     return img;
 }
@@ -63,7 +63,7 @@ class Tilerenderer extends Bauble {
             let entityID = _tup[0];
             let tile = _tup[1];
             let [ox, oy] = this.offsets[tile.index];
-            let t = components.get_transform(entityID);
+            let t = components.get_identity(entityID);
             this.context.save();
             this.context.translate(t.x, t.y);
             this.context.rotate(degreesToRadians(t.rotation));
@@ -81,7 +81,7 @@ class TileMapRenderer extends Tilerenderer {
         this.debug_next_render = false;
     }
     render(components) {
-        let camera = components.get_transform([...components.get('camera').keys()][0])
+        let camera = components.get_identity([...components.get('camera').keys()][0])
         for (let _tup of entitiesSortedByZ('tilemap', components)) {
             let mapEntityID = _tup[0];
             let mapdata = _tup[1];
@@ -108,7 +108,7 @@ class TileMapRenderer extends Tilerenderer {
     }
 }
 function entitiesSortedByZ(componentname, components) {
-    let getT = (x) => components.get_transform(x[0]);
+    let getT = (x) => components.get_identity(x[0]);
     function sortfn(a, b) {
         let a_t = getT(a);
         let b_t = getT(b);
@@ -147,7 +147,7 @@ class BootAnimationSystem extends Bauble {
     }
 
     globalUpdate(components) {
-        let part = (partname) => components.get_transform([...components.get('bootanim' + partname).keys()][0]);
+        let part = (partname) => components.get_identity([...components.get('bootanim' + partname).keys()][0]);
         let bootsprite = part('text');
         let bootsprite_bottom = part('bottom');
         let bootsprite_top = part('top');
@@ -210,9 +210,9 @@ function setupBootAnimation(baublebox, done_callback) {
     baublebox.initializeComponent('bootanimbottom', bootAnimPart);
     baublebox.initializeComponent('bootanimtext', bootAnimPart);
     let bootpart = (partname, x, y, z) => baublebox
-        .makeEntity({x: x, y: y, z: z, width: 320, height: 320})
-                    ('img', {src: `/img/bootscreen_${partname}.svg`})
-                    (`bootanim${partname}`);
+        .makeEntity({x: x, y: y, z: z, width: 320, height: 320},
+                    ['img', {src: `/img/bootscreen_${partname}.svg`}],
+                    [`bootanim${partname}`]);
     bootpart('text', 160, 160 * 4, 1);
     bootpart('top', 160 * -2, 160, 2);
     bootpart('bottom', 160 * 3, 160, 2);
@@ -230,7 +230,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
     baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
     baublebox.initializeComponent('camera', cameraComponent);
-    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320})('camera');
+    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';

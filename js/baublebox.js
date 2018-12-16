@@ -15,8 +15,8 @@ export default class BaubleBox {
         this.__systems = new Map();
         this.__entityUpdaters = new Map();
         this.__renderers = new Map();
-        this.initializeComponent('transform', function(initialvalue, entityID) {
-            return Object.assign({entityID: entityID, x: 0, y: 0, z: 0, scale: 1, rotation: 0, width: 0, height: 0}, initialvalue);
+        this.initializeComponent('identity', function (initialvalue, entityID) {
+            return Object.assign({ entityID: entityID, x: 0, y: 0, z: 0, scale: 1, scaleX: 1, scaleY: 1, rotation: 0, width: 0, height: 0, requestDelete: false, willDelete: true }, initialvalue);
         })
         this.__components.entitiesFrom = function ([limiter, ...rest]) {
             let self = this;
@@ -49,15 +49,17 @@ export default class BaubleBox {
         let fn = this.__componentMakers.get(componentName);
         let realvalue = fn(initialvalue, entityID, this.__components);
         this.__components.get(componentName).set(entityID, realvalue);
-        let t = this;
-        return function(otherComponentName, otherInitialValue) {
-            return t.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
-        }
+        return entityID;
     }
-    makeEntity(transform) {
+    makeEntity(identity, ...rest) {
+        console.log(identity);
         let newID = 'ent' + (Math.random() * 1e10)
         this.__entities.add(newID);
-        return this.addComponentToEntity(newID, 'transform', transform);
+        this.addComponentToEntity(newID, 'identity', identity);
+        for (let [cName, cData] of rest) {
+            this.addComponentToEntity(newID, cName, cData);
+        }
+        return newID;
     }
     destroyEntity(entityID) {
         this.__entities.delete(entityID);
