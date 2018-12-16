@@ -12,6 +12,14 @@ export function uploadTexture(name, image) {
     backend.createImageTexture(name, image);
 }
 
+export function jewlsCameraView(ops, entityID, components) {
+    return Object.assign({ initialized: false, clear: { R: 0, G: 0, B: 0, A: 0 } }, ops);
+}
+
+export function doRender(r, g, b, a) {
+    backend.render(r, g, b, a);
+}
+
 function transformValues(transform) {
     let parent = transform.parent || {
         x: 0,
