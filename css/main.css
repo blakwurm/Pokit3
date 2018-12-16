@@ -44,6 +44,10 @@ body {
     background-repeat: no-repeat;
     background-size: contain;
     padding: 15vmin;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+
 }
 
 #debugreadout {
