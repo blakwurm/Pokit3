@@ -8,7 +8,7 @@ function grabImage(imgsrc) {
 async function loadBootImages() {
     for (let partname of ['bottom', 'text', 'top']) {
         let tex = await grabImage(`/img/bootscreen_${partname}`);
-        jewls.uploadTexture(`bootscreen_${partname}`);
+        jewls.uploadTexture(`bootscreen_${partname}`, tex);
     }
 }
 
