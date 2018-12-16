@@ -28,8 +28,8 @@ export async function preload (canvas_, input_, skipintro_) {
     pokitOS.gamescreen = canvas;
     input = input_;
     skipintro = skipintro_;
-    setupBB(baublebox, canvas, skipintro, () => cart.start());
     initializeJewls(pokitOS, canvas);
+    setupBB(baublebox, canvas, skipintro, () => cart.start());
     if (skipintro) {
         boot_done = true;
     }

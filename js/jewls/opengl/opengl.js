@@ -47,8 +47,8 @@ export async function initContext(canvas) {
     _gl.enable(_gl.BLEND);
     _gl.disable(_gl.DEPTH_TEST);
 
-    let vertexShaderSource = await fetch("shaders/default_vertex_shader.glsl").then(b => b.text());
-    let fragmentShaderSource = await fetch("shaders/default_fragment_shader.glsl").then(b => b.text());
+    let vertexShaderSource = await fetch("/js/jewls/opengl/shaders/default_vertex_shader.glsl").then(b => b.text());
+    let fragmentShaderSource = await fetch("/js/jewls/opengl/shaders/default_fragment_shader.glsl").then(b => b.text());
 
     let vertexShader = createShader(_gl, _gl.VERTEX_SHADER, vertexShaderSource);
     let fragmentShader = createShader(_gl, _gl.FRAGMENT_SHADER, fragmentShaderSource);
