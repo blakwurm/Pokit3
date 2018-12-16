@@ -184,6 +184,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
 
     _actors.set(name, {
         texture: tex.texture,
+        vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,
         width: width,
@@ -201,6 +202,14 @@ export function createActor(name, texture, width, height, textureLiteral = false
         angle: 0,
         priority: 0,
     });
+}
+
+export function deleteActor(name) {
+    let actor = _actors.get(name);
+    _gl.deleteVertexArray(actor.vertexArray);
+    _gl.deleteBuffer(vertexBuffer);
+    _gl.deleteBuffer(uvBuffer);
+    _actors.delete(name);
 }
 
 export function setActorSprite(actor, x, y) {

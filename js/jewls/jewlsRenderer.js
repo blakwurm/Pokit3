@@ -54,6 +54,11 @@ export class JewlsActor {
     }
 
     entityUpdate([entityID, actor, identity, texture]) {
+        if (identity.willDelete) {
+            backend.deleteActor(entityID);
+            return;
+        }
+
         let transformed = transformValues(identity);
 
         if (!actor.initialized) {
@@ -75,9 +80,11 @@ export class JewlsMainCamera {
         this.componentsRequired = ['jewlsMainCamera', 'identity'];
     }
 
-    entityUpdate([,identity]) {
-        backend.rotateCamera('_main', identity.rotation);
-        backend.translateCamera('_main', identity.x, identity.y);
+    entityUpdate([, identity]) {
+        let transformed = transformValues(identity);
+
+        backend.rotateCamera('_main', transformed.rotation);
+        backend.translateCamera('_main', transformed.x, transformed.y);
     }
 }
 
@@ -107,9 +114,20 @@ export class JewlsCameraView {
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
+        if (identity.willDelete) {
+            backend.deleteActor(entityID);
+            return;
+        }
+
         if (!jewlsCameraView.initialized) {
             backend.createCameraView(entityID, jewlsCameraView.cameraID);
             jewlsCameraView.initialized = true;
         }
+
+        let transformed = transformValues(identity);
+
+        backend.rotateActor(entityID, transformed.rotation);
+        backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
+        backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
     }
 }
