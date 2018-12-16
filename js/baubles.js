@@ -210,9 +210,9 @@ function setupBootAnimation(baublebox, done_callback) {
     baublebox.initializeComponent('bootanimbottom', bootAnimPart);
     baublebox.initializeComponent('bootanimtext', bootAnimPart);
     let bootpart = (partname, x, y, z) => baublebox
-        .makeEntity({x: x, y: y, z: z, width: 320, height: 320})
-                    ('img', {src: `/img/bootscreen_${partname}.svg`})
-                    (`bootanim${partname}`);
+        .makeEntity({x: x, y: y, z: z, width: 320, height: 320},
+                    ['img', {src: `/img/bootscreen_${partname}.svg`}],
+                    [`bootanim${partname}`]);
     bootpart('text', 160, 160 * 4, 1);
     bootpart('top', 160 * -2, 160, 2);
     bootpart('bottom', 160 * 3, 160, 2);
@@ -230,7 +230,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
     baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
     baublebox.initializeComponent('camera', cameraComponent);
-    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320})('camera');
+    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';

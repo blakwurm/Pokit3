@@ -49,15 +49,17 @@ export default class BaubleBox {
         let fn = this.__componentMakers.get(componentName);
         let realvalue = fn(initialvalue, entityID, this.__components);
         this.__components.get(componentName).set(entityID, realvalue);
-        let t = this;
-        return function(otherComponentName, otherInitialValue) {
-            return t.addComponentToEntity(entityID, otherComponentName, otherInitialValue);
-        }
+        return entityID;
     }
-    makeEntity(identity) {
+    makeEntity(identity, ...rest) {
+        console.log(identity);
         let newID = 'ent' + (Math.random() * 1e10)
         this.__entities.add(newID);
-        return this.addComponentToEntity(newID, 'identity', identity);
+        this.addComponentToEntity(newID, 'identity', identity);
+        for (let [cName, cData] of rest) {
+            this.addComponentToEntity(newID, cName, cData);
+        }
+        return newID;
     }
     destroyEntity(entityID) {
         this.__entities.delete(entityID);
