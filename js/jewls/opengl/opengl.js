@@ -34,7 +34,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 }
 
 export async function initContext(canvas) {
-    _gl = canvas.getContext("webgl2");
+    _gl = canvas.getContext("webgl2", { premultipliedAlpha: false, alpha: false });
     _textures = new Map();
     _actors = new Map();
     _cameras = new Map();
@@ -42,6 +42,10 @@ export async function initContext(canvas) {
     if (!_gl) {
         return false;
     }
+
+    _gl.blendFunc(_gl.ONE, _gl.ONE_MINUS_SRC_ALPHA);
+    _gl.enable(_gl.BLEND);
+    _gl.disable(_gl.DEPTH_TEST);
 
     let vertexShaderSource = await fetch("shaders/default_vertex_shader.glsl").then(b => b.text());
     let fragmentShaderSource = await fetch("shaders/default_fragment_shader.glsl").then(b => b.text());
@@ -99,6 +103,7 @@ function createTexture(width, height, data) {
     let texture = _gl.createTexture();
 
     _gl.bindTexture(_gl.TEXTURE_2D, texture);
+    _gl.pixelStorei(_gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, width, height, 0, _gl.RGBA, _gl.UNSIGNED_BYTE, data);
 
     _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.NEAREST);
@@ -273,6 +278,7 @@ function filterMap(mapValues, filter) {
 }
 
 export function render(r, g, b, a) {
+    _gl.colorMask(true, true, true, true);
 
     let programData = _programs[0];
 
@@ -335,4 +341,8 @@ export function render(r, g, b, a) {
 
         _gl.drawArrays(_gl.TRIANGLES, 0, 6);
     }
+
+
+    _gl.colorMask(false, false, false, true);
+    clear(1, 1, 1, 1);
 }
