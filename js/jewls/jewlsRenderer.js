@@ -103,7 +103,7 @@ export class JewlsCamera {
 
         let transformed = transformValues(identity);
 
-        rotateCamera(entityID, transformed.rotation);
+        backend.rotateCamera(entityID, transformed.rotation);
         translateCamera(entityID, transformed.x, transformed.y);
     }
 }
