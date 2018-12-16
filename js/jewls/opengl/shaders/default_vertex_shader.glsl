@@ -28,5 +28,5 @@ void main() {
 	vec2 scaledClip = clip * u_scale;
 
 	gl_Position = vec4(scaledClip * vec2(1, u_flip_y), u_priority, 1);
-	v_uvCoord = a_uvCoord; //* u_uvModifier + u_uvTranslator;
+	v_uvCoord = a_uvCoord * u_uvModifier + u_uvTranslator;
 }

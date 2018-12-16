@@ -120,7 +120,7 @@ function createTexture(width, height, data) {
 }
 
 
-export function createActor(name, texture, textureLiteral = false) {
+export function createActor(name, texture, width, height, textureLiteral = false) {
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
     let vertexPosition = _programs[0].attributes.vertexPosition;
@@ -168,12 +168,21 @@ export function createActor(name, texture, textureLiteral = false) {
     _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
     _gl.enableVertexAttribArray(uvCoords);
 
+    width = width || tex.width;
+    height = height || tex.height;
+
     _actors.set(name, {
         texture: tex.texture,
         vertexArray: vao,
         uvBuffer: coordBuffer,
-        width: tex.width,
-        height: tex.height,
+        width: width,
+        height: height,
+        sheetWidth: tex.width,
+        sheetHeight: tex.height,
+        spriteWidth: width / tex.width, 
+        spriteHeight: height / tex.height,
+        sprite_x: 0,
+        sprite_y: 0,
         x_translation: 0,
         y_translation: 0,
         x_scale: 1,
@@ -181,6 +190,11 @@ export function createActor(name, texture, textureLiteral = false) {
         angle: 0,
         priority: 0,
     });
+}
+
+export function setActorSprite(actor, x, y) {
+    _actors.get(actor).sprite_x = x;
+    _actors.get(actor).sprite_y = y;
 }
 
 export function createCamera(name, width, height, clearR, clearG, clearB, clearA) {
@@ -209,7 +223,7 @@ export function createCamera(name, width, height, clearR, clearG, clearB, clearA
 
 export function createCameraView(name, camera) {
     let tex = _cameras.get(camera).texture;
-    createActor(name, tex, true);
+    createActor(name, tex, tex.width, tex.height, true);
 }
 
 export function clear(r, g, b, a) {
@@ -297,6 +311,7 @@ export function render(r, g, b, a) {
 
         for (let actor of _actors.values()) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
             if (actor.texture === camera.texture.texture) continue;
+
             _gl.bindVertexArray(actor.vertexArray);
 
             _gl.activeTexture(_gl.TEXTURE0);
@@ -309,8 +324,8 @@ export function render(r, g, b, a) {
             _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x - (_gl.canvas.width / 2 - camera.width / 2), actor.y_translation - camera.y - (_gl.canvas.height/2 - camera.height /2));
             _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - camera.angle)), Math.cos(toRad(actor.angle - camera.angle)));
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
-            _gl.uniform2f(programData.uniforms.uvModifier, 1.0, 1.0);
-            _gl.uniform2f(programData.uniforms.uvTranslator, 0.0, 0.0);
+            _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
+            _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
 
             _gl.drawArrays(_gl.TRIANGLES, 0, 6);
         }
