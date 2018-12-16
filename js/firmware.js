@@ -2,7 +2,7 @@ import BaubleBox from './baublebox.js';
 import Ouroboros from './ouroboros.js';
 import Bellhop from './bellhop.js';
 import setupBB from './baubles.js';
-import Jewls from './jewls.js';
+import initializeJewls from './jewls.js';
 
 let canvas = null;
 let screen = null;
@@ -29,7 +29,7 @@ export async function preload (canvas_, input_, skipintro_) {
     input = input_;
     skipintro = skipintro_;
     setupBB(baublebox, canvas, skipintro, () => cart.start());
-    baublebox.initializeSystem('jewls', new Jewls(pokitOS, canvas));
+    initializeJewls(pokitOS, canvas);
     if (skipintro) {
         boot_done = true;
     }
