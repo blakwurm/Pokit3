@@ -1,5 +1,5 @@
 // refactored from https://github.com/straker/kontra/blob/master/src/assets.js
-import {uploadTexture} from './jewls.js';
+import {uploadTexture} from './jewls/jewlsRenderer.js';
 
 export default class Bellhop {
     constructor(pokitOS) {
