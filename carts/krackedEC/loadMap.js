@@ -1,6 +1,5 @@
-let loc = 'http://127.0.0.1:38359'
 export default async function loadMap(pokitOS) {
-    let mapdata = await (await fetch(new URL('level1_santa.json', loc))).json();
+    let mapdata = await (await fetch('/carts/krackedEC/level1_santa.json')).json();
     let {tilewidth, tileheight, width, height, layers} = mapdata;
     let layerdata = new Map();
     for (let {name, data} of mapdata.layers) {
