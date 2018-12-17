@@ -38,10 +38,17 @@ export class PlayerWallCollisionSystem {
     globalUpdate(components) {
         if (!this.quadtree) {
             let walls = components.entitiesFrom(['wallsprite', 'identity']).map((x) => x[1]);
-            this.quadtree = kontra.quadtree();
+            this.quadtree = kontra.quadtree({x: 0, y: 0, width: 32*10, height: 32*10});
             this.quadtree.add(walls)
         }
         let players = components.entitiesFrom(['playersprite', 'identity']);
+        // TODO: For each player, make sure that it is not going to overlap with a wall
+        //       in the direction that the player will be moving. We will do that by
+        //       using self.quadtree.get({x: playerIdentity.x*playerIdentity, ditto y, width and height same})
+        //       and then checking to see if anything gets returned. If its returned, we
+        //       set that player sprite's velocity to 0.
+        //       Should probably also only run this if the player sprite in question has a
+        //       positive velocity.
 
     }
 }
