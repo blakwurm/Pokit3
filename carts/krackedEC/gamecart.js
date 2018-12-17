@@ -12,7 +12,7 @@ export class GameCart {
         console.log(kontra)
     }
     start(){
-        setupPC(this.pokitOS);
+        // setupPC(this.pokitOS);
     }
 
     
