@@ -200,7 +200,7 @@ class BootAnimationSystem extends Bauble {
             return;
         }
         
-        if (bootsprite.scaleX < 4) {
+        if (bootsprite.scaleX < 38) {
             [bootsprite, bootsprite_bottom, bootsprite_top].forEach(expandoAnimationPart);
             console.log('doin')
             return
@@ -211,9 +211,9 @@ class BootAnimationSystem extends Bauble {
     }
 }
 function expandoAnimationPart(t) {
-    t.rotation += 2;
-    t.scaleX += .03;
-    t.scaleY += .03;
+    t.rotation += 2.3;
+    t.scaleX += .5;
+    t.scaleY += .5;
 }
 
 function bootAnimPart (opts, entityID, components) {
@@ -240,6 +240,8 @@ function setupBootAnimation(baublebox, done_callback) {
     let t = bootpart('text', 160, 160 * 4, 1);
     bootpart('top', 160 * -2, 160, 2);
     bootpart('bottom', 160 * 3, 160, 2);
+    baublebox.makeEntity({width: 320, height: 320, x: 160, y: 160},
+                                 ['jewlsMainCamera']);
 }
 function teardownBootAnimation(baublebox, boot_anim_ids) {
     baublebox.destroySystem('bootanimation');

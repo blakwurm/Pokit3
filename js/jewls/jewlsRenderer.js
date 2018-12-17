@@ -83,7 +83,7 @@ export class JewlsMainCamera {
         this.componentsRequired = ['jewlsMainCamera', 'identity'];
     }
 
-    entityUpdate([, identity]) {
+    entityUpdate([entityID, , identity]) {
         let transformed = transformValues(identity);
 
         backend.rotateCamera('_main', transformed.rotation);
