@@ -207,10 +207,12 @@ export function createActor(name, texture, width, height, textureLiteral = false
 }
 
 export function deleteActor(name) {
+    console.log('deleting')
+    console.log(name)
     let actor = _actors.get(name);
     _gl.deleteVertexArray(actor.vertexArray);
-    _gl.deleteBuffer(vertexBuffer);
-    _gl.deleteBuffer(uvBuffer);
+    _gl.deleteBuffer(actor.vertexBuffer);
+    _gl.deleteBuffer(actor.uvBuffer);
     _actors.delete(name);
 }
 
