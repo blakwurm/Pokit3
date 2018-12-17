@@ -4,6 +4,23 @@ function cameraComponent() {
     return {initialized:false}
 }
 
+class ThingMover extends Bauble {
+    constructor() {
+        super('thingmover', 100);
+        this.componentsRequired = ['moves', 'identity'];
+    }
+    entityUpdate([entityID, moves, identity]) {
+        if (!moves.paused) {
+            identity.x += identity.velocityX;
+            identity.y += identity.velocityY;
+        }
+    }
+}
+
+function movesComponent() {
+    return {paused: false};
+}
+
 class CanvasClearer extends Bauble {
     constructor(canvas) {
         super('clearer', 1);
@@ -234,8 +251,9 @@ function teardownBootAnimation(baublebox, boot_anim_ids) {
 }
 
 export default function setupBaubleBox(baublebox, canvas, skipintro, done_callback) {
-    baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
+    // baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
     // baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
+    baublebox.initializeSystem('thingmover', new ThingMover())
     baublebox.initializeComponent('camera', cameraComponent);
     baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
     baublebox.initializeComponent('img', imgComponent);
