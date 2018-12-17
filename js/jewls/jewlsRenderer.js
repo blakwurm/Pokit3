@@ -131,6 +131,6 @@ export class JewlsCameraView {
 
         backend.rotateActor(entityID, transformed.rotation);
         backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
-        backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
+        backend.scaleActor(entityID, transformed.scaleX, transformed.scaleY);
     }
 }
