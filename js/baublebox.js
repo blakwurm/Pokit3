@@ -113,6 +113,17 @@ export default class BaubleBox {
         }
     }
 
+    checkDelete() {
+        let entities = this.__components.get('identity');
+        for (let entity of entities.values()) {
+            if (entity.willDelete) {
+                destroyEntity(entity.entityID);
+            } else if (entity.requestDelete) {
+                entity.willDelete = true;
+            }
+        }
+    }
+
     render() {
         for (let system of [...this.__renderers.values()].sort(this.prioritySort)) {
             system.render(this.__components);

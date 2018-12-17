@@ -20,6 +20,7 @@ export default class Ouroboros {
     }
     update(n){
         this.pokitOS.baublebox.update();
+        this.pokitOS.baublebox.checkDelete();
     }
     render(){
         doRender();
