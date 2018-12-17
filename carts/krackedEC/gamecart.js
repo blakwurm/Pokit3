@@ -42,10 +42,9 @@ export class GameCart {
             ['jewlsTexture', { ID: texture, width: width, height: height, x: 0, y: 0 }],
             ['jewlsActor', {}]);
     }
-<<<<<<< HEAD
     start(){
         // setupPC(this.pokitOS);
-=======
+    }
 
     makeQuadCamView(x, y, camera) {
         return this.ecs.makeEntity({ x: x, y: y, z: 0, width: 160, height: 160 },
@@ -56,7 +55,6 @@ export class GameCart {
         return this.ecs.makeEntity(
             [{ x: x, y: y, width: 160, height: 160 }],
             ['camera', {}]);
->>>>>>> 79b3ac1202cc19fa7274e292decb0c520592ee84
     }
 
     
