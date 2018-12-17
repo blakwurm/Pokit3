@@ -211,7 +211,14 @@ function setupBootAnimation(baublebox, done_callback) {
     baublebox.initializeComponent('bootanimtext', bootAnimPart);
     let bootpart = (partname, x, y, z) => baublebox
         .makeEntity({x: x, y: y, z: z, width: 320, height: 320},
-                    ['img', {src: `/img/bootscreen_${partname}.svg`}],
+                    ['jewlsActor'],
+                    ['jewlsTexture', {
+                        ID: `bootscreen_${partname}`,
+                        width: 320,
+                        height: 320,
+                        x: 0,
+                        y: 0
+                    }],
                     [`bootanim${partname}`]);
     bootpart('text', 160, 160 * 4, 1);
     bootpart('top', 160 * -2, 160, 2);
