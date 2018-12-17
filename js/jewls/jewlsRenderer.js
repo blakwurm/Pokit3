@@ -12,8 +12,10 @@ export function uploadTexture(name, image) {
     backend.createImageTexture(name, image);
 }
 
-export function jewlsCameraView() {
-    return { initialized: false };
+export function jewlsCameraView(ops) {
+    let o = Object.assign({ cameraID: null }, ops);
+    o.initialized = false;
+    return o;
 }
 
 export function doRender() {
@@ -54,7 +56,7 @@ export class JewlsActor {
     }
 
     entityUpdate([entityID, actor, identity, texture]) {
-        if (identity.willDelete == true) {
+        if (identity.willDelete === true) {
             backend.deleteActor(entityID);
             return;
         }
@@ -62,8 +64,6 @@ export class JewlsActor {
         let transformed = transformValues(identity);
 
         if (!actor.initialized) {
-            console.log(texture)
-            console.log(identity)
             backend.createActor(entityID, texture.ID, texture.width, texture.height);
             actor.initialized = true;
         }
@@ -117,7 +117,7 @@ export class JewlsCameraView {
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
-        if (identity.willDelete == true) {
+        if (identity.willDelete === true) {
             backend.deleteActor(entityID);
             return;
         }
