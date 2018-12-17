@@ -244,8 +244,8 @@ function setupBootAnimation(baublebox, done_callback) {
                     }],
                     [`bootanim${partname}`]);
     let t = bootpart('text', 160, 160 * 4, 1);
-    bootpart('top', 160 * -2, 160, 2);
-    bootpart('bottom', 160 * 3, 160, 2);
+    bootpart('top', 160 * -2, 160, -1);
+    bootpart('bottom', 160 * 3, 160, -1);
     baublebox.makeEntity({width: 320, height: 320, x: 160, y: 160},
                                  ['jewlsMainCamera']);
 }

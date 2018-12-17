@@ -43,9 +43,10 @@ export async function initContext(canvas) {
         return false;
     }
 
+    _gl.depthFunc(_gl.LEQUAL);
     _gl.blendFunc(_gl.ONE, _gl.ONE_MINUS_SRC_ALPHA);
     _gl.enable(_gl.BLEND);
-    _gl.disable(_gl.DEPTH_TEST);
+    _gl.enable(_gl.DEPTH_TEST);
 
     let vertexShaderSource = await fetch("/js/jewls/opengl/shaders/default_vertex_shader.glsl").then(b => b.text());
     let fragmentShaderSource = await fetch("/js/jewls/opengl/shaders/default_fragment_shader.glsl").then(b => b.text());
@@ -326,7 +327,7 @@ export function render(r, g, b, a) {
 
         _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
 
-        // clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
+        clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
 
         _gl.useProgram(programData.program);
 
