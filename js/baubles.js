@@ -200,7 +200,7 @@ class BootAnimationSystem extends Bauble {
             return;
         }
         
-        if (bootsprite.width < 2e5) {
+        if (bootsprite.scaleX < 4) {
             [bootsprite, bootsprite_bottom, bootsprite_top].forEach(expandoAnimationPart);
             console.log('doin')
             return
@@ -212,8 +212,8 @@ class BootAnimationSystem extends Bauble {
 }
 function expandoAnimationPart(t) {
     t.rotation += 2;
-    t.width *= 1.03;
-    t.height *= 1.03;
+    t.scaleX += .03;
+    t.scaleY += .03;
 }
 
 function bootAnimPart (opts, entityID, components) {
@@ -237,7 +237,7 @@ function setupBootAnimation(baublebox, done_callback) {
                         y: 0
                     }],
                     [`bootanim${partname}`]);
-    bootpart('text', 160, 160 * 4, 1);
+    let t = bootpart('text', 160, 160 * 4, 1);
     bootpart('top', 160 * -2, 160, 2);
     bootpart('bottom', 160 * 3, 160, 2);
 }
@@ -255,7 +255,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     // baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
     baublebox.initializeSystem('thingmover', new ThingMover())
     baublebox.initializeComponent('camera', cameraComponent);
-    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
+    baublebox.initializeComponent('moves', movesComponent);
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';

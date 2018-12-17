@@ -5,7 +5,7 @@ export function jewlsActor() {
 }
 
 export function jewlsTexture(ops) {
-    return Object.assign({ID:null, width: 1, height: 1, x: 0, y: 0});
+    return Object.assign({ID:null, width: 1, height: 1, x: 0, y: 0}, ops);
 }
 
 export function uploadTexture(name, image) {
@@ -54,14 +54,17 @@ export class JewlsActor {
     }
 
     entityUpdate([entityID, actor, identity, texture]) {
-        if (identity.willDelete) {
+        if (identity.willDelete == true) {
             backend.deleteActor(entityID);
             return;
         }
 
         let transformed = transformValues(identity);
+        let tranasformed = transformed;
 
         if (!actor.initialized) {
+            console.log(texture)
+            console.log(identity)
             backend.createActor(entityID, texture.ID, texture.width, texture.height);
             actor.initialized = true;
         }
@@ -115,7 +118,7 @@ export class JewlsCameraView {
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
-        if (identity.willDelete) {
+        if (identity.willDelete == true) {
             backend.deleteActor(entityID);
             return;
         }

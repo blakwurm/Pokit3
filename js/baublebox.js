@@ -23,7 +23,7 @@ export default class BaubleBox {
                 rotation: 0,
                 width: 0, height: 0,
                 velocityX: 0, velocityY: 0, 
-                requestDelete: false, willDelete: true }, initialvalue);
+                requestDelete: false, willDelete: false }, initialvalue);
         })
         this.__components.entitiesFrom = function ([limiter, ...rest]) {
             let self = this;

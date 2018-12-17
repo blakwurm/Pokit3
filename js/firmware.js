@@ -28,8 +28,7 @@ export async function preload (canvas_, input_, skipintro_) {
     pokitOS.gamescreen = canvas;
     input = input_;
     skipintro = skipintro_;
-    initializeJewls(pokitOS, canvas);
-    setupBB(baublebox, canvas, skipintro, () => cart.start());
+    await initializeJewls(pokitOS, canvas);
     if (skipintro) {
         boot_done = true;
     }
@@ -45,6 +44,7 @@ export async function preload (canvas_, input_, skipintro_) {
     if (skipintro) {
         cart.start();
     }
+    setupBB(baublebox, canvas, skipintro, () => cart.start());
     // makeBootAnim(trollybelt, () => pokitOS.cart.start());
     // makeTestEntity();
     // let cartag = document.createElement('script');

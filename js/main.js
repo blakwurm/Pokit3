@@ -1,6 +1,6 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
-import {preload, boot} from '/js/firmware.js'
+import {preload, boot} from './firmware.js'
 
 let debug = false;
 let input = new InputManager();

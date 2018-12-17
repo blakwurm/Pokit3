@@ -139,6 +139,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
+    console.log(texture);
     let offsetX = _gl.canvas.width / 2 - tex.width / 2;
     let offsetY = _gl.canvas.height / 2 - tex.height / 2;
 

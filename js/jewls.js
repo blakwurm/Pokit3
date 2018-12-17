@@ -2,17 +2,22 @@ import * as jewls from './jewls/jewlsRenderer.js';
 
 function grabImage(imgsrc) {
     let img = new Image();
-    return new Promise(allgood => img.onload = () => allgood(img));
+    let prom = new Promise((allgood) => {img.onload = () => allgood(img)});
+    img.src = imgsrc;
+    return prom;
 }
 
 async function loadBootImages() {
     for (let partname of ['bottom', 'text', 'top']) {
-        let tex = await grabImage(`/img/bootscreen_${partname}`);
+        console.log('thing')
+        let tex = await grabImage(`/img/bootscreen_${partname}.svg`);
+        console.log(tex);
         jewls.uploadTexture(`bootscreen_${partname}`, tex);
     }
 }
 
-export default function initializeJewls(pokitOS, canvas) {
+export default async function initializeJewls(pokitOS, canvas) {
+    console.log(canvas)
     pokitOS.baublebox.initializeSystem('jewlsActor', new jewls.JewlsActor(pokitOS, canvas));
     pokitOS.baublebox.initializeSystem('jewlsMainCamera', new jewls.JewlsMainCamera(pokitOS));
     pokitOS.baublebox.initializeSystem('jewlsCamera', new jewls.JewlsCamera(pokitOS));
