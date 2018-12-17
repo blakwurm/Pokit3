@@ -2,6 +2,7 @@ import {Bauble} from './baublebox.js';
 
 function cameraComponent(ops) {
     let o = Object.assign({}, ops);
+    o.clear = o.clear || {};
     o.clear.R = o.clear.R || 0;
     o.clear.G = o.clear.G || 0;
     o.clear.B = o.clear.B || 0;
