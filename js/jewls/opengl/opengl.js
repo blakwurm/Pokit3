@@ -140,18 +140,18 @@ export function createActor(name, texture, width, height, textureLiteral = false
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
-    console.log(texture);
-    let offsetX = _gl.canvas.width / 2 - tex.width / 2;
-    let offsetY = _gl.canvas.height / 2 - tex.height / 2;
+    let offsetX = tex.width / 2;
+    let offsetY = tex.height / 2;
 
     let positions = [
+        -offsetX, -offsetY,
+        -offsetX, offsetY,
+        offsetX, -offsetY,
+        -offsetX, offsetY,
+        offsetX, -offsetY,
         offsetX, offsetY,
-        offsetX, offsetY + tex.height,
-        offsetX + tex.width, offsetY,
-        offsetX, offsetY + tex.height,
-        offsetX + tex.width, offsetY,
-        offsetX + tex.width, offsetY + tex.height,
     ];
+
     _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
 
     let vao = _gl.createVertexArray();
@@ -207,8 +207,6 @@ export function createActor(name, texture, width, height, textureLiteral = false
 }
 
 export function deleteActor(name) {
-    console.log('deleting')
-    console.log(name)
     let actor = _actors.get(name);
     _gl.deleteVertexArray(actor.vertexArray);
     _gl.deleteBuffer(actor.vertexBuffer);
@@ -277,7 +275,7 @@ export function translateActor(actor, x = 0, y = 0, z = 0) {
     _actors.get(actor).priority = z;
 }
 
-export function translateCamera(camera, x, y) {
+export function translateCamera(camera, x = 0, y = 0) {
     _cameras.get(camera).x = x;
     _cameras.get(camera).y = y;
 }
@@ -345,7 +343,7 @@ export function render(r, g, b, a) {
             _gl.uniform1f(programData.uniforms.priority, actor.priority);
             _gl.uniform1f(programData.uniforms.yFlip, 1.0);
             _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
-            _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x - (_gl.canvas.width / 2 - camera.width / 2), actor.y_translation - camera.y - (_gl.canvas.height/2 - camera.height /2));
+            _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x, actor.y_translation - camera.y);
             _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - camera.angle)), Math.cos(toRad(actor.angle - camera.angle)));
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
             _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);

@@ -15,9 +15,11 @@ export default async function loadMap(pokitOS) {
     let makeTile = (posind, tilemapind, z) => {
         let [tilex, tiley] = getPosFromOffset(tilemapind, width, height);
         let [posx, posy] = getPosFromOffset(posind, width, height, tilewidth, tileheight);
-            return {tile: {height: tileheight, width: tilewidth, x: tilex, y: tiley+1},  
-                    transform: {height: tileheight, width: tilewidth, x: posx, y: posy, z: z}}
-        }
+        return {
+            tile: { height: tileheight, width: tilewidth, x: tilex, y: tiley + 1 },
+            transform: { height: tileheight, width: tilewidth, x: posx, y: posy, z: z }
+        };
+    };
     for (let n = 0; n < mapdata.width*mapdata.height; n++) {
         let vals = mapInd(n, layerdata);
         let [tileposx, tileposy] = getPosFromOffset(n, width, height);
@@ -27,7 +29,7 @@ export default async function loadMap(pokitOS) {
             ['chimney', chims, 90],
             ['present', presents, 60],
             ['startpoint', startpoints, 30]
-        ]
+        ];
         for (let [mapname, collection, z] of foo) {
             let thing = vals.get(mapname);
             if (thing) {

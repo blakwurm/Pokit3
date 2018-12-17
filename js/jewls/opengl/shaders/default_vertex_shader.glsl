@@ -16,12 +16,10 @@ uniform vec2 u_uvTranslator;
 out vec2 v_uvCoord;
 
 void main() {
-	vec2 origin = a_vertexPosition - (u_resolution/vec2(2,2));
 	vec2 rotatedOrigin = vec2(
-		origin.x * u_rotation.y + origin.y * u_rotation.x,
-		origin.y * u_rotation.y - origin.x * u_rotation.x);
-	vec2 rotatedPosition = rotatedOrigin + (u_resolution / vec2(2,2));
-	vec2 position = rotatedPosition + u_translation;
+		a_vertexPosition.x * u_rotation.y + a_vertexPosition.y * u_rotation.x,
+		a_vertexPosition.y * u_rotation.y - a_vertexPosition.x * u_rotation.x);
+	vec2 position = rotatedOrigin + u_translation;
 	vec2 zto = position / u_resolution;
 	vec2 ztt = zto * 2.0;
 	vec2 clip = ztt - 1.0;

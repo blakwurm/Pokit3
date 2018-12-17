@@ -1,4 +1,5 @@
 // refactored from https://github.com/straker/kontra/blob/master/src/assets.js
+import {uploadTexture} from './jewls/jewlsRenderer.js';
 
 export default class Bellhop {
     constructor(pokitOS) {
@@ -26,13 +27,15 @@ export default class Bellhop {
         return thing;
     }
 
-    loadImage(assetname, imgurl, width, height) {
+    async loadImage(assetname, imgurl, width, height) {
         let i = new Image();
         if (width) {i.width = width;}
         if (height) {i.height = height;}
         let p = this.__handle_loader__(assetname, i);
         i.src = imgurl;
-        return p; 
+        let img = await p;
+        uploadTexture(assetname, img);
+        return p;
     }
 
     loadSound(assetname, soundurl) {

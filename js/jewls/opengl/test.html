@@ -23,13 +23,14 @@
                 gl.createActor("a1", "t1");
                 gl.createActor("a2", "t2");
 
-                gl.translateActor("a1", 0, 0);
-                gl.translateActor("a2", -8200, 0);
+                gl.translateActor("a1", c.width/2, c.height/2);
+                gl.translateActor("a2",-8000 + c.width/2, c.width/2);
 
-                gl.createCamera("cam1", c.width, i2.height, 0, 0, 0, 0);
+                gl.createCamera("cam1", c.width, c.height, 0, 0, 0, 0);
                 gl.createCameraView("view1", "cam1");
+                gl.translateActor("view1", c.width/2, c.height/2);
 
-                gl.translateCamera("cam1", -8000, 0);
+                gl.translateCamera("cam1", -8000);
 
                 let i = 0;
                 while (true) {
