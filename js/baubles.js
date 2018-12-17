@@ -249,8 +249,8 @@ function setupBootAnimation(baublebox, done_callback) {
     let t = bootpart('text', 160, 160 * 4, 10);
     bootpart('top', 160 * -2, 160, 5);
     bootpart('bottom', 160 * 3, 160, 5);
-    baublebox.makeEntity({width: 320, height: 320, x: 160, y: 160},
-                                 ['jewlsMainCamera']);
+    /*baublebox.makeEntity({width: 320, height: 320, x: 160, y: 160},
+                                 ['jewlsMainCamera']);*/
 }
 function teardownBootAnimation(baublebox, boot_anim_ids) {
     baublebox.destroySystem('bootanimation');
