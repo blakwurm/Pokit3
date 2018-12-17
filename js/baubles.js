@@ -211,6 +211,9 @@ class BootAnimationSystem extends Bauble {
             console.log('doin')
             return
         }
+        bootsprite.requestDelete = true;
+        bootsprite_bottom.requestDelete = true;
+        bootsprite_top.requestDelete = true;
 
 
         this.boot_done = true;
