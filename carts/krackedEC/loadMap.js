@@ -47,6 +47,19 @@ export default async function loadMap(pokitOS) {
     return mapdata;
 }
 
+function makeJewlsTileMap(layermap) {
+    return {
+        background: {
+            data : layermap.get('background'),
+            z: 99
+        },
+        walls: {
+            data: layermap.get('walls'),
+            z: 88
+        }
+    }
+}
+
 
 function mapInd(index, map) {
     let newmap = new Map();

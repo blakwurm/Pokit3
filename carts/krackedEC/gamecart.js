@@ -1,4 +1,4 @@
-//import { loadMap } from './loadMap.js';
+import loadMap from '../krackedEC/loadMap.js';
 //import './kontra.js';
 //import { setupPC } from './playerControl.js';
 
@@ -12,7 +12,7 @@ export class GameCart {
         this.input = pokitOS.inputManager;
     }
     async preload() {
-        //loadMap(this.pokitOS);
+        loadMap(this.pokitOS);
         this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
         this.assetPool.loadImage('mapA', '/carts/krackedEC/rawsprites/mapA.png');
         this.assetPool.loadImage('mapB', '/carts/krackedEC/rawsprites/mapB.png');
