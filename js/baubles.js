@@ -228,7 +228,7 @@ function teardownBootAnimation(baublebox, boot_anim_ids) {
 
 export default function setupBaubleBox(baublebox, canvas, skipintro, done_callback) {
     baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
-    baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
+    // baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
     baublebox.initializeComponent('camera', cameraComponent);
     baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
     baublebox.initializeComponent('img', imgComponent);
@@ -238,7 +238,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.TileMapRenderer = TileMapRenderer;
     baublebox.initializeComponent('tile', tileComponent);
     baublebox.initializeComponent('tilemap', tilemapComponent);
-    if (!skipintro) {
         setupBootAnimation(baublebox, done_callback);
+    if (!skipintro) {
     } 
 }

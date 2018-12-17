@@ -325,7 +325,7 @@ export function render(r, g, b, a) {
 
         _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
 
-        clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
+        // clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
 
         _gl.useProgram(programData.program);
 
