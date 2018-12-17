@@ -60,7 +60,6 @@ export class JewlsActor {
         }
 
         let transformed = transformValues(identity);
-        let tranasformed = transformed;
 
         if (!actor.initialized) {
             console.log(texture)
@@ -72,7 +71,7 @@ export class JewlsActor {
         backend.setActorSprite(entityID, texture.x, texture.y);
         backend.rotateActor(entityID, transformed.rotation);
         backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
-        backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
+        backend.scaleActor(entityID, transformed.scaleX, transformed.scaleY);
     }
 
 }
@@ -83,7 +82,7 @@ export class JewlsMainCamera {
         this.componentsRequired = ['jewlsMainCamera', 'identity'];
     }
 
-    entityUpdate([entityID, , identity]) {
+    entityUpdate([,,identity]) {
         let transformed = transformValues(identity);
 
         backend.rotateCamera('_main', transformed.rotation);
