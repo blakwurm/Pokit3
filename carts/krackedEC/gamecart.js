@@ -1,5 +1,7 @@
 import loadMap from './loadMap.js';
 import './kontra.js';
+import setupPC from './playerControl.js';
+
 export class GameCart {
     constructor(pokitOS) {
         this.pokitOS = pokitOS;
@@ -10,7 +12,7 @@ export class GameCart {
         console.log(kontra)
     }
     start(){
-
+        setupPC(this.pokitOS);
     }
 
     

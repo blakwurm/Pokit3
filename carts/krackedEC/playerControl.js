@@ -33,10 +33,19 @@ export class PlayerWallCollisionSystem {
     constructor(pokitOS) {
         this.priority = 9;
         this.pokitOS = pokitOS;
+        this.quadtree = null;
     }
     globalUpdate(components) {
+        if (!this.quadtree) {
+            let walls = components.entitiesFrom(['wallsprite', 'identity']).map((x) => x[1]);
+            this.quadtree = kontra.quadtree();
+            this.quadtree.add(walls)
+        }
         let players = components.entitiesFrom(['playersprite', 'identity']);
-        let walls = components.entitiesFrom(['wallsprite', 'identity']);
 
     }
+}
+
+export default function setupPlayerControl(pokitOS) {
+    pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
 }
