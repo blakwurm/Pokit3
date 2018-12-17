@@ -1,4 +1,4 @@
-import { doRender } from './jewls/jewlsRenderer';
+import { doRender } from './jewls/jewlsRenderer.js';
 
 /*
 * Refactored into class form from 
@@ -20,6 +20,7 @@ export default class Ouroboros {
     }
     update(n){
         this.pokitOS.baublebox.update();
+        this.pokitOS.baublebox.checkDelete();
     }
     render(){
         doRender();

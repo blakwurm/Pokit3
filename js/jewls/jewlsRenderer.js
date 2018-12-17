@@ -5,7 +5,7 @@ export function jewlsActor() {
 }
 
 export function jewlsTexture(ops) {
-    return Object.assign({ID:null, width: 1, height: 1, x: 0, y: 0});
+    return Object.assign({ID:null, width: 1, height: 1, x: 0, y: 0}, ops);
 }
 
 export function uploadTexture(name, image) {
@@ -46,7 +46,7 @@ export class JewlsActor {
         this.componentsRequired = ['jewlsActor', 'identity', 'jewlsTexture'];
         this.canvas = canvas;
 
-        onInitialize();
+        this.onInitialize();
     }
 
     onInitialize() {
@@ -54,7 +54,7 @@ export class JewlsActor {
     }
 
     entityUpdate([entityID, actor, identity, texture]) {
-        if (identity.willDelete) {
+        if (identity.willDelete == true) {
             backend.deleteActor(entityID);
             return;
         }
@@ -62,6 +62,8 @@ export class JewlsActor {
         let transformed = transformValues(identity);
 
         if (!actor.initialized) {
+            console.log(texture)
+            console.log(identity)
             backend.createActor(entityID, texture.ID, texture.width, texture.height);
             actor.initialized = true;
         }
@@ -69,7 +71,7 @@ export class JewlsActor {
         backend.setActorSprite(entityID, texture.x, texture.y);
         backend.rotateActor(entityID, transformed.rotation);
         backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
-        backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
+        backend.scaleActor(entityID, transformed.scaleX, transformed.scaleY);
     }
 
 }
@@ -80,7 +82,7 @@ export class JewlsMainCamera {
         this.componentsRequired = ['jewlsMainCamera', 'identity'];
     }
 
-    entityUpdate([, identity]) {
+    entityUpdate([,,identity]) {
         let transformed = transformValues(identity);
 
         backend.rotateCamera('_main', transformed.rotation);
@@ -96,14 +98,15 @@ export class JewlsCamera {
 
     entityUpdate([entityID, camera, identity]) {
         if (!camera.initialized) {
+            camera.clear = Object.assign({R: 0, G: 0, B: 0, A: 0}, camera.clear);
             backend.createCamera(entityID, identity.width, camera.clear.R, camera.clear.G, camera.clear.B, camera.clear.A);
             camera.initialized = true;
         }
 
         let transformed = transformValues(identity);
 
-        rotateCamera(entityID, transformed.rotation);
-        translateCamera(entityID, transformed.x, transformed.y);
+        backend.rotateCamera(entityID, transformed.rotation);
+        backend.translateCamera(entityID, transformed.x, transformed.y);
     }
 }
 
@@ -114,7 +117,7 @@ export class JewlsCameraView {
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
-        if (identity.willDelete) {
+        if (identity.willDelete == true) {
             backend.deleteActor(entityID);
             return;
         }

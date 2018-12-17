@@ -28,24 +28,23 @@ export async function preload (canvas_, input_, skipintro_) {
     pokitOS.gamescreen = canvas;
     input = input_;
     skipintro = skipintro_;
-    setupBB(baublebox, canvas, skipintro, () => cart.start());
-    initializeJewls(pokitOS, canvas);
+    await initializeJewls(pokitOS, canvas);
     if (skipintro) {
         boot_done = true;
     }
     screen = canvas.getContext('2d');
-    kontra.init(canvas);
     // trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
     pokitOS = pokitOS;
-    import(get_cart_location()).then((module) => {
-            cart = new module.GameCart(pokitOS);
-            pokitOS.cart = cart;
-            cart.preload();
-            if (skipintro) {
-                cart.start();
-            }
-        });
+    let cartModule = await import(get_cart_location());
+    console.log(cartModule.GameCart)
+    cart = new cartModule.GameCart(pokitOS);
+    pokitOS.cart = cart;
+    cart.preload();
+    if (skipintro) {
+        cart.start();
+    }
+    setupBB(baublebox, canvas, skipintro, () => cart.start());
     // makeBootAnim(trollybelt, () => pokitOS.cart.start());
     // makeTestEntity();
     // let cartag = document.createElement('script');
@@ -57,6 +56,7 @@ export async function preload (canvas_, input_, skipintro_) {
     // };
 
     console.log(this);
+    return pokitOS;
 }
 
 function makeTestEntity() {

@@ -43,12 +43,13 @@ export async function initContext(canvas) {
         return false;
     }
 
+    _gl.depthFunc(_gl.LEQUAL);
     _gl.blendFunc(_gl.ONE, _gl.ONE_MINUS_SRC_ALPHA);
     _gl.enable(_gl.BLEND);
-    _gl.disable(_gl.DEPTH_TEST);
+    _gl.enable(_gl.DEPTH_TEST);
 
-    let vertexShaderSource = await fetch("shaders/default_vertex_shader.glsl").then(b => b.text());
-    let fragmentShaderSource = await fetch("shaders/default_fragment_shader.glsl").then(b => b.text());
+    let vertexShaderSource = await fetch("/js/jewls/opengl/shaders/default_vertex_shader.glsl").then(b => b.text());
+    let fragmentShaderSource = await fetch("/js/jewls/opengl/shaders/default_fragment_shader.glsl").then(b => b.text());
 
     let vertexShader = createShader(_gl, _gl.VERTEX_SHADER, vertexShaderSource);
     let fragmentShader = createShader(_gl, _gl.FRAGMENT_SHADER, fragmentShaderSource);
@@ -139,6 +140,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
+    console.log(texture);
     let offsetX = _gl.canvas.width / 2 - tex.width / 2;
     let offsetY = _gl.canvas.height / 2 - tex.height / 2;
 
@@ -205,10 +207,12 @@ export function createActor(name, texture, width, height, textureLiteral = false
 }
 
 export function deleteActor(name) {
+    console.log('deleting')
+    console.log(name)
     let actor = _actors.get(name);
     _gl.deleteVertexArray(actor.vertexArray);
-    _gl.deleteBuffer(vertexBuffer);
-    _gl.deleteBuffer(uvBuffer);
+    _gl.deleteBuffer(actor.vertexBuffer);
+    _gl.deleteBuffer(actor.uvBuffer);
     _actors.delete(name);
 }
 

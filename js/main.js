@@ -1,6 +1,6 @@
 import { html, render } from 'https://unpkg.com/lit-html?module'
 import {InputManager} from '/js/inputmanager.js'
-import {preload, boot} from '/js/firmware.js'
+import {preload, boot} from './firmware.js'
 
 let debug = false;
 let input = new InputManager();
@@ -39,8 +39,8 @@ function toggle_debug() {
 function open_console() {
     powercase_state = 'hidden';
     let can = document.querySelector('#gamescreen')
-    setTimeout(() => boot(kontra, can, input), 1000);
     render_controls();
+    boot();
 }
 
 function controls() {
@@ -120,15 +120,15 @@ async function main() {
     // firmware = await new Firmware(kontra, can, get_cart_location()).init();
     let params = new URLSearchParams(window.location.search);
     let skipintro = params.has('skipintro') ? true : false;
-    preload(can, input, skipintro);
+    let loadresult = await preload(can, input, skipintro);
+    console.log(loadresult)
     if (skipintro) {
         powercase_state = 'hidden';
-        render_controls();
+        open_console();
     }
     if (powercase_state === 'hidden') {
         // For 'live-server' reloading.
         // firmware.boot();
-        boot();
     }
     console.log(firmware);
 }

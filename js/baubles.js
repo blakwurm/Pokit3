@@ -1,7 +1,30 @@
 import {Bauble} from './baublebox.js';
 
-function cameraComponent() {
-    return {initialized:false}
+function cameraComponent(ops) {
+    let o = Object.assign({}, ops);
+    o.clear.R = o.clear.R || 0;
+    o.clear.G = o.clear.G || 0;
+    o.clear.B = o.clear.B || 0;
+    o.clear.A = o.clear.A || 0;
+    o.initialized = false;
+    return o;
+}
+
+class ThingMover extends Bauble {
+    constructor() {
+        super('thingmover', 100);
+        this.componentsRequired = ['moves', 'identity'];
+    }
+    entityUpdate([entityID, moves, identity]) {
+        if (!moves.paused) {
+            identity.x += identity.velocityX;
+            identity.y += identity.velocityY;
+        }
+    }
+}
+
+function movesComponent() {
+    return {paused: false};
 }
 
 class CanvasClearer extends Bauble {
@@ -183,20 +206,23 @@ class BootAnimationSystem extends Bauble {
             return;
         }
         
-        if (bootsprite.width < 2e5) {
+        if (bootsprite.scaleX < 38) {
             [bootsprite, bootsprite_bottom, bootsprite_top].forEach(expandoAnimationPart);
             console.log('doin')
             return
         }
+        bootsprite.requestDelete = true;
+        bootsprite_bottom.requestDelete = true;
+        bootsprite_top.requestDelete = true;
 
 
         this.boot_done = true;
     }
 }
 function expandoAnimationPart(t) {
-    t.rotation += 2;
-    t.width *= 1.03;
-    t.height *= 1.03;
+    t.rotation += 2.3;
+    t.scaleX += .5;
+    t.scaleY += .5;
 }
 
 function bootAnimPart (opts, entityID, components) {
@@ -211,11 +237,20 @@ function setupBootAnimation(baublebox, done_callback) {
     baublebox.initializeComponent('bootanimtext', bootAnimPart);
     let bootpart = (partname, x, y, z) => baublebox
         .makeEntity({x: x, y: y, z: z, width: 320, height: 320},
-                    ['img', {src: `/img/bootscreen_${partname}.svg`}],
+                    ['jewlsActor'],
+                    ['jewlsTexture', {
+                        ID: `bootscreen_${partname}`,
+                        width: 320,
+                        height: 320,
+                        x: 0,
+                        y: 0
+                    }],
                     [`bootanim${partname}`]);
-    bootpart('text', 160, 160 * 4, 1);
-    bootpart('top', 160 * -2, 160, 2);
-    bootpart('bottom', 160 * 3, 160, 2);
+    let t = bootpart('text', 160, 160 * 4, 10);
+    bootpart('top', 160 * -2, 160, 5);
+    bootpart('bottom', 160 * 3, 160, 5);
+    baublebox.makeEntity({width: 320, height: 320, x: 160, y: 160},
+                                 ['jewlsMainCamera']);
 }
 function teardownBootAnimation(baublebox, boot_anim_ids) {
     baublebox.destroySystem('bootanimation');
@@ -227,10 +262,11 @@ function teardownBootAnimation(baublebox, boot_anim_ids) {
 }
 
 export default function setupBaubleBox(baublebox, canvas, skipintro, done_callback) {
-    baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
-    baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
+    // baublebox.initializeSystem('imgrenderer', new IMGRenderer(canvas));
+    // baublebox.initializeSystem('canvasclearer', new CanvasClearer(canvas));
+    baublebox.initializeSystem('thingmover', new ThingMover())
     baublebox.initializeComponent('camera', cameraComponent);
-    baublebox.makeEntity({x: 160, y: 160, width: 320, height: 320},['camera']);
+    baublebox.initializeComponent('moves', movesComponent);
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';
@@ -238,7 +274,7 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.TileMapRenderer = TileMapRenderer;
     baublebox.initializeComponent('tile', tileComponent);
     baublebox.initializeComponent('tilemap', tilemapComponent);
-    if (!skipintro) {
         setupBootAnimation(baublebox, done_callback);
+    if (!skipintro) {
     } 
 }

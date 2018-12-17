@@ -21,9 +21,7 @@
                 gl.createImageTexture("t2", i2);
 
                 gl.createActor("a1", "t1");
-                gl.createActor("a2", "t2", i2.width / 2, i2.height / 2);
-
-                gl.setActorSprite("a2", 1, 0);
+                gl.createActor("a2", "t2");
 
                 gl.translateActor("a1", 0, 0);
                 gl.translateActor("a2", -8200, 0);
