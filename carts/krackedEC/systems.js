@@ -87,13 +87,13 @@ function startPositionComponent()  {
 function presentComponent() {
     return {collected: false}
 }
-function chimneyComponent() {
-    return {hasSanta: false}
+function chimneysComponent(opts) {
+    return opts || [] 
 }
 
 
 export function setupPlayerControl(pokitOS) {
     pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
-    pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
+    // pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
     pokitOS.baublebox.initializeComponent('playersprite', playerspriteComponent);
 }
