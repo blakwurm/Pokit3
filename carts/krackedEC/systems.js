@@ -9,6 +9,7 @@ export class StartScreen {
         if (this.engine.input.buttons.a) {
             components.get('identity').get(this.startScreen).requestDelete = true;
             this.engine.baublebox.destroySystem('startScreen');
+            setupPlayerControl(this.engine);
         }
     }
 }
@@ -61,8 +62,8 @@ export class PlayerWallCollisionSystem {
         // cancel the move
         for (let [entityID, _, player] of players) {
             let overlapping = self.quadtree.get({
-                x: player.x * player.velocityX,
-                y: player.y * player.velocityY,
+                x: player.x + (player.velocityX * 3),
+                y: player.y + (player.velocityY * 3),
                 width: player.width,
                 height: player.height
             })
@@ -81,9 +82,25 @@ function walllistComponent(opts) {
 function playerspriteComponent(spritename) {
     return spritename || 'badsanta'; 
 }
+function startPositionComponent()  {
+    return {used: false}
+}
+function presentComponent() {
+    return {collected: false}
+}
+function chimneysComponent(opts) {
+    return opts || [] 
+}
+
 
 export function setupPlayerControl(pokitOS) {
+    let makePlayersprite = (santaname, spriteoffset) => pokitOS.baublebox.makeEntity(
+        {x: 0, y: 0, width: 16, height: 16, z: 40},
+        ['moves'],
+        ['playersprite', santaname]
+        )
+    ['a', 'b', 'c', 'd'].map(makePlayersprite);
     pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
-    pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
+    // pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
     pokitOS.baublebox.initializeComponent('playersprite', playerspriteComponent);
 }

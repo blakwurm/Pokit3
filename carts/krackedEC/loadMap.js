@@ -44,6 +44,7 @@ export default async function loadMap(pokitOS) {
     console.log(chims);
     console.log(presents);
     console.log(startpoints);
+    
     return mapdata;
 }
 
