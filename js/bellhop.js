@@ -24,17 +24,22 @@ export default class Bellhop {
         this.successfullyLoaded++;
         console.log(onloadthing);
         this.__loadedAssets.set(assetname, thing);
+        console.log(onloadthing);
         return thing;
     }
 
     async loadImage(assetname, imgurl, width, height) {
+        console.log('loading ' + assetname);
         let i = new Image();
         if (width) {i.width = width;}
         if (height) {i.height = height;}
         let p = this.__handle_loader__(assetname, i);
         i.src = imgurl;
+        console.log('image almost there! ' + assetname)
         let img = await p;
+        console.log('almost loaded ' + assetname);
         uploadTexture(assetname, img);
+        console.log('loaded ' + assetname);
         return p;
     }
 

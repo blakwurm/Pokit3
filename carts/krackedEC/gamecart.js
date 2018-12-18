@@ -14,7 +14,7 @@ export class GameCart {
     async preload() {
         console.log('preload happened');
         loadMap(this.pokitOS);
-        this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
+        await this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
         this.assetPool.loadImage('mapA', '/carts/krackedEC/rawsprites/mapA.png');
         this.assetPool.loadImage('mapB', '/carts/krackedEC/rawsprites/mapB.png');
         this.assetPool.loadImage('mapC', '/carts/krackedEC/rawsprites/mapC.png');
@@ -43,9 +43,6 @@ export class GameCart {
         return this.ecs.makeEntity({ x: x, y: y, z: z, height: height, width: width, scaleX: scaleX, scaleY: scaleY, },
             ['jewlsTexture', { ID: texture, width: width, height: height, x: 0, y: 0 }],
             ['jewlsActor', {}]);
-    }
-    start(){
-        // setupPC(this.pokitOS);
     }
 
     makeQuadCamView(x, y, camera) {
