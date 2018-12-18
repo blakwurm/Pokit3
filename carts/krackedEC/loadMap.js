@@ -48,16 +48,9 @@ export default async function loadMap(pokitOS) {
 }
 
 function makeJewlsTileMap(layermap) {
-    return {
-        background: {
-            data : layermap.get('background'),
-            z: 99
-        },
-        walls: {
-            data: layermap.get('walls'),
-            z: 88
-        }
-    }
+    return {width: 256, height: 256, spritewidth: 16, spriteheight: 16, data: [
+        layermap.get('background'), layermap.get('walls'), layermap.get('chimney')
+    ]}
 }
 
 
