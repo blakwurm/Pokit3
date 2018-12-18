@@ -81,6 +81,16 @@ function walllistComponent(opts) {
 function playerspriteComponent(spritename) {
     return spritename || 'badsanta'; 
 }
+function startPositionComponent()  {
+    return {used: false}
+}
+function presentComponent() {
+    return {collected: false}
+}
+function chimneyComponent() {
+    return {hasSanta: false}
+}
+
 
 export function setupPlayerControl(pokitOS) {
     pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
