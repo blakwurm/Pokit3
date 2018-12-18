@@ -13,7 +13,8 @@
 
             async function render(c) {
                 await gl.initContext(c);
-
+                
+                //console.time('tileMap');
                 let i1 = await loadImage('/carts/krackedEC/santasprites.png');
 
                 gl.createImageTexture('i1', i1);
@@ -21,12 +22,18 @@
                 let b = await fetch('/carts/krackedEC/testing.json');
                 let j = await b.json();
 
-                gl.createTileMap('tm1', 'i1', 8, 2, 16, 16, [[0,0,0,0]]);
-                gl.scaleActor('tm1', 4, 4)
+                gl.createTileMap('tm1', 'i1', 8, 2, 16, 16, 9, [[1,2,3,4]]);
+                //console.timeEnd('tileMap');
+                //gl.scaleActor('tm1', .25, .25)
 
                 gl.translateActor('tm1', c.width / 2, c.height / 2);
 
-                gl.render(1, 1, 1, 1);
+                for(let i = 0; i < 10; i++){
+                    //console.time('render');
+                    gl.render(1,1,1,1);
+                    //console.timeEnd('render');
+                    await sleep(5);
+                }
             }
 
             function sleep(time) {

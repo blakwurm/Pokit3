@@ -131,87 +131,78 @@ function createTexture(width, height, data) {
     };
 }
 
-function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers) {
+function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
+
+    //console.log(layers);
+
     let positions = [];
     let uvs = [];
     let offsetX = -((numTilesRow / 2) * tileWidth);
     let offsetY = -((layers[0].length / numTilesRow / 2) * tileWidth);
+    let l = 0;
     for (let layer of layers) {
         for (let i = 0; i < layer.length; i++) {
-            let x = i % tileWidth;
+            let x = i % numTilesRow;
             let y = Math.floor(i / numTilesRow);
 
-            let spriteX = layer[i] % numSpritesRow;
-            let spriteY = Math.floor(layer[i] / numSpritesRow);
+            let tile = alphaTile;
 
-            createSquare(positions, uvs, tileWidth, tileHeight, x * tileWidth, y * tileHeight / 2, 0, 0);
+            if (layer[i] > 0)
+                tile = layer[i] - 1;
+
+            let spriteX = tile % numSpritesRow;
+            let spriteY = Math.floor(tile / numSpritesRow);
+
+            //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
+
+            createSquare(positions, uvs, tileWidth, tileHeight, offsetX + tileWidth * x, offsetY + tileHeight * y, l, spriteX, spriteY)
             //return [positions, uvs];
         }
+        l--;
     }
 
     return [positions, uvs];
 }
 
-function createSquare(positions, uvs, width, height, x, y, spriteX, spriteY) {
-    positions.push(x, y);
+function createSquare(positions, uvs, width, height, x, y, layer, spriteX, spriteY) {
+    positions.push(x, y, layer);
     uvs.push(spriteX, spriteY);
 
-    positions.push(x + width, y);
+    positions.push(x + width, y, layer);
     uvs.push(spriteX + 1, spriteY);
 
-    positions.push(x, y + height);
+    positions.push(x, y + height, layer);
     uvs.push(spriteX, spriteY + 1);
 
-    positions.push(x + width, y);
+    positions.push(x + width, y, layer);
     uvs.push(spriteX + 1, spriteY);
 
-    positions.push(x, y + height);
+    positions.push(x, y + height, layer);
     uvs.push(spriteX, spriteY + 1);
 
-    positions.push(x + width, y + width);
+    positions.push(x + width, y + width, layer);
     uvs.push(spriteX + 1, spriteY + 1);
 }
 
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, layers) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
 
-    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers);
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers);
 
-    console.log(positions);
-    console.log(uvs);
+    //console.log(positions);
+    //console.log(uvs);
 
     let tex = _textures.get(texture);
     let vertexPosition = _programs[0].attributes.vertexPosition;
-
-    let positionBuffer = _gl.createBuffer();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
-
-    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
-
-    let vao = _gl.createVertexArray();
-    _gl.bindVertexArray(vao);
-    _gl.enableVertexAttribArray(vertexPosition);
-
-    let size = 2;
-    let type = _gl.FLOAT;
-    let normalize = false;
-    let stride = 0;
-    let offset = 0;
-    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
-
     let uvCoords = _programs[0].attributes.uvCoords;
 
-    let coordBuffer = _gl.createBuffer();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
-    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(uvs), _gl.STATIC_DRAW);
-
-    _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
-    _gl.enableVertexAttribArray(uvCoords);
+    let [positionBuffer, vao, coordBuffer] = bufferData(positions, uvs, vertexPosition, uvCoords);
 
     _actors.set(name, {
         texture: tex.texture,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,
+        passes: positions.length/3,
         width: numTilesRow * tileWidth,
         height: Math.floor(layers[0] / numTilesRow) * tileHeight,
         sheetWidth: tex.width,
@@ -233,59 +224,27 @@ export function createActor(name, texture, width, height, textureLiteral = false
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
     let vertexPosition = _programs[0].attributes.vertexPosition;
-
-    let positionBuffer = _gl.createBuffer();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
+    let uvCoords = _programs[0].attributes.uvCoords;
 
     let offsetX = tex.width / 2;
     let offsetY = tex.height / 2;
 
-    let positions = [
-        -offsetX, -offsetY,
-        -offsetX, offsetY,
-        offsetX, -offsetY,
-        -offsetX, offsetY,
-        offsetX, -offsetY,
-        offsetX, offsetY,
-    ];
+    let positions = []
+    let uvs = []
 
-    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
-
-    let vao = _gl.createVertexArray();
-    _gl.bindVertexArray(vao);
-    _gl.enableVertexAttribArray(vertexPosition);
-
-    let size = 2;
-    let type = _gl.FLOAT;
-    let normalize = false;
-    let stride = 0;
-    let offset = 0;
-    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
-
-    let uvCoords = _programs[0].attributes.uvCoords;
-
-    let coordBuffer = _gl.createBuffer();
-    _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
-    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array([
-        0.0, 0.0,
-        0.0, 1.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        1.0, 0.0,
-        1.0, 1.0,
-    ]), _gl.STATIC_DRAW);
-
-    _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
-    _gl.enableVertexAttribArray(uvCoords);
+    let [positionBuffer, vao, coordBuffer] = bufferData(positions, uvs, vertexPosition, uvCoords);
 
     width = width || tex.width;
     height = height || tex.height;
+
+    createSquare(positions, uvs, tex.width, tex.height, offsetX, offsetY, 0, 0, 0);
 
     _actors.set(name, {
         texture: tex.texture,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,
+        passes: 6,
         width: width,
         height: height,
         sheetWidth: tex.width,
@@ -301,6 +260,33 @@ export function createActor(name, texture, width, height, textureLiteral = false
         angle: 0,
         priority: 0,
     });
+}
+
+function bufferData(positions, uvs, vertexPosition, uvCoords) {
+    let positionBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
+
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
+
+    let vao = _gl.createVertexArray();
+    _gl.bindVertexArray(vao);
+    _gl.enableVertexAttribArray(vertexPosition);
+
+    let size = 3;
+    let type = _gl.FLOAT;
+    let normalize = false;
+    let stride = 0;
+    let offset = 0;
+    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
+
+    let coordBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(uvs), _gl.STATIC_DRAW);
+
+    _gl.vertexAttribPointer(uvCoords, 2, type, normalize, stride, offset);
+    _gl.enableVertexAttribArray(uvCoords);
+
+    return [positionBuffer, vao, coordBuffer];
 }
 
 export function deleteActor(name) {
@@ -474,8 +460,7 @@ export function render(r, g, b, a) {
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
             _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
             _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
-
-            _gl.drawArrays(_gl.TRIANGLES, 0, 6);
+            _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
         }
     }
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
@@ -503,7 +488,8 @@ export function render(r, g, b, a) {
         _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
         _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
         _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
-        _gl.drawArrays(_gl.TRIANGLES, 0, 6);
+        console.log(actor.passes);
+        _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
     }
 
 
