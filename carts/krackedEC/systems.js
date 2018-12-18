@@ -23,7 +23,7 @@ export class PlayerControlSystem {
         //this.ifResetTicks = false;
         console.log(this);
     }
-    resetTicks(playersprite) { playersprite.ticksUntilMove = this.movetime }
+    resetTicks(playersprite) { playersprite.ticksUntilMove = movetime }
     entityUpdate([entityID, playersprite, moves, identity]) {
         if (playersprite.ticksUntilMove <= 0) {
             console.log(entityID);
