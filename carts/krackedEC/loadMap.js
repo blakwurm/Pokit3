@@ -1,5 +1,5 @@
 export default async function loadMap(pokitOS) {
-    let mapdata = await (await fetch('/carts/krackedEC/level1_santa.json')).json();
+    let mapdata = await (await fetch('/carts/krackedEC/world.json')).json();
     let {tilewidth, tileheight, width, height, layers} = mapdata;
     let layerdata = new Map();
     for (let {name, data} of mapdata.layers) {
