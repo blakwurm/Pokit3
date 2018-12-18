@@ -29,7 +29,7 @@
          "name":"presents",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":256,
          "x":0,
          "y":0
@@ -51,7 +51,7 @@
          "name":"startpoint",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":256,
          "x":0,
          "y":0
