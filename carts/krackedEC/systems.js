@@ -5,7 +5,6 @@ export class StartScreen {
     }
 
     globalUpdate(components) {
-        console.log(this.startScreen);
         if (this.engine.input.buttons.a) {
             components.get('identity').get(this.startScreen).requestDelete = true;
             this.engine.baublebox.destroySystem('startScreen');
@@ -21,41 +20,44 @@ export class PlayerControlSystem {
         this.pokitOS = pokitOS;
         this.componentsRequired = ['playersprite', 'moves', 'identity'];
         this.ticksUntilMove = 0;
+        //this.ifResetTicks = false;
         console.log(this);
     }
-    resetTicks() {this.ticksUntilMove = movetime;}
+    resetTicks(playersprite) { playersprite.ticksUntilMove = this.movetime }
     entityUpdate([entityID, playersprite, moves, identity]) {
-        if (this.ticksUntilMove <= 0) {
+        if (playersprite.ticksUntilMove <= 0) {
+            console.log(entityID);
             let velXDelta = false;
             let velYDelta = true;
             identity.velocityX = 0;
             identity.velocityY = 0;
             if (this.pokitOS.input.buttons.up) {
-                identity.velocityY += moveSpeed;
-                velYDelta = true;
-                this.resetTicks();
-            } else if (this.pokitOS.input.buttons.down) {
                 identity.velocityY += -moveSpeed;
                 velYDelta = true;
-                this.resetTicks();
+                this.resetTicks(playersprite);
+            } else if (this.pokitOS.input.buttons.down) {
+                identity.velocityY += moveSpeed;
+                velYDelta = true;
+                this.resetTicks(playersprite);
             } else if (this.pokitOS.input.buttons.left) {
-                identity.velocityX += moveSpeed;
-                velXDelta = true;
-                this.resetTicks();
-            } else if (this.pokitOS.input.buttons.right) {
                 identity.velocityX += -moveSpeed;
                 velXDelta = true;
-                this.resetTicks();
+                this.resetTicks(playersprite);
+            } else if (this.pokitOS.input.buttons.right) {
+                identity.velocityX += moveSpeed;
+                velXDelta = true;
+                this.resetTicks(playersprite);
             }
             if (!velXDelta)
                 this.moveTowardsZero(identity.velocityX, moveSpeed);
             if (!velYDelta)
                 this.moveTowardsZero(identity.velocityY, moveSpeed);
         }
-        this.ticksUntilMove--;
+        playersprite.ticksUntilMove--;
     }
 
     moveTowardsZero(orig, amt) {
+        if (orig === 0) return 0;
         if (orig > 0)
             return orig - amt;
         return orig + amt;
@@ -110,7 +112,7 @@ function walllistComponent(opts) {
     return opts || [];
 }
 function playerspriteComponent(spritename) {
-    return {santaname: spritename || 'badsanta', collected: false}; 
+    return {santaname: spritename || 'badsanta', ticksUntilMove: 0, collected: false}; 
 }
 function startPositionComponent()  {
     return {used: false}
