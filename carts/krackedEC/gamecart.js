@@ -16,6 +16,7 @@ export class GameCart {
         console.log('preload happened');
         loadMap(this.pokitOS);
         await this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
+        this.assetPool.loadImage('world', '/carts/krackedEC/world.png');
         this.assetPool.loadImage('mapA', '/carts/krackedEC/rawsprites/mapA.png');
         this.assetPool.loadImage('mapB', '/carts/krackedEC/rawsprites/mapB.png');
         this.assetPool.loadImage('mapC', '/carts/krackedEC/rawsprites/mapC.png');
@@ -35,24 +36,24 @@ export class GameCart {
 
         console.log('start happened');
         let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
-        let mapA = this.makeActor(-8000 + 80, -8000 + 80, 'mapA');
+        let mapA = this.makeActor(-8000, -8000, 'world');
         let mapB = this.makeActor(8000 + 80, -8000 + 80, 'mapB');
         let mapC = this.makeActor(-8000 + 80, 8000 + 80, 'mapC');
         let mapD = this.makeActor(8000 + 80, 8000 + 80, 'mapD');
         //setupPC(this.pokitOS);
         let camA = this.makeQuadCam(-8000, -8000); //Top Left Cam
-        let camB = this.makeQuadCam(8000, -8000);  //Top Right Cam
-        let camC = this.makeQuadCam(-8000, 8000);  //Bottom Left Cam
-        let camD = this.makeQuadCam(8000, 8000);   //Bottom Right Cam
-        let camViewA = this.makeQuadCamView(80, 80, camA);
-        let camViewB = this.makeQuadCamView(240, 80, camB);
-        let camViewC = this.makeQuadCamView(80, 240, camC);
-        let camViewD = this.makeQuadCamView(240, 240, camD);
+        let camB = this.makeQuadCam(-8000, -8000);  //Top Right Cam
+        let camC = this.makeQuadCam(-8000, -8000);  //Bottom Left Cam
+        let camD = this.makeQuadCam(-8000, -8000);   //Bottom Right Cam
+        let camViewA = this.makeQuadCamView(79, 79, camA);
+        let camViewB = this.makeQuadCamView(241, 79, camB);
+        let camViewC = this.makeQuadCamView(79, 241, camC);
+        let camViewD = this.makeQuadCamView(241, 241, camD);
 
         this.ecs.initializeSystem('startScreen', new systems.StartScreen(this.pokitOS, startScreen));
     }
 
-    makeActor(x, y, texture, z = 0, width, height, scaleX = 2, scaleY = 2) {
+    makeActor(x, y, texture, z = 0, width, height, scaleX = 1, scaleY = 1) {
         return this.ecs.makeEntity({ x: x, y: y, z: z, height: height, width: width, scaleX: scaleX, scaleY: scaleY, },
             ['jewlsTexture', { ID: texture, width: width, height: height, x: 0, y: 0 }],
             ['jewlsActor', {}]);

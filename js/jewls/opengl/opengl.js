@@ -144,7 +144,8 @@ function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers)
             let spriteX = layer[i] % numSpritesRow;
             let spriteY = Math.floor(layer[i] / numSpritesRow);
 
-            createSquare(positions, uvs, tileWidth, tileHeight, x, y, 0, 0);
+            createSquare(positions, uvs, tileWidth, tileHeight, x * tileWidth, y * tileHeight / 2, 0, 0);
+            //return [positions, uvs];
         }
     }
 

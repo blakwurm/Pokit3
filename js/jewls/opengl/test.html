@@ -21,10 +21,12 @@
                 let b = await fetch('/carts/krackedEC/testing.json');
                 let j = await b.json();
 
-                gl.createTileMap('tm1', 'i1', 8, 32, 16, 16, [j.layers[0].data]);
-                //gl.scaleActor('tm1', 4, 4)
+                gl.createTileMap('tm1', 'i1', 8, 2, 16, 16, [[0,0,0,0]]);
+                gl.scaleActor('tm1', 4, 4)
 
-                gl.render(1, 0, 0, 1);
+                gl.translateActor('tm1', c.width / 2, c.height / 2);
+
+                gl.render(1, 1, 1, 1);
             }
 
             function sleep(time) {
