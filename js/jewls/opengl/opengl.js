@@ -137,24 +137,46 @@ function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers)
     let offsetX = -((numTilesRow / 2) * tileWidth);
     let offsetY = -((layers[0].length / numTilesRow / 2) * tileWidth);
     for (let layer of layers) {
-        for (let x = 0, y = 0; y * numTilesRow + x < layer.length; x++) {
-            if (x > numTilesRow) {
-                x = 0;
-                y++;
-            }
+        for (let i = 0; i < layer.length; i++) {
+            let x = i % tileWidth;
+            let y = Math.floor(i / numTilesRow);
 
-            positions.push(offsetX + (x * tileWidth));
-            positions.push(offsetY + (y * tileWidth));
+            let spriteX = layer[i] % numSpritesRow;
+            let spriteY = Math.floor(layer[i] / numSpritesRow);
 
-            positions.push()
-
+            createSquare(positions, uvs, tileWidth, tileHeight, x, y, 0, 0);
         }
     }
+
+    return [positions, uvs];
+}
+
+function createSquare(positions, uvs, width, height, x, y, spriteX, spriteY) {
+    positions.push(x, y);
+    uvs.push(spriteX, spriteY);
+
+    positions.push(x + width, y);
+    uvs.push(spriteX + 1, spriteY);
+
+    positions.push(x, y + height);
+    uvs.push(spriteX, spriteY + 1);
+
+    positions.push(x + width, y);
+    uvs.push(spriteX + 1, spriteY);
+
+    positions.push(x, y + height);
+    uvs.push(spriteX, spriteY + 1);
+
+    positions.push(x + width, y + width);
+    uvs.push(spriteX + 1, spriteY + 1);
 }
 
 export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, layers) {
 
     let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers);
+
+    console.log(positions);
+    console.log(uvs);
 
     let tex = _textures.get(texture);
     let vertexPosition = _programs[0].attributes.vertexPosition;
@@ -184,20 +206,17 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
     _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
     _gl.enableVertexAttribArray(uvCoords);
 
-    width = width || tex.width;
-    height = height || tex.height;
-
     _actors.set(name, {
         texture: tex.texture,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,
-        width: width,
-        height: height,
+        width: numTilesRow * tileWidth,
+        height: Math.floor(layers[0] / numTilesRow) * tileHeight,
         sheetWidth: tex.width,
         sheetHeight: tex.height,
-        spriteWidth: width / tex.width,
-        spriteHeight: height / tex.height,
+        spriteWidth: tileWidth / tex.width,
+        spriteHeight: tileHeight / tex.height,
         sprite_x: 0,
         sprite_y: 0,
         x_translation: 0,

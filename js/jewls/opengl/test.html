@@ -14,40 +14,17 @@
             async function render(c) {
                 await gl.initContext(c);
 
-                let i1 = await loadImage('testimg.png');
-                let i2 = await loadImage('testimg2.png');
+                let i1 = await loadImage('/carts/krackedEC/santasprites.png');
 
-                gl.createImageTexture("t1", i1);
-                gl.createImageTexture("t2", i2);
+                gl.createImageTexture('i1', i1);
 
-                gl.createActor("a1", "t1");
-                gl.createActor("a2", "t2");
+                let b = await fetch('/carts/krackedEC/testing.json');
+                let j = await b.json();
 
-                gl.translateActor("a1", c.width/2, c.height/2);
-                gl.translateActor("a2",-8000 + c.width/2, c.width/2);
+                gl.createTileMap('tm1', 'i1', 8, 32, 16, 16, [j.layers[0].data]);
+                //gl.scaleActor('tm1', 4, 4)
 
-                gl.createCamera("cam1", c.width, c.height, 0, 0, 0, 0);
-                gl.createCamera("cam2", 200, 200, 0, 0, 0, 0);
-                gl.createCameraView("view1", "cam1");
-                gl.createCameraView("view2", "cam2");
-                gl.scaleActor("view2", 3,3);
-                gl.translateActor("view2", c.width / 2, c.height / 2);
-                gl.translateActor("view1", c.width/2, c.height/2);
-
-                gl.translateCamera("cam1", -8000);
-
-                let i = 0;
-                while (true) {
-                    gl.rotateActor("a1", 360-i)
-                    gl.rotateActor("a2", i);
-                    gl.translateCamera("cam2", -i)
-                    gl.render(1, 0, 0, 1);
-                    //return;
-
-                    ++i;
-                    if (i === 360) i = 0;
-                    await sleep(5);
-                }
+                gl.render(1, 0, 0, 1);
             }
 
             function sleep(time) {
