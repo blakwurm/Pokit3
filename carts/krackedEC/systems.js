@@ -129,4 +129,5 @@ export function setupPlayerControl(pokitOS) {
     pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
     pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
     pokitOS.baublebox.initializeComponent('playersprite', playerspriteComponent);
+    pokitOS.baublebox.initializeComponent('startpoint', startPositionComponent)
 }
