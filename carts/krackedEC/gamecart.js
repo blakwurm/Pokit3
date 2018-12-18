@@ -22,6 +22,10 @@ export class GameCart {
     }
 
     async start() {
+
+        let audio = new Audio('/carts/krackedEC/LastChristmas.mp3');
+        audio.play();
+
         systems.setupPlayerControl(this.pokitOS);
         console.log(Object.assign({
             entityID: 'arb',
