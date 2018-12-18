@@ -223,21 +223,35 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
 export function createActor(name, texture, width, height, textureLiteral = false) {
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
+    //console.log(_programs);
     let vertexPosition = _programs[0].attributes.vertexPosition;
     let uvCoords = _programs[0].attributes.uvCoords;
 
     let offsetX = tex.width / 2;
     let offsetY = tex.height / 2;
 
-    let positions = []
-    let uvs = []
+    let positions = [
+        -offsetX, -offsetY, 0,
+        -offsetX, offsetY, 0,
+        offsetX, -offsetY, 0,
+        -offsetX, offsetY, 0,
+        offsetX, -offsetY, 0,
+        offsetX, offsetY, 0,
+    ];
+
+    let uvs = [
+        0.0, 0.0,
+        0.0, 1.0,
+        1.0, 0.0,
+        0.0, 1.0,
+        1.0, 0.0,
+        1.0, 1.0,
+    ];
 
     let [positionBuffer, vao, coordBuffer] = bufferData(positions, uvs, vertexPosition, uvCoords);
 
     width = width || tex.width;
     height = height || tex.height;
-
-    createSquare(positions, uvs, tex.width, tex.height, offsetX, offsetY, 0, 0, 0);
 
     _actors.set(name, {
         texture: tex.texture,

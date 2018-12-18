@@ -91,32 +91,32 @@ class BootAnimationSystem extends Bauble {
         }
         if (bootsprite.y > 160) {
             bootsprite.y -= 4;
-            console.log(bootsprite.x);
+            //console.log(bootsprite.x);
             return;
         } 
         if (bootsprite_top.x < 160) {
             bootsprite_top.x += 20;
-            console.log(bootsprite_top.x)
+            //console.log(bootsprite_top.x)
             return;
         }
         if (bootsprite_bottom.x > 160) {
             bootsprite_bottom.x -= 20;
-            console.log(bootsprite_bottom.x)
+            //console.log(bootsprite_bottom.x)
             return;
         }
         if (this.hold > 0) {
-            console.log('hold is ' + this.hold);
+            //console.log('hold is ' + this.hold);
             this.hold -= 1;
             return;
         } 
         
         if (bootsprite.scaleX < 38) {
             [bootsprite, bootsprite_bottom, bootsprite_top].forEach(expandoAnimationPart);
-            console.log('doin')
+            //console.log('doin')
             return
         }
 
-        console.log('boot animation completed');
+        //console.log('boot animation completed');
 
         bootsprite.requestDelete = true;
         bootsprite_bottom.requestDelete = true;

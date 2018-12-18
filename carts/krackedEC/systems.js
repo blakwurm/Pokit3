@@ -26,7 +26,7 @@ export class PlayerControlSystem {
     resetTicks(playersprite) { playersprite.ticksUntilMove = movetime }
     entityUpdate([entityID, playersprite, moves, identity]) {
         if (playersprite.ticksUntilMove <= 0) {
-            console.log(entityID);
+            //console.log(entityID);
             let velXDelta = false;
             let velYDelta = true;
             identity.velocityX = 0;

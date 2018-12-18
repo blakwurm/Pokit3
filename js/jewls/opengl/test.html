@@ -22,7 +22,7 @@
                 let b = await fetch('/carts/krackedEC/testing.json');
                 let j = await b.json();
 
-                gl.createTileMap('tm1', 'i1', 8, 2, 16, 16, 9, [[1,2,3,4]]);
+                gl.createTileMap('tm1', 'i1', 8, 32, 16, 16, 9, [j.layers[0].data]);
                 //console.timeEnd('tileMap');
                 //gl.scaleActor('tm1', .25, .25)
 
