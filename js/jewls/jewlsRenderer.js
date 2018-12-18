@@ -94,6 +94,7 @@ export class JewlsCamera {
     constructor(engine) {
         this.engine = engine;
         this.componentsRequired = ['camera', 'identity'];
+        this.priority = 1;
     }
 
     entityUpdate([entityID, camera, identity]) {
@@ -114,6 +115,7 @@ export class JewlsCameraView {
     constructor(engine) {
         this.engine = engine;
         this.componentsRequired = ['jewlsCameraView', 'identity'];
+        this.priority = 0;
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
@@ -131,6 +133,6 @@ export class JewlsCameraView {
 
         backend.rotateActor(entityID, transformed.rotation);
         backend.translateActor(entityID, transformed.x, transformed.y, transformed.z);
-        backend.scaleActor(entityID, transformed.scaleX, tranasformed.scaleY);
+        backend.scaleActor(entityID, transformed.scaleX, transformed.scaleY);
     }
 }
