@@ -14,7 +14,7 @@ export class StartScreen {
 }
 
 const movetime = 60;
-const moveSpeed = movetime/4;
+const moveSpeed = 16/60;
 export class PlayerControlSystem {
     constructor(pokitOS) {
         this.priority = 10;
