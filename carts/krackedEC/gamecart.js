@@ -17,10 +17,7 @@ export class GameCart {
         loadMap(this.pokitOS);
         await this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
         this.assetPool.loadImage('world', '/carts/krackedEC/world.png');
-        this.assetPool.loadImage('mapA', '/carts/krackedEC/rawsprites/mapA.png');
-        this.assetPool.loadImage('mapB', '/carts/krackedEC/rawsprites/mapB.png');
-        this.assetPool.loadImage('mapC', '/carts/krackedEC/rawsprites/mapC.png');
-        this.assetPool.loadImage('mapD', '/carts/krackedEC/rawsprites/mapD.png');
+        this.assetPool.loadImage('spritesheet', '/carts/krackedEC/santasprites.png');
     }
 
     async start() {
@@ -37,25 +34,29 @@ export class GameCart {
         console.log('start happened');
         let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
         let mapA = this.makeActor(-8000, -8000, 'world');
-        let mapB = this.makeActor(8000 + 80, -8000 + 80, 'mapB');
-        let mapC = this.makeActor(-8000 + 80, 8000 + 80, 'mapC');
-        let mapD = this.makeActor(8000 + 80, 8000 + 80, 'mapD');
-        //setupPC(this.pokitOS);
-        let camA = this.makeQuadCam(-8000, -8000); //Top Left Cam
-        let camB = this.makeQuadCam(-8000, -8000);  //Top Right Cam
-        let camC = this.makeQuadCam(-8000, -8000);  //Bottom Left Cam
-        let camD = this.makeQuadCam(-8000, -8000);   //Bottom Right Cam
+        let santa1 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 0, 0);
+        let santa2 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 1, 0);
+        let santa3 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 2, 0);
+        let santa4 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 3, 0);
+        let camA = this.makeQuadCam(-80, -80, santa1); //Top Left Cam
+        let camB = this.makeQuadCam(-80, -80, santa2);  //Top Right Cam
+        let camC = this.makeQuadCam(-80, -80, santa3);  //Bottom Left Cam
+        let camD = this.makeQuadCam(-80, -80, santa4);   //Bottom Right Cam
+
         let camViewA = this.makeQuadCamView(79, 79, camA);
         let camViewB = this.makeQuadCamView(241, 79, camB);
         let camViewC = this.makeQuadCamView(79, 241, camC);
         let camViewD = this.makeQuadCamView(241, 241, camD);
 
+
+
+
         this.ecs.initializeSystem('startScreen', new systems.StartScreen(this.pokitOS, startScreen));
     }
 
-    makeActor(x, y, texture, z = 0, width, height, scaleX = 1, scaleY = 1) {
+    makeActor(x, y, texture, z = 0, width, height, scaleX = 1, scaleY = 1, spriteX = 0, spriteY = 0) {
         return this.ecs.makeEntity({ x: x, y: y, z: z, height: height, width: width, scaleX: scaleX, scaleY: scaleY, },
-            ['jewlsTexture', { ID: texture, width: width, height: height, x: 0, y: 0 }],
+            ['jewlsTexture', { ID: texture, width: width, height: height, x: spriteX, y: spriteY }],
             ['jewlsActor', {}]);
     }
 
@@ -64,9 +65,9 @@ export class GameCart {
             ['jewlsCameraView', {cameraID: camera}]);
     }
 
-    makeQuadCam(x, y) {
+    makeQuadCam(x, y, santa) {
         return this.ecs.makeEntity(
-            { x: x, y: y, width: 160, height: 160 },
+            { x: x, y: y, width: 160, height: 160, parent: this.ecs.__components.get('identity').get(santa) },
             ['camera', {}]);
     }
 }
