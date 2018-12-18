@@ -94,6 +94,7 @@ export class JewlsCamera {
     constructor(engine) {
         this.engine = engine;
         this.componentsRequired = ['camera', 'identity'];
+        this.priority = 1;
     }
 
     entityUpdate([entityID, camera, identity]) {
@@ -114,6 +115,7 @@ export class JewlsCameraView {
     constructor(engine) {
         this.engine = engine;
         this.componentsRequired = ['jewlsCameraView', 'identity'];
+        this.priority = 0;
     }
 
     entityUpdate([entityID, jewlsCameraView, identity]) {
