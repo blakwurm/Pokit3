@@ -1,4 +1,5 @@
 import loadMap from '../krackedEC/loadMap.js';
+import * as systems from './systems.js'
 //import './kontra.js';
 //import { setupPC } from './playerControl.js';
 
@@ -33,7 +34,7 @@ export class GameCart {
         }, { x: 0, y: 0, z: 0, width: 160, height: 160 }));
 
         console.log('start happened');
-        let startScreen = this.makeActor(160, 160, 'startScreen', 1, 80, 80, 4, 4);
+        let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
         let mapA = this.makeActor(-8000 + 80, -8000 + 80, 'mapA');
         let mapB = this.makeActor(8000 + 80, -8000 + 80, 'mapB');
         let mapC = this.makeActor(-8000 + 80, 8000 + 80, 'mapC');
@@ -47,6 +48,8 @@ export class GameCart {
         let camViewB = this.makeQuadCamView(240, 80, camB);
         let camViewC = this.makeQuadCamView(80, 240, camC);
         let camViewD = this.makeQuadCamView(240, 240, camD);
+
+        this.ecs.initializeSystem('startScreen', new systems.StartScreen(this.pokitOS, startScreen));
     }
 
     makeActor(x, y, texture, z = 0, width, height, scaleX = 2, scaleY = 2) {
@@ -65,6 +68,4 @@ export class GameCart {
             { x: x, y: y, width: 160, height: 160 },
             ['camera', {}]);
     }
-
-    
 }
