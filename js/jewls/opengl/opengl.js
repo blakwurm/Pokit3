@@ -131,6 +131,83 @@ function createTexture(width, height, data) {
     };
 }
 
+function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers) {
+    let positions = [];
+    let uvs = [];
+    let offsetX = -((numTilesRow / 2) * tileWidth);
+    let offsetY = -((layers[0].length / numTilesRow / 2) * tileWidth);
+    for (let layer of layers) {
+        for (let x = 0, y = 0; y * numTilesRow + x < layer.length; x++) {
+            if (x > numTilesRow) {
+                x = 0;
+                y++;
+            }
+
+            positions.push(offsetX + (x * tileWidth));
+            positions.push(offsetY + (y * tileWidth));
+
+            positions.push()
+
+        }
+    }
+}
+
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, layers) {
+
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, layers);
+
+    let tex = _textures.get(texture);
+    let vertexPosition = _programs[0].attributes.vertexPosition;
+
+    let positionBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
+
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(positions), _gl.STATIC_DRAW);
+
+    let vao = _gl.createVertexArray();
+    _gl.bindVertexArray(vao);
+    _gl.enableVertexAttribArray(vertexPosition);
+
+    let size = 2;
+    let type = _gl.FLOAT;
+    let normalize = false;
+    let stride = 0;
+    let offset = 0;
+    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
+
+    let uvCoords = _programs[0].attributes.uvCoords;
+
+    let coordBuffer = _gl.createBuffer();
+    _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
+    _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(uvs), _gl.STATIC_DRAW);
+
+    _gl.vertexAttribPointer(uvCoords, size, type, normalize, stride, offset);
+    _gl.enableVertexAttribArray(uvCoords);
+
+    width = width || tex.width;
+    height = height || tex.height;
+
+    _actors.set(name, {
+        texture: tex.texture,
+        vertexBuffer: positionBuffer,
+        vertexArray: vao,
+        uvBuffer: coordBuffer,
+        width: width,
+        height: height,
+        sheetWidth: tex.width,
+        sheetHeight: tex.height,
+        spriteWidth: width / tex.width,
+        spriteHeight: height / tex.height,
+        sprite_x: 0,
+        sprite_y: 0,
+        x_translation: 0,
+        y_translation: 0,
+        x_scale: 1,
+        y_scale: 1,
+        angle: 0,
+        priority: 0,
+    });
+}
 
 export function createActor(name, texture, width, height, textureLiteral = false) {
     let tex = _textures.get(texture);
@@ -220,6 +297,7 @@ export function setActorSprite(actor, x, y) {
 }
 
 export function createCamera(name, width, height, clearR, clearG, clearB, clearA) {
+
     const fb = _gl.createFramebuffer();
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
 
@@ -325,7 +403,35 @@ export function render(r, g, b, a) {
 
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
 
-        _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
+        let s = _gl.checkFramebufferStatus(_gl.FRAMEBUFFER);
+
+        //console.log(camera.frameBuffer);
+        /*
+        switch (s) {
+            case _gl.FRAMEBUFFER_COMPLETE:
+                console.log(camera.cameraID + ' ready');
+                break;
+            case _gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                console.log(cameraID + ' incomplete attachment');
+                break;
+            case _gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                console.log(camera.cameraID + ' incomplete missing attachment');
+                break;
+            case _gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+                console.log(camera.cameraID + ' incomplete dimensions');
+                break;
+            case _gl.FRAMEBUFFER_UNSUPPORTED:
+                console.log(camera.cameraID + ' unsupported');
+                break;
+            case _gl.FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                console.log(camera.cameraID + ' incomplete multisample');
+                break;
+            case _gl.RENDERBUFFER_SAMPLES:
+                console.log(camera.cameraID + ' renderbuffer samples');
+                break;
+        }*/
+
+        _gl.viewport(0, 0, camera.width, camera.height);
 
         clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
 
@@ -342,7 +448,7 @@ export function render(r, g, b, a) {
             _gl.uniform1i(programData.uniforms.image, 0);
             _gl.uniform1f(programData.uniforms.priority, actor.priority);
             _gl.uniform1f(programData.uniforms.yFlip, 1.0);
-            _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
+            _gl.uniform2f(programData.uniforms.resolution, camera.width, camera.height);
             _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x, actor.y_translation - camera.y);
             _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - camera.angle)), Math.cos(toRad(actor.angle - camera.angle)));
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);

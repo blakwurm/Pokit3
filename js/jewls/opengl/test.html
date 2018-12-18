@@ -27,7 +27,11 @@
                 gl.translateActor("a2",-8000 + c.width/2, c.width/2);
 
                 gl.createCamera("cam1", c.width, c.height, 0, 0, 0, 0);
+                gl.createCamera("cam2", 200, 200, 0, 0, 0, 0);
                 gl.createCameraView("view1", "cam1");
+                gl.createCameraView("view2", "cam2");
+                gl.scaleActor("view2", 3,3);
+                gl.translateActor("view2", c.width / 2, c.height / 2);
                 gl.translateActor("view1", c.width/2, c.height/2);
 
                 gl.translateCamera("cam1", -8000);
@@ -36,8 +40,9 @@
                 while (true) {
                     gl.rotateActor("a1", 360-i)
                     gl.rotateActor("a2", i);
+                    gl.translateCamera("cam2", -i)
                     gl.render(1, 0, 0, 1);
-                    return;
+                    //return;
 
                     ++i;
                     if (i === 360) i = 0;
