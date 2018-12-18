@@ -16,15 +16,15 @@ uniform vec2 u_uvTranslator;
 out vec2 v_uvCoord;
 
 void main() {
+	vec2 scaledPosition = a_vertexPosition * u_scale;
 	vec2 rotatedOrigin = vec2(
-		a_vertexPosition.x * u_rotation.y + a_vertexPosition.y * u_rotation.x,
-		a_vertexPosition.y * u_rotation.y - a_vertexPosition.x * u_rotation.x);
+		scaledPosition.x * u_rotation.y + scaledPosition.y * u_rotation.x,
+		scaledPosition.y * u_rotation.y - scaledPosition.x * u_rotation.x);
 	vec2 position = rotatedOrigin + u_translation;
 	vec2 zto = position / u_resolution;
 	vec2 ztt = zto * 2.0;
 	vec2 clip = ztt - 1.0;
-	vec2 scaledClip = clip * u_scale;
 
-	gl_Position = vec4(scaledClip * vec2(1, u_flip_y), u_priority / 100.0, 1);
+	gl_Position = vec4(clip * vec2(1, u_flip_y), u_priority / 100.0, 1);
 	v_uvCoord = a_uvCoord * u_uvModifier + u_uvTranslator;
 }
