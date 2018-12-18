@@ -76,11 +76,24 @@ export class PlayerWallCollisionSystem {
     }
 }
 
+export class PlayerPresetnCollisionSystem {
+    constructor(pokitOS) {
+        this.pokitOS = pokitOS;
+        this.priority = 8;
+        this.quadtree = kontra.quadtree();
+    }
+
+    globalUpdate(components) {
+        let presents = components.entitiesFrom(['present', 'identity']).map(x => x[2]);
+        this.quadtree
+    }
+}
+
 function walllistComponent(opts) {
     return opts || [];
 }
 function playerspriteComponent(spritename) {
-    return spritename || 'badsanta'; 
+    return {santaname: spritename || 'badsanta', collected: false}; 
 }
 function startPositionComponent()  {
     return {used: false}
