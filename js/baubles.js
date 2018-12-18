@@ -28,34 +28,6 @@ function movesComponent() {
     return {paused: false};
 }
 
-class CanvasClearer extends Bauble {
-    constructor(canvas) {
-        super('clearer', 1);
-        this.canvas = canvas;
-        this.context = this.canvas.getContext('2d');
-    }
-    render() {
-        this.context.clearRect(0, 0, 320, 320);
-    }
-}
-class IMGRenderer extends Bauble {
-    constructor(canvas) {
-        super('imgrenderer', 10);
-        this.canvas = canvas;
-        this.context = this.canvas.getContext('2d');
-    }
-    render(components) {
-        let camera = components.entitiesFrom(['camera', 'identity'])[0][2];
-        for (let [entityID, img, t] of components.entitiesFrom(['img', 'identity'])) {
-            this.context.save();
-            this.context.translate(t.x - (camera.x - 160), t.y - (camera.y - 160));
-            this.context.scale(camera.scale, camera.scale);
-            this.context.rotate(degreesToRadians(t.rotation));
-            this.context.drawImage(img, -t.width/2, -t.height/2, t.width, t.height);
-            this.context.restore();
-        }
-    }
-}
 function degreesToRadians(degrees) {
     return (degrees) * Math.PI / 180;
 }
@@ -67,70 +39,6 @@ function imgComponent(opts, entityID, components) {
     return img;
 }
 
-class Tilerenderer extends Bauble {
-    constructor(canvas, img, maptilewidth, maptileheight, tilepixelwidth, tilepixelheight) {
-        super('tilerenderer', 5);
-        this.canvas = canvas;
-        this.context = this.canvas.getContext('2d');
-        tilepixelwidth = tilepixelwidth || 16;
-        tilepixelheight = tilepixelheight || 16;
-        maptilewidth = maptilewidth || img.width / tilepixelwidth;
-        maptileheight = maptileheight || img.height / tilepixelheight;
-        this.img = img;
-        this.tilewidth = tilepixelwidth;
-        this.tileheight = tilepixelheight;
-        this.offsets = calcTileOffsets(maptilewidth, maptileheight, tilepixelwidth, tilepixelheight);
-        console.log(this.offsets);
-    }
-    render(components) {
-        for (let _tup of entitiesSortedByZ('tile', components)) {
-            let entityID = _tup[0];
-            let tile = _tup[1];
-            let [ox, oy] = this.offsets[tile.index];
-            let t = components.get_identity(entityID);
-            this.context.save();
-            this.context.translate(t.x, t.y);
-            this.context.rotate(degreesToRadians(t.rotation));
-            this.context.drawImage(this.img, ox, oy, this.tilewidth, this.tileheight,  -t.width/2, -t.height/2, t.width, t.height);
-            this.context.restore();
-        }
-
-    }
-}
-class TileMapRenderer extends Tilerenderer {
-    constructor(canvas, img, maptilewidth, maptileheight, tilepixelwidth, tilepixelheight) {
-        super(canvas, img, maptilewidth, maptileheight, tilepixelwidth, tilepixelheight);
-        this.priority = 3;
-        this.name = 'tilemaprenderer';
-        this.debug_next_render = false;
-    }
-    render(components) {
-        let camera = components.get_identity([...components.get('camera').keys()][0])
-        for (let _tup of entitiesSortedByZ('tilemap', components)) {
-            let mapEntityID = _tup[0];
-            let mapdata = _tup[1];
-            let self = this;
-            mapdata.mapstructure
-            .forEach((layer, layer_index) =>
-                layer.forEach((row, row_index) =>
-                    row.forEach((cell, cell_index) => {
-                            let [ox, oy] = this.offsets[cell];
-                        if (cell) {
-                            self.context.save();
-                            self.context.translate(mapdata.tilewidth * cell_index, mapdata.tileheight * row_index);
-                            self.context.drawImage(this.img, ox, oy, self.tilewidth, self.tileheight, 0 - (camera.x - 160), 0 - (camera.y - 160), self.tilewidth, self.tileheight)
-                            self.context.restore();
-
-                        }
-                        if (self.debug_next_render) {
-                            console.log(`${row_index}/${cell_index} [${ox},${oy}] for ${cell}`)
-                        }
-                    })))
-                    
-            this.debug_next_render = false;
-        }
-    }
-}
 function entitiesSortedByZ(componentname, components) {
     let getT = (x) => components.get_identity(x[0]);
     function sortfn(a, b) {
@@ -269,8 +177,6 @@ export default function setupBaubleBox(baublebox, canvas, skipintro, done_callba
     baublebox.initializeComponent('img', imgComponent);
     let tileimage = new Image();
     tileimage.src = '/carts/basictiles.png';
-    baublebox.Tilerenderer = Tilerenderer;
-    baublebox.TileMapRenderer = TileMapRenderer;
     baublebox.initializeComponent('tile', tileComponent);
     baublebox.initializeComponent('tilemap', tilemapComponent);
         setupBootAnimation(baublebox, done_callback);

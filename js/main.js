@@ -7,13 +7,6 @@ let input = new InputManager();
 let powercase_state = 'active';
 let firmware = undefined;
 
-function debug_fill_canvas() {
-    let c = document.getElementById('gamescreen');
-    let ctx = c.getContext('2d');
-    ctx.fillStyle = "blue";
-    ctx.fillRect(0, 0, c.width, c.height);
-}
-
 function begin_debug() {
     if (debug) {
         // debug_fill_canvas()

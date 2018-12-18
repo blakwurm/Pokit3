@@ -32,7 +32,6 @@ export async function preload (canvas_, input_, skipintro_) {
     if (skipintro) {
         boot_done = true;
     }
-    screen = canvas.getContext('2d');
     // trollybelt.registerScript(new IMGRenderer(canvas_));
     pokitOS.input = input;
     pokitOS = pokitOS;
