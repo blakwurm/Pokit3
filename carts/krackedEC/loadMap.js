@@ -44,7 +44,15 @@ export default async function loadMap(pokitOS) {
     console.log(chims);
     console.log(presents);
     console.log(startpoints);
-    
+    pokitOS.baublebox.makeEntity({}, [['walllist', walls]]);
+    pokitOS.baublebox.makeEntity({}, [['chimneylist', chims]]);
+    for (let {transform} of presents) {
+        pokitOS.baublebox.makeEntity(transform, ['present']);
+    }
+    for (let {transform} of startpoints) {
+        pokitOS.baublebox.makeEntity(transform, ['startpoint'])
+    }
+
     return mapdata;
 }
 
