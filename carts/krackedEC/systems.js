@@ -9,19 +9,19 @@ export class StartScreen {
         if (this.engine.input.buttons.a) {
             components.get('identity').get(this.startScreen).requestDelete = true;
             this.engine.baublebox.destroySystem('startScreen');
-            setupPlayerControl(this.engine);
         }
     }
 }
 
-const movetime = 320/16;
-const moveSpeed = movetime/16;
+const movetime = 60;
+const moveSpeed = movetime/4;
 export class PlayerControlSystem {
     constructor(pokitOS) {
         this.priority = 10;
         this.pokitOS = pokitOS;
         this.componentsRequired = ['playersprite', 'moves', 'identity'];
         this.ticksUntilMove = 0;
+        console.log(this);
     }
     resetTicks() {this.ticksUntilMove = movetime;}
     entityUpdate([entityID, playersprite, moves, identity]) {
@@ -41,7 +41,9 @@ export class PlayerControlSystem {
                 identity.velocityX = -moveSpeed;
                 this.resetTicks();
             }
+            console.log('thing')
         }
+        this.ticksUntilMove--;
     }
 }
 
@@ -107,13 +109,7 @@ function chimneysComponent(opts) {
 
 
 export function setupPlayerControl(pokitOS) {
-    let makePlayersprite = (santaname, spriteoffset) => pokitOS.baublebox.makeEntity(
-        {x: 0, y: 0, width: 16, height: 16, z: 40},
-        ['moves'],
-        ['playersprite', santaname]
-        )
-    ['a', 'b', 'c', 'd'].map(makePlayersprite);
     pokitOS.baublebox.initializeSystem('playerwallcollision', new PlayerControlSystem(pokitOS));
-    // pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
+    pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
     pokitOS.baublebox.initializeComponent('playersprite', playerspriteComponent);
 }

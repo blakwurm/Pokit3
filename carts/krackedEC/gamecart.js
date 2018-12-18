@@ -1,5 +1,6 @@
 import loadMap from '../krackedEC/loadMap.js';
 import * as systems from './systems.js'
+import setupBaubleBox from '../../js/baubles.js';
 //import './kontra.js';
 //import { setupPC } from './playerControl.js';
 
@@ -21,6 +22,7 @@ export class GameCart {
     }
 
     async start() {
+        systems.setupPlayerControl(this.pokitOS);
         console.log(Object.assign({
             entityID: 'arb',
             x: 0, y: 0, z: 0,
@@ -34,10 +36,10 @@ export class GameCart {
         console.log('start happened');
         let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
         let mapA = this.makeActor(-8000, -8000, 'world');
-        let santa1 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 0, 0);
-        let santa2 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 1, 0);
-        let santa3 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 2, 0);
-        let santa4 = this.makeActor(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 3, 0);
+        let santa1 = this.makeSanta(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 0, 0, 'santa');
+        let santa2 = this.makeSanta(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 1, 0, 'stNick');
+        let santa3 = this.makeSanta(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 2, 0, 'fatherChristmas');
+        let santa4 = this.makeSanta(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 3, 0, 'dedMoroz');
         let camA = this.makeQuadCam(-80, -80, santa1); //Top Left Cam
         let camB = this.makeQuadCam(-80, -80, santa2);  //Top Right Cam
         let camC = this.makeQuadCam(-80, -80, santa3);  //Bottom Left Cam
@@ -58,6 +60,14 @@ export class GameCart {
         return this.ecs.makeEntity({ x: x, y: y, z: z, height: height, width: width, scaleX: scaleX, scaleY: scaleY, },
             ['jewlsTexture', { ID: texture, width: width, height: height, x: spriteX, y: spriteY }],
             ['jewlsActor', {}]);
+    }
+
+    makeSanta(x, y, texture, z = 0, width, height, scaleX = 1, scaleY = 1, spriteX = 0, spriteY = 0, santaname) {
+        return this.ecs.makeEntity({ x: x, y: y, z: z, height: height, width: width, scaleX: scaleX, scaleY: scaleY, },
+            ['jewlsTexture', { ID: texture, width: width, height: height, x: spriteX, y: spriteY }],
+            ['jewlsActor', {}],
+            ['playersprite', santaname],
+            ['moves']);
     }
 
     makeQuadCamView(x, y, camera) {
