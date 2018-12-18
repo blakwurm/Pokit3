@@ -117,7 +117,7 @@ export default class BaubleBox {
         let entities = this.__components.get('identity');
         for (let entity of entities.values()) {
             if (entity.willDelete) {
-                destroyEntity(entity.entityID);
+                this.destroyEntity(entity.entityID);
             } else if (entity.requestDelete) {
                 entity.willDelete = true;
             }

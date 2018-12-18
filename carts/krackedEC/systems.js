@@ -4,10 +4,10 @@ export class StartScreen {
         this.startScreen = startEntity;
     }
 
-    globalUpdate(component) {
-        console.log(this.engine.input.buttons)
+    globalUpdate(components) {
+        console.log(this.startScreen);
         if (this.engine.input.buttons.a) {
-            this.engine.baublebox.destroyEntity(this.startScreen);
+            components.get('identity').get(this.startScreen).requestDelete = true;
             this.engine.baublebox.destroySystem('startScreen');
         }
     }
