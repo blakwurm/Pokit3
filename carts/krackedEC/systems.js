@@ -14,7 +14,7 @@ export class StartScreen {
 }
 
 const movetime = 60;
-const moveSpeed = 60/32;
+const moveSpeed = 1;
 export class PlayerControlSystem {
     constructor(pokitOS) {
         this.priority = 10;
@@ -26,24 +26,39 @@ export class PlayerControlSystem {
     resetTicks() {this.ticksUntilMove = movetime;}
     entityUpdate([entityID, playersprite, moves, identity]) {
         if (this.ticksUntilMove <= 0) {
+            let velXDelta = false;
+            let velYDelta = true;
             identity.velocityX = 0;
             identity.velocityY = 0;
             if (this.pokitOS.input.buttons.up) {
-                identity.velocityY = moveSpeed;
+                identity.velocityY += moveSpeed;
+                velYDelta = true;
                 this.resetTicks();
             } else if (this.pokitOS.input.buttons.down) {
-                identity.velocityY = -moveSpeed;
+                identity.velocityY += -moveSpeed;
+                velYDelta = true;
                 this.resetTicks();
             } else if (this.pokitOS.input.buttons.left) {
-                identity.velocityX = moveSpeed;
+                identity.velocityX += moveSpeed;
+                velXDelta = true;
                 this.resetTicks();
             } else if (this.pokitOS.input.buttons.right) {
-                identity.velocityX = -moveSpeed;
+                identity.velocityX += -moveSpeed;
+                velXDelta = true;
                 this.resetTicks();
             }
-            console.log('thing')
+            if (!velXDelta)
+                this.moveTowardsZero(identity.velocityX, moveSpeed);
+            if (!velYDelta)
+                this.moveTowardsZero(identity.velocityY, moveSpeed);
         }
         this.ticksUntilMove--;
+    }
+
+    moveTowardsZero(orig, amt) {
+        if (orig > 0)
+            return orig - amt;
+        return orig + amt;
     }
 }
 
