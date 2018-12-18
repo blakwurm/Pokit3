@@ -54,6 +54,7 @@ export class PlayerControlSystem {
                 this.moveTowardsZero(identity.velocityY, moveSpeed);
         }
         playersprite.ticksUntilMove--;
+        console.log(playersprite.ticksUntilMove);
     }
 
     moveTowardsZero(orig, amt) {
@@ -128,6 +129,8 @@ function chimneysComponent(opts) {
 export function setupPlayerControl(pokitOS) {
     pokitOS.baublebox.initializeSystem('playercontrolsystem', new PlayerControlSystem(pokitOS));
     pokitOS.baublebox.initializeComponent('walllist', walllistComponent);
+    pokitOS.baublebox.initializeComponent('chimneylist', chimneysComponent);
     pokitOS.baublebox.initializeComponent('playersprite', playerspriteComponent);
     pokitOS.baublebox.initializeComponent('startpoint', startPositionComponent)
+    pokitOS.baublebox.initializeComponent('present', presentComponent)
 }

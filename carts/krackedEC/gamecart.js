@@ -15,7 +15,6 @@ export class GameCart {
     }
     async preload() {
         console.log('preload happened');
-        loadMap(this.pokitOS);
         await this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
         this.assetPool.loadImage('world', '/carts/krackedEC/world.png');
         this.assetPool.loadImage('spritesheet', '/carts/krackedEC/santasprites.png');
@@ -27,6 +26,7 @@ export class GameCart {
         audio.play();
 
         systems.setupPlayerControl(this.pokitOS);
+        loadMap(this.pokitOS);
         console.log(Object.assign({
             entityID: 'arb',
             x: 0, y: 0, z: 0,
