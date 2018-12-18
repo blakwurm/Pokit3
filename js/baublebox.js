@@ -37,7 +37,7 @@ export default class BaubleBox {
         }
     }
     prioritySort(thinga, thingb) {
-        return thinga.priority - thingb.priority;
+        return thingb.priority - thinga.priority;
     }
     initializeComponent(componentName, componentMaker) {
         this.__componentMakers.set(componentName, componentMaker);
