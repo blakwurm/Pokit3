@@ -175,43 +175,46 @@ class BootAnimationSystem extends Bauble {
         let bootsprite = part('text');
         let bootsprite_bottom = part('bottom');
         let bootsprite_top = part('top');
-
+        console.log(1);
         if (this.boot_done) {
             teardownBootAnimation(this.baublebox, 
                 [bootsprite.entityID, bootsprite_bottom.entityID, bootsprite_top.entityID]);
             this.done_callback();
             return
         }
-
+        console.log(1);
         if (bootsprite.y > 160) {
             bootsprite.y -= 4;
             console.log(bootsprite.x);
             return;
         } 
-        
+        console.log(2);
         if (bootsprite_top.x < 160) {
             bootsprite_top.x += 20;
             console.log(bootsprite_top.x)
             return;
         }
-        
+        console.log(3);
         if (bootsprite_bottom.x > 160) {
             bootsprite_bottom.x -= 20;
             console.log(bootsprite_bottom.x)
             return;
         }
-        
+        console.log(4);
         if (this.hold > 0) {
             console.log('hold is ' + this.hold);
             this.hold -= 1;
             return;
-        }
+        } console.log(5);
         
         if (bootsprite.scaleX < 38) {
             [bootsprite, bootsprite_bottom, bootsprite_top].forEach(expandoAnimationPart);
             console.log('doin')
             return
         }
+
+        console.log('boot animation completed');
+
         bootsprite.requestDelete = true;
         bootsprite_bottom.requestDelete = true;
         bootsprite_top.requestDelete = true;

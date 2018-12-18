@@ -1,4 +1,4 @@
-import { html, render } from 'https://unpkg.com/lit-html?module'
+import { html, render } from 'https://unpkg.com/lit-html/lit-html.js?module'
 import {InputManager} from '/js/inputmanager.js'
 import {preload, boot} from './firmware.js'
 
