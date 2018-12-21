@@ -29,6 +29,7 @@ function toggle_debug() {
     undo_debug();
 }
 
+
 function open_console() {
     powercase_state = 'hidden';
     let can = document.querySelector('#gamescreen')
@@ -102,9 +103,31 @@ function render_debug_readout() {
     };
 }
 
+function makeAThing() {
+    let scripto = document.createElement('script');
+    scripto.text = 'console.log("haha")';
+    document.open();
+    document.write(`
+    <html>
+        <head>
+            <link rel="stylesheet" href="/css/main.css">
+        </head>
+        <body>
+            <canvas id="gamescreen" height="320" width="320"></canvas>
+            <div id="controls"></div>
+            <div id="debug_point"></div>
+            <div id="cart_slot"></div>
+            <div id='controls'></div>
+        </body>
+    </html>
+    `
+    )
+    document.close();
+}
 
 async function main() {
     console.log('testing');
+    makeAThing();
     render_controls();
     input.full_setup();
     begin_debug();
