@@ -174,6 +174,12 @@ export class InputManager {
         }
     }
 
+    tick() {
+        if (this.dirty_keys){
+            this.detect_buttons_pressed();
+        }
+    }
+
 }
 
 function make_handle_touchpresent(inputmanager) {

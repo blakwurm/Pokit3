@@ -1,2 +1,5 @@
-export function main() {
+export function main(
+    {inputmanager,
+     startsequence}
+) {
 }

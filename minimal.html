@@ -29,7 +29,9 @@
   <div id="cart_slot"></div>
   <script type="module">
     import {main} from './js/init.js';
-    main();
+    import {InputManager} from './js/input_minimal.js'
+
+    main({inputmanager: new InputManager()});
   </script>
 </body>
 </html>
