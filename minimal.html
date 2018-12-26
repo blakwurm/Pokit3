@@ -30,8 +30,10 @@
   <script type="module">
     import {main} from './js/init.js';
     import {InputManager} from './js/input_minimal.js'
-
-    main({inputmanager: new InputManager()});
+    import {ECS} from './js/ecs.js'
+    let ecs = new ECS();
+    console.log(new ecs.GameEntity())
+    main({inputmanager: new InputManager(), ecs: ecs});
   </script>
 </body>
 </html>
