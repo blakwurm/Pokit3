@@ -6,23 +6,6 @@
 
 
   <title>The Pokit3 Handheld Game Console</title>
-  <link rel="preload" href="/img/bootscreen.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/bootscreen_bottom.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/bootscreen_top.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/bootscreen_text.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_a.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_down.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_left.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_up.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_right.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/dpadback.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/hbitface.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/startselect.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/clasp.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_green.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/img/button_red.svg" as="image" type="image/svg+xml">
-  <link rel="preload" href="/sound/introtune.wav" as="audio" type="audio/wav">
-
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
 
@@ -31,8 +14,60 @@
 </head>
 
 <body>
-  Loading, please wait...
+  <canvas id="gamescreen" height="320" width="320"></canvas>
+  <div id="controls"></div>
+  <div id="debug_point"></div>
+  <div id="cart_slot"></div>
+  <div id='controls'></div>
   <script src="/js/lib/screenful/min.js"></script>
-  <script type="module" src="/js/main.js"></script>
+  <!-- <script type="module" src="/js/main.js"></script> -->
+  <!-- <script type="module" src="/js/init.js"></script> -->
+  <script type="module">
+    import {main} from './js/init.js';
+    import { html, render } from 'https://unpkg.com/lit-html/lit-html.js?module'
+
+  let powercase_state = 'active';
+  function controls() {
+    return html`
+       <div id="dpad" class="buttongroup">
+         <button id="pad-left" name="left"></button>
+         <button id="pad-up" name="up"></button>
+         <button id="pad-down" name="down"></button>
+         <button id="pad-right" name="right"></button>
+       </div>
+       </div>
+       <div id="startselect" class="buttongroup">
+         <button id="startbutton" name="start">START</button>
+         <button id="selectbutton" name="select" @dblclick='${() => toggle_debug()}'>SELECT</button>
+       </div>
+       <div id="rightbuttons" class="buttongroup">
+         <button id="ybutton" name="y">Y</button>
+         <button id="xbutton" name="x">X</button>
+         <button id="bbutton" name="b">B</button>
+         <button id="abutton" name="a">A</button>
+       </div>
+       <div id="metabuttons" class="buttongroup">
+         <button id="fullscreen" @click='${() => screenfull.toggle()}'>
+           Fullscreen
+         </button>
+       </div>
+        <div id="powercase_right" class="${powercase_state}"></div>
+       <div id="powercase_left" class="${powercase_state}">
+           <button @click='${open_console}'></button> 
+       </div>
+    `
+}
+
+function open_console() {
+    powercase_state = 'hidden';
+    let can = document.querySelector('#gamescreen')
+    render_controls();
+}
+export default function render_controls() {
+    render(controls(), document.querySelector('#controls'))
+}
+    render_controls()
+    main();
+  </script>
 </body>
 </html>
