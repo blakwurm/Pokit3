@@ -35,8 +35,7 @@
     let e = ecs.makeEntity();
     e.addSystem('foo', () => console.log('works!'));
     ecs.update();
-    e.removeSystem('foo');
-    main({inputmanager: new InputManager(), ecs: ecs});
+    main({inputmanager: new InputManager(), ecs: ecs, renderer: {render:()=>{}}});
   </script>
 </body>
 </html>

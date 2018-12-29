@@ -1,5 +1,8 @@
+import pokitOS from './pokitos.js';
+import PokitOS from './pokitos.js';
 export function main(
-    {inputmanager,
-     startsequence}
+    bundle
 ) {
+    let pokitos = new PokitOS(bundle)
+    pokitos.start();
 }
