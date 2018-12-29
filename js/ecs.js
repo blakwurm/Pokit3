@@ -9,7 +9,7 @@ let prisort = (a, b) => a.priority - b.priority
 class PokitEntity{
     constructor(ecs, identity) {
         Object.assign(this,
-            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0},
+            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set()},
             identity,
             {id: Math.random(), ecs: ecs, systems: new Map(), _sorted: [], runonce: []});
     }
