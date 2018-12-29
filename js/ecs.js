@@ -1,6 +1,7 @@
 Function.prototype.update = function (e) {this.call(e, 'update');}
 Function.prototype.init = function (e) {this.call(e, 'init');}
 Function.prototype.destroy = function (e) {this.call(e, 'destroy');}
+Function.prototype.runonce = function (e) {this.call(e, 'runonce');} 
 Function.prototype.priority = 0;
 
 let prisort = (a, b) => a.priority - b.priority
@@ -15,7 +16,7 @@ class PokitEntity{
     update() {
         let self = this;
         if (this.runonce.length) {
-            this.runonce.sort(prisort).forEach(a=>a.update(self))
+            this.runonce.sort(prisort).forEach(a=>a.runonce(self))
             this.runonce = [];
         }
         this._sorted.forEach(a=>a.update(self));
