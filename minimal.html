@@ -32,6 +32,10 @@
     import {InputManager} from './js/input_minimal.js'
     import {ECS} from './js/ecs.js'
     let ecs = new ECS();
+    let e = ecs.makeEntity();
+    e.addSystem('foo', () => console.log('works!'));
+    ecs.update();
+    e.removeSystem('foo');
     main({inputmanager: new InputManager(), ecs: ecs});
   </script>
 </body>

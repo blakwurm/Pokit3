@@ -1,41 +1,58 @@
+Function.prototype.update = function (e) {this.call(e, 'update');}
+Function.prototype.init = function (e) {this.call(e, 'init');}
+Function.prototype.destroy = function (e) {this.call(e, 'destroy');}
+Function.prototype.priority = 0;
+
+let prisort = (a, b) => a.priority - b.priority
+
 class PokitEntity{
     constructor(ecs, identity) {
-        Object.assign(this, {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0}, identity);
-        Object.assign(this, {id: Math.random(), ecs: ecs, systems: new Map(), sortedSystems: [], runonce: []})
+        Object.assign(this,
+            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0},
+            identity,
+            {id: Math.random(), ecs: ecs, systems: new Map(), _sorted: [], runonce: []});
     }
     update() {
         let self = this;
-        this.sortedSystems.forEach(a=>a.call(self));
-        this.runonce.forEach(a=>a.call(self))
-        this.runonce = [];
+        if (this.runonce.length) {
+            this.runonce.sort(prisort).forEach(a=>a.update(self))
+            this.runonce = [];
+        }
+        this._sorted.forEach(a=>a.update(self));
     }
-    runOnce(runOnceFn) {
-        this.runOnce.push(runOnceFn);
+    runOnce(ro) {
+        this.ro.push(runOnceFn);
     }
-    addSystem(systemName, systemFn, priority) {
-        if (priority) {systemFn.priority = priority}
-        this.systems.set(systemName, systemFn)
+    addSystem(systemName, sys, priority) {
+        if (priority) {sys.priority = priority}
+        sys.init(this);
+        this.systems.set(systemName, sys)
         return this.sortSystems();
     }
-    removeSystem(systemName) {
-        this.systems.delete(systemName);
+    removeSystem(sn) {
+        this.systems.get(sn).destroy(this);
+        this.systems.delete(sn);
         return this.sortSystems();
     }
     sortSystems() {
-        this.sortedSystems = [...this.systems.values()].sort((a, b) => a.priority - b.priority)
+        this._sorted = [...this.systems.values()].sort(prisort)
         return this;
     }
 }
 
 export class ECS {
-    constructor(pokitOS) {
-        this.pokitOS = pokitOS;
+    constructor() {
         this.entities = new Map();
     }
     makeEntity(identity) {
         let e = new PokitEntity(this, identity);
         this.entities.set(e.id, e);
-        return this;
+        return e;
+    }
+    popEntity(id) {
+        let e = this.entities.get(id);
+        this.entities.delete(id);
+        return e;
     }
     update() {
         [...this.entities.values()].forEach(e=>e.update());
