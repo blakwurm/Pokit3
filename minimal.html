@@ -28,14 +28,8 @@
   <div id="debug_point"></div>
   <div id="cart_slot"></div>
   <script type="module">
-    import {main} from './js/init.js';
-    import {InputManager} from './js/input_minimal.js'
-    import {ECS} from './js/ecs.js'
-    let ecs = new ECS();
-    let e = ecs.makeEntity();
-    e.addSystem('foo', () => console.log('works!'));
-    ecs.update();
-    main({inputmanager: new InputManager(), ecs: ecs, renderer: {render:()=>{}}});
+    import main from './js/smolinit.js'
+    main();
   </script>
 </body>
 </html>

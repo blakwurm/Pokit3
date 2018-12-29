@@ -45,6 +45,7 @@ export class ECS {
     constructor() {
         this.entities = new Map();
     }
+    init(pokitOS) {this.pokitOS = pokitOS}
     makeEntity(identity) {
         let e = new PokitEntity(this, identity);
         this.entities.set(e.id, e);

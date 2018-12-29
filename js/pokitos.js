@@ -25,8 +25,8 @@ export default class PokitOS {
         cancelAnimationFrame(this.time.r);
     }
     preload() {
-        this.renderer.init();
-        this.ecs.init();
+        this.renderer.init(this);
+        this.ecs.init(this);
     }
     spin() {
         let t = this.maketime();
