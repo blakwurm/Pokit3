@@ -1,9 +1,9 @@
-import {InputManager} from './smolinput.js'
-import {ECS} from './ecs.js';
-import Renderer from './smolrender.js';
-import PokitOS from './pokitos.js';
-import AM from './assetmanager.js';
-import * as base from './basesystems.js';
+import {InputManager} from './smolinput.mjs'
+import {ECS} from './ecs.mjs';
+import Renderer from './smolrender.mjs';
+import PokitOS from './pokitos.mjs';
+import AM from './assetmanager.mjs';
+import * as base from './basesystems.mjs';
 
 export default function main() {
     let ecs = new ECS();

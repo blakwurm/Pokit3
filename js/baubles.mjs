@@ -1,4 +1,4 @@
-import {Bauble} from './baublebox.js';
+import {Bauble} from './baublebox.mjs';
 
 function cameraComponent(ops) {
     let o = Object.assign({}, ops);

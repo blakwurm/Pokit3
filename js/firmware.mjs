@@ -1,8 +1,8 @@
-import BaubleBox from './baublebox.js';
-import Ouroboros from './ouroboros.js';
-import Bellhop from './bellhop.js';
-import setupBB from './baubles.js';
-import initializeJewls from './jewls.js';
+import BaubleBox from './baublebox.mjs';
+import Ouroboros from './ouroboros.mjs';
+import Bellhop from './bellhop.mjs';
+import setupBB from './baubles.mjs';
+import initializeJewls from './jewls.mjs';
 
 let canvas = null;
 let screen = null;
