@@ -1,6 +1,9 @@
 # Mac Stuff
 .DS_Store
 
+# Google Closure stuff
+closure/
+
 # Logs
 logs
 *.log
