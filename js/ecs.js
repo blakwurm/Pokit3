@@ -1,7 +1,7 @@
-Function.prototype.update = function (e) {this.call(e, 'update');}
-Function.prototype.init = function (e) {this.call(e, 'init');}
-Function.prototype.destroy = function (e) {this.call(e, 'destroy');}
-Function.prototype.runonce = function (e) {this.call(e, 'runonce');} 
+Function.prototype.update = function (e, a) {this.call('',e, 'update', a);}
+Function.prototype.init = function (e, a) {this.call('',e, 'init', a);}
+Function.prototype.destroy = function (e, a) {this.call('',e, 'destroy', a);}
+Function.prototype.runonce = function (e, a) {this.call('',e, 'runonce', a);} 
 Function.prototype.priority = 0;
 
 let prisort = (a, b) => a.priority - b.priority
@@ -11,7 +11,7 @@ class PokitEntity{
         Object.assign(this,
             {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set()},
             identity,
-            {id: Math.random(), ecs: ecs, systems: new Map(), _sorted: [], runonce: []});
+            {id: Math.random(), ecs: ecs, systems: new Map(), exts: new Map(), _sorted: [], runonce: []});
     }
     update() {
         let self = this;
@@ -22,11 +22,11 @@ class PokitEntity{
         this._sorted.forEach(a=>a.update(self));
     }
     runOnce(ro) {
-        this.ro.push(runOnceFn);
+        this.runonce.push(ro);
     }
-    addSystem(systemName, sys, priority) {
-        if (priority) {sys.priority = priority}
-        sys.init(this);
+    addSystem(systemName, props) {
+        let sys = this.ecs.systems.get(systemName);
+        sys.init(this, props);
         this.systems.set(systemName, sys)
         return this.sortSystems();
     }
@@ -44,6 +44,7 @@ class PokitEntity{
 export class ECS {
     constructor() {
         this.entities = new Map();
+        this.systems = new Map();
     }
     init(pokitOS) {this.pokitOS = pokitOS}
     makeEntity(identity) {

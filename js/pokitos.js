@@ -1,9 +1,7 @@
 export default class PokitOS {
-    constructor({inputmanager, renderer, ecs}) {
+    constructor(initbundle) {
         let s = this;
-        this.input = inputmanager;
-        this.renderer = renderer;
-        this.ecs = ecs;
+        Object.assign(this, initbundle);
     }
     maketime() {
         let now = performance.now();
