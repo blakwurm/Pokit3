@@ -1,4 +1,4 @@
-import {InputManager} from './smolinput.mjs'
+import {InputManager} from './inputmanager.mjs'
 import {ECS} from './ecs.mjs';
 import Renderer from './smolrender.mjs';
 import PokitOS from './pokitos.mjs';
