@@ -23,7 +23,7 @@
   <!-- <script type="module" src="/js/main.mjs"></script> -->
   <!-- <script type="module" src="/js/init.mjs"></script> -->
   <script type="module">
-    import {main} from './js/init.js';
+    import main from './js/init.mjs';
     import { html, render } from 'https://unpkg.com/lit-html/lit-html.js?module'
 
   let powercase_state = 'active';
@@ -67,7 +67,7 @@ export default function render_controls() {
     render(controls(), document.querySelector('#controls'))
 }
     render_controls()
-    main({});
+    main();
   </script>
 </body>
 </html>
