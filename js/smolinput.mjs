@@ -4,6 +4,7 @@
  */
 export class InputManager {
     constructor () {
+        this.dirty_keys = false;
         this.buttons = {
             'up': false,
             'down': false,

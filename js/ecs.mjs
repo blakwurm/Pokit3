@@ -8,10 +8,16 @@ let prisort = (a, b) => a.priority - b.priority
 
 class PokitEntity{
     constructor(ecs, identity) {
+        this.pokitOS = null;
         Object.assign(this,
             {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set()},
-            identity,
-            {id: Math.random(), ecs: ecs, systems: new Map(), exts: new Map(), _sorted: [], runonce: []});
+            identity)
+            this.id = Math.random();
+            this.ecs = ecs;
+            this.systems = new Map();
+            this.exts = new Map();
+            this._sorted = [];
+            this.runonce = [];
     }
     update() {
         let self = this;
@@ -45,6 +51,7 @@ export class ECS {
     constructor() {
         this.entities = new Map();
         this.systems = new Map();
+        this.pokitOS = null;
     }
     init(pokitOS) {this.pokitOS = pokitOS}
     makeEntity(identity) {

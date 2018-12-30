@@ -1,6 +1,9 @@
 export default class PokitOS {
     constructor(initbundle) {
         let s = this;
+        this.time = null;
+        this.renderer = null;
+        this.ecs = null;
         Object.assign(this, initbundle);
     }
     maketime() {
@@ -14,7 +17,7 @@ export default class PokitOS {
     }
     raf () {let s = this;s.time.r = requestAnimationFrame(() => s.spin.call(s))}
     start(){
-        this.time = this.maketime(this.time);
+        this.time = this.maketime();
         this.time.active = true;
         this.raf();
     }

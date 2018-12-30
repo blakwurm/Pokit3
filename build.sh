@@ -1,0 +1,1 @@
+java -jar closure/compiler.jar --language_in ECMASCRIPT_2017 --compilation_level ADVANCED_OPTIMIZATIONS --js js/smolinit.mjs js/smolrender.mjs js/smolinput.mjs js/ecs.mjs js/pokitos.mjs js/assetmanager.mjs --js_output_file liv/out.js

@@ -6,6 +6,7 @@ export default class SmolRender{
         this.torender = new Map();
         this.imgdata = new Map();
         this.cameras = new Map();
+        this.pokitOS = null;
     }
     init(pokitOS) {
         this.pokitOS = pokitOS

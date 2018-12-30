@@ -3,7 +3,6 @@ import {ECS} from './ecs.mjs';
 import Renderer from './smolrender.mjs';
 import PokitOS from './pokitos.mjs';
 import AM from './assetmanager.mjs';
-import * as base from './basesystems.mjs';
 
 export default function main() {
     let ecs = new ECS();
