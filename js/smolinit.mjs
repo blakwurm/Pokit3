@@ -3,6 +3,7 @@ import {ECS} from './ecs.mjs';
 import Renderer from './smolrender.mjs';
 import PokitOS from './pokitos.mjs';
 import AM from './assetmanager.mjs';
+import SpatialHash from './spatialhash.mjs'
 
 export default function main() {
     let ecs = new ECS();
