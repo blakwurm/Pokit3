@@ -10,7 +10,7 @@ class PokitEntity{
     constructor(ecs, identity) {
         this.pokitOS = null;
         Object.assign(this,
-            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set()},
+            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set(),parent:null},
             identity)
             this.id = Math.random();
             this.ecs = ecs;

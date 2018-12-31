@@ -16,8 +16,18 @@ export default class SmolRender{
             if (calltype == 'init') {
                 console.log(entity)
                 s.addEntity(entity, imgdata);
+                entity.flags.add('visible')
             }
         })
+        pokitOS.ecs.systems.set('camera',
+        (entity, calltype) => {
+            if (calltype == 'init') {
+                s.addCamera(entity)
+                entity.flags.add('camera')
+            }
+        })
+        pokitOS.ecs.makeEntity({width:320,height:320,x:160,y:160}).addSystem('camera')
+        console.log(this.cameras)
     }
     addEntity(entity, imgdata) {
         entity.flags.add('visable')
