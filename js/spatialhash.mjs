@@ -3,29 +3,57 @@ export default class SpatialHash {
         this.cs = cellsize;
         this._map = new Map();
     }
+    add(entity) {
+        let spatialKeys = makeSpatialKey(this.cs, entity);
+        for (let key of spatialKeys) {
+            let bucket = this._map.get(key)
+            if (bucket) {
+                bucket.push(entity)
+            } else {
+                bucket = [entity]
+                this._map.set(key, bucket)
+            }
+        }
+        return this;
+    }
+    addMany(entities) {
+        for (let entity of entities) {
+            this.add(entity)
+        }
+        return this;
+    }
+    findNearby(entity) {
+        let spatialKeys = makeSpatialKey(this.cs, entity)
+        for (let key of spatialKeys) {
+            let bucket =  this._map.get(key);
+            
+        }
+    }
     
 }
 function makeSpatialKey(cs, {x,y,z,width,height,depth}){
-    var hw=Math.floor((x+width)/cs)
-    var hh=Math.floor((y+height)/cs)
-    var hd=Math.floor((z+depth)/cs)
-    var keys = []
-    for (var xi=Math.floor(x/cs);xi<=hw;xi=xi+1) {
-        for (var yi=Math.floor(y/cs);yi<=hh;yi=yi+1) {
-            for (var zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
+    let hw=Math.floor((x+width)/cs)
+    let hh=Math.floor((y+height)/cs)
+    let hd=Math.floor((z+depth)/cs)
+    let keys = []
+    for (let xi=Math.floor(x/cs);xi<=hw;xi=xi+1) {
+        for (let yi=Math.floor(y/cs);yi<=hh;yi=yi+1) {
+            for (let zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
                 keys.push(((1e5*xi+1e3*yi+zi)|0))
             }
         }
     }
-    console.log(keys)
+    // console.log(keys)
     return keys
 }
 function moo() {
     console.time('moo.')
-for (let i = 0;i < 64;i++) {
-    makeSpatialKey(30,{x:8+i,y:0+i,width:16,height:26,z:1,depth:1})
+    let sh = new SpatialHash(32)
+for (let i = 0;i < 300;i++) {
+    sh.add({id:i,x:8+(i%30),y:0+(i%30),width:16,height:26,z:1,depth:1})
 }
     console.timeEnd('moo.')
+    console.log(sh)
 }
 console.time('baseline')
 for (let i = 0; i < 64e3;i++) {
