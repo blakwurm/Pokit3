@@ -45,6 +45,9 @@ class PokitEntity{
         this._sorted = [...this.systems.values()].sort(prisort)
         return this;
     }
+    hydrate(jsono) {
+        let o = JSON.parse(jsono);
+    }
 }
 
 export class ECS {
