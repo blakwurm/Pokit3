@@ -1,4 +1,4 @@
-export default class PokitOS {
+export class PokitOS {
     constructor(initbundle) {
         let s = this;
         this.time = null;

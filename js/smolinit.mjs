@@ -1,9 +1,9 @@
 import {InputManager} from './smolinput.mjs'
 import {ECS} from './ecs.mjs';
-import Renderer from './smolrender.mjs';
-import PokitOS from './pokitos.mjs';
-import AM from './assetmanager.mjs';
-import SpatialHash from './spatialhash.mjs'
+import {Renderer} from './smolrender.mjs';
+import {PokitOS} from './pokitos.mjs';
+import {AssetManager} from './assetmanager.mjs';
+import {SpatialHash} from './spatialhash.mjs'
 
 export default function main() {
     let ecs = new ECS();
@@ -11,7 +11,7 @@ export default function main() {
     ecs.update();
     let i = new InputManager();
     let r = new Renderer(document.querySelector('#gamescreen'));
-    let a = new AM();
+    let a = new AssetManager();
     let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a});
     pokitOS.preload();
     a.getImage('load_text', '/img/bootscreen_text.svg');

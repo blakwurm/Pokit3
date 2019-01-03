@@ -1,4 +1,4 @@
-export default class AssetManager{
+export class AssetManager{
     constructor(){
         this.imgs = new Map();
         this.sounds = new Map();

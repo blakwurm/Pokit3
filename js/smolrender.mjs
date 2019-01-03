@@ -1,5 +1,5 @@
 let rfs = (vals) => Array.prototype.sort.call(vals, (a,b)=>a.z-b.z)
-export default class SmolRender{
+export class Renderer{
     constructor(canvas){
         this.canvas = canvas;
         this.context = canvas.getContext('2d');

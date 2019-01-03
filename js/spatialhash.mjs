@@ -1,4 +1,4 @@
-export default class SpatialHash {
+export class SpatialHash {
     constructor(cellsize) {
         this.cs = cellsize;
         this._map = new Map();
