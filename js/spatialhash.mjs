@@ -18,6 +18,15 @@ export default class SpatialHash {
     findNearby(entity) {
         return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat())
     }
+    findColliding(entity) {
+        return this.findNearby(entity).filter(e=>
+            entity.x < e.x + e.width &&
+            entity.x + entity.width > e.x &&
+            entity.z < e.z + e.depth &&
+            entity.z + entity.depth > e.z &&
+            entity.y < e.y + e.height &&
+            entity.y + entity.height > e.y)
+    }
     clear() {this._map.clear();return this}
     
 }
