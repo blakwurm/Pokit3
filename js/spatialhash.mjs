@@ -7,27 +7,16 @@ export default class SpatialHash {
         let spatialKeys = makeSpatialKey(this.cs, entity);
         for (let key of spatialKeys) {
             let bucket = this._map.get(key)
-            if (bucket) {
-                bucket.push(entity)
-            } else {
-                bucket = [entity]
-                this._map.set(key, bucket)
-            }
+            bucket ? bucket.push(entity) : this._map.set(key, [entity])
         }
         return this;
     }
     addMany(entities) {
-        for (let entity of entities) {
-            this.add(entity)
-        }
+        entities.forEach(e=>this.add(e))
         return this;
     }
     findNearby(entity) {
-        let spatialKeys = makeSpatialKey(this.cs, entity)
-        for (let key of spatialKeys) {
-            let bucket =  this._map.get(key);
-            
-        }
+        return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat())
     }
     
 }
@@ -49,11 +38,14 @@ function makeSpatialKey(cs, {x,y,z,width,height,depth}){
 function moo() {
     console.time('moo.')
     let sh = new SpatialHash(32)
-for (let i = 0;i < 300;i++) {
-    sh.add({id:i,x:8+(i%30),y:0+(i%30),width:16,height:26,z:1,depth:1})
-}
+    for (let i = 0;i < 3000;i++) {
+        sh.add({id:i,x:8+(i*3),y:0+(i*3),width:16,height:26,z:1,depth:1})
+    }
+    sh.findNearby({x:16,y:10,width:30,height:30,z:1,depth:1})
+    sh.findNearby({x:16,y:10,width:30,height:30,z:1,depth:1})
+    sh.findNearby({x:16,y:10,width:30,height:30,z:1,depth:1})
     console.timeEnd('moo.')
-    console.log(sh)
+    // console.log(sh)
 }
 console.time('baseline')
 for (let i = 0; i < 64e3;i++) {
