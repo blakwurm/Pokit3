@@ -18,6 +18,7 @@ export default class SpatialHash {
     findNearby(entity) {
         return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat())
     }
+    clear() {this._map.clear();return this}
     
 }
 function makeSpatialKey(cs, {x,y,z,width,height,depth}){
