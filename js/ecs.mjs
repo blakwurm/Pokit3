@@ -1,8 +1,3 @@
-Function.prototype.update = function (e, a) {this.call('',e, 'update', a);}
-Function.prototype.init = function (e, a) {this.call('',e, 'init', a);}
-Function.prototype.destroy = function (e, a) {this.call('',e, 'destroy', a);}
-Function.prototype.runonce = function (e, a) {this.call('',e, 'runonce', a);} 
-Function.prototype.priority = 0;
 
 let prisort = (a, b) => a.priority - b.priority
 
@@ -48,6 +43,12 @@ class PokitEntity{
     hydrate(jsono) {
         let o = JSON.parse(jsono);
     }
+    destroy() {
+        for (let x of this.systems.values()) {
+            x.destroy(this)
+        }
+
+    }
 }
 
 export class ECS {
@@ -57,6 +58,15 @@ export class ECS {
         this.pokitOS = null;
     }
     init(pokitOS) {this.pokitOS = pokitOS}
+    setSystem(systemname, newsystem) {
+        for (let x of ['init', 'update', 'destroy', 'runonce']) {
+            if (!newsystem[x]) {
+                newsystem[x] = () => {}
+            }
+        }
+        this.systems.set(systemname, newsystem)
+        return this;
+    }
     makeEntity(identity) {
         let e = new PokitEntity(this, identity);
         this.entities.set(e.id, e);
