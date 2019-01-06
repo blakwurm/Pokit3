@@ -29,6 +29,7 @@ class PokitEntity{
         let sys = this.ecs.systems.get(systemName);
         sys.init(this, props);
         this.systems.set(systemName, sys)
+        this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
     removeSystem(sn) {
@@ -44,7 +45,8 @@ class PokitEntity{
         let o = JSON.parse(jsono);
     }
     destroy() {
-        for (let x of this.systems.values()) {
+        for (let [n,x] of this.systems) {
+            this.ecs.reverseRemove(n,this)
             x.destroy(this)
         }
 
@@ -55,16 +57,34 @@ export class ECS {
     constructor() {
         this.entities = new Map();
         this.systems = new Map();
+        this.reverse_lookup = {}
         this.pokitOS = null;
     }
     init(pokitOS) {this.pokitOS = pokitOS}
-    setSystem(systemname, newsystem) {
+    reverseSet(systemName, entity) {
+        let s = this.reverse_lookup[systemName]
+        if (s) {
+            s.add(entity)
+        } else {
+            this.reverse_lookup[systemName] = new Set([entity])
+        }
+        console.log(this.reverse_lookup)
+        return this;
+    }
+    reverseRemove(systemName, entity) {
+        let s = this.reverse_lookup[systemName]
+        if (s) {
+            s.delete(entity)
+        }
+        return this;
+    }
+    setSystem(systemName, newsystem) {
         for (let x of ['init', 'update', 'destroy', 'runonce']) {
             if (!newsystem[x]) {
                 newsystem[x] = () => {}
             }
         }
-        this.systems.set(systemname, newsystem)
+        this.systems.set(systemName, newsystem)
         return this;
     }
     makeEntity(identity) {
