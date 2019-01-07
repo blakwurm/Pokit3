@@ -4,6 +4,7 @@ import {Renderer} from './smolrender.mjs';
 import {PokitOS} from './pokitos.mjs';
 import {AssetManager} from './assetmanager.mjs';
 import {SpatialHash} from './spatialhash.mjs'
+import { doIntroAnim } from './introanim.mjs';
 
 export default function main() {
     let ecs = new ECS();
@@ -14,8 +15,9 @@ export default function main() {
     let a = new AssetManager();
     let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a});
     pokitOS.preload();
-    a.getImage('load_text', '/img/bootscreen_text.svg');
-    e.addSystem('img', {imgname:'load_text'})
+    // a.getImage('load_text', '/img/bootscreen_text.svg');
+    // e.addSystem('img', {imgname:'load_text'})
+    doIntroAnim(pokitOS)
     pokitOS.start();
     return pokitOS;
 }

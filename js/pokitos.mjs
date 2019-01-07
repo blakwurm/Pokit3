@@ -4,6 +4,7 @@ export class PokitOS {
         this.time = null;
         this.renderer = null;
         this.ecs = null;
+        this.assets = null;
         Object.assign(this, initbundle);
     }
     maketime() {

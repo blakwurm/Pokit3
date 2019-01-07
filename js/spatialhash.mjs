@@ -16,7 +16,7 @@ export class SpatialHash {
         return this;
     }
     findNearby(entity) {
-        return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat())
+        return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat().filter(x=>x))
     }
     findColliding(entity) {
         return this.findNearby(entity).filter(e=>
@@ -30,13 +30,14 @@ export class SpatialHash {
     clear() {this._map.clear();return this}
     
 }
-function makeSpatialKey(cs, {x,y,z,width,height,depth}){
+function makeSpatialKey(cs, e){
+    let {x,y,z,width,height,depth} = e
     let hw=Math.floor((x+width)/cs)
     let hh=Math.floor((y+height)/cs)
-    let hd=Math.floor((z+depth)/cs)
+    let hd=Math.floor(((z+depth)|1)/cs)
     let keys = []
-    for (let xi=Math.floor(x/cs);xi<=hw;xi=xi+1) {
-        for (let yi=Math.floor(y/cs);yi<=hh;yi=yi+1) {
+    for (let xi=Math.floor((x|1)/cs);xi<=hw;xi=xi+1) {
+        for (let yi=Math.floor((y|1)/cs);yi<=hh;yi=yi+1) {
             for (let zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
                 keys.push(((1e5*xi+1e3*yi+zi)|0))
             }
