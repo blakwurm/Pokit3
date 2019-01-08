@@ -1,5 +1,5 @@
 export function doIntroAnim(pokitOS) {
-    let animrate = 3;
+    let animrate = 4;
     let mag = 1;
     pokitOS.assets.getImage('load_text', '/img/bootscreen_text.svg');
     pokitOS.assets.getImage('load_top', '/img/bootscreen_top.svg');
@@ -14,9 +14,9 @@ export function doIntroAnim(pokitOS) {
     let top_done = false;
     let bottom_done = false;
     text.addSystem('doanim', {update: () => {
-        if (text.y > 160) {text.y -= animrate}
-        else if (topbar.x < 159) {topbar.x += animrate*3}
-        else if (bottombar.x > 159) {bottombar.x -= animrate*3}
+        if (text.y > 161) {text.y -= animrate}
+        else if (topbar.x < 155) {topbar.x += animrate*4}
+        else if (bottombar.x > 155) {bottombar.x -= animrate*4}
         else if (text.width < 320*32) { [text, topbar, bottombar].forEach(x=>{
             x.width+=10*mag
             x.height+=10*mag

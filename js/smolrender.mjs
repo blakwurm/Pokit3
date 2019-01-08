@@ -63,6 +63,7 @@ export class Renderer{
         let con = this.context;
         let spatial_hash = new SpatialHash(160)
         spatial_hash.addMany(this._sorted_torender)
+        con.clearRect(0,0,320,320)
         for (let cam of this._sorted_cameras) {
             for (let {id,x,y,width,height} of spatial_hash.findNearby(cam)) {
                 let {imgname,offx,offy,offwidth,offheight} = this.imgdata.get(id);
