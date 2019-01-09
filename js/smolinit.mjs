@@ -4,7 +4,7 @@ import {Renderer} from './smolrender.mjs';
 import {PokitOS} from './pokitos.mjs';
 import {AssetManager} from './assetmanager.mjs';
 import {SpatialHash} from './spatialhash.mjs'
-import { doIntroAnim } from './introanim.mjs';
+import {doIntroAnim} from './introanim.mjs';
 
 export default function main() {
     let ecs = new ECS();

@@ -11,8 +11,8 @@ function prepSystem(sys) {
 class PokitEntity{
     constructor(ecs, identity) {
         Object.assign(this,
-            {x:0,y:0,z:0,height:0,width:0,rotation:0,velocity:0,flags:new Set(),parent:null},
-            identity)
+            {x:0,y:0,z:0,height:0,width:0,depth:1,rotation:0,velocity:0,flags:new Set(),parent:null},
+            identity);
             this.id = Math.random();
             this.ecs = ecs;
             this.systems = new Map();
@@ -65,6 +65,7 @@ class PokitEntity{
 export class ECS {
     constructor() {
         this.entities = new Map();
+        // TODO: Add cache array of entities
         this.systems = new Map();
         this.reverse_lookup = {}
         this.pokitOS = null;
@@ -77,6 +78,7 @@ export class ECS {
         } else {
             this.reverse_lookup[systemName] = new Set([entity])
         }
+        // TODO: ECHO global with debug boolean. Also minifier exclusion?
         console.log(this.reverse_lookup)
         return this;
     }
