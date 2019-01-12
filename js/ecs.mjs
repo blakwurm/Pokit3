@@ -1,11 +1,13 @@
 
 let prisort = (a, b) => a.priority - b.priority
+function no_op(){}
 function prepSystem(sys) {
     for (let x of ['init', 'update', 'destroy', 'runonce']) {
         if (!sys[x]) {
-            sys[x] = () => {}
+            sys[x] = no_op
         }
     }
+    if (!sys.exts) (sys.exts = {})
     return sys
 }
 class PokitEntity{
