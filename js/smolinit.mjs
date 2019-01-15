@@ -5,6 +5,8 @@ import {PokitOS} from './pokitos.mjs';
 import {AssetManager} from './assetmanager.mjs';
 import {SpatialHash} from './spatialhash.mjs'
 import {doIntroAnim} from './introanim.mjs';
+import {addTileMapSupport} from './extras/tilemaps.mjs';
+import './smolworker.mjs'
 
 export default function main() {
     let ecs = new ECS();
@@ -13,12 +15,14 @@ export default function main() {
     let i = new InputManager();
     let r = new Renderer(document.querySelector('#gamescreen'));
     let a = new AssetManager();
+    addTileMapSupport();
     let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a});
     pokitOS.preload();
     // a.getImage('load_text', '/img/bootscreen_text.svg');
     // e.addSystem('img', {imgname:'load_text'})
     doIntroAnim(pokitOS)
     pokitOS.start();
+    window.pokitOS = pokitOS;
     return pokitOS;
 }
 
