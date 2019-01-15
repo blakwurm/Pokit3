@@ -29,6 +29,7 @@ export class PokitOS {
     preload() {
         this.renderer.init(this);
         this.ecs.init(this);
+        this.assets.init(this);
     }
     spin() {
         let t = this.maketime();
