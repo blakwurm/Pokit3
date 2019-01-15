@@ -68,17 +68,6 @@ export async function initContext(canvas) {
     let translatorUniformLocation = _gl.getUniformLocation(program, "u_uvTranslator");
     let imageUniformLocation = _gl.getUniformLocation(program, "u_image");
 
-    _cameras.set("_main", {
-        x: 0,
-        y: 0,
-        angle: 0,
-        width: canvas.width,
-        height: canvas.height,
-        frameBuffer: null,
-        texture: null,
-        clear: null,
-    });
-
     _programs.push({
         program: program,
         attributes: {
@@ -316,7 +305,7 @@ export function setActorSprite(actor, x, y) {
     _actors.get(actor).sprite_y = y;
 }
 
-export function createCamera(name, width, height, clearR, clearG, clearB, clearA) {
+export function createCamera(name, width, height, clearR, clearG, clearB, clearA, isMainCamera = false) {
 
     const fb = _gl.createFramebuffer();
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
@@ -330,6 +319,7 @@ export function createCamera(name, width, height, clearR, clearG, clearB, clearA
         angle: 0,
         width: width,
         height: height,
+        main: isMainCamera,
         frameBuffer: fb,
         texture: tex,
         clear: {
@@ -353,10 +343,6 @@ export function clear(r, g, b, a) {
 
 function toRad(deg) {
     return deg / 360 * 2 * Math.PI;
-}
-
-function distance(x1, y1, x2, y2) {
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
 export function rotateActor(actor, degrees) {
@@ -383,73 +369,15 @@ export function scaleActor(actor, x, y) {
     _actors.get(actor).y_scale = y;
 }
 
-function checkOverlap(ox1, oy1, w1, h1, ox2, oy2, w2, h2) {
-    let lx1 = ox1 - w1 / 2;
-    let ly1 = oy1 - h1 / 2;
-    let rx1 = lx1 + w1;
-    let ry1 = ly1 + h1;
-
-    let lx2 = ox2 - w2 / 2;
-    let ly2 = oy2 - h2 / 2;
-    let rx2 = lx2 + w2;
-    let ry2 = ly2 + h2;
-
-    if (lx1 > rx2 || ly1 > ry2 ||
-        lx2 > rx1 || ly2 > ry1) return false;
-    return true;
-}
-
-function filterMap(mapValues, filter) {
-    let r = [];
-    for (let v of mapValues) {
-        //console.log(v);
-        if (filter(v)) {
-            console.log("through");
-            r.push(v);
-        }
-    }
-    return r;
-}
-
-export function render(r, g, b, a) {
+export function render() {
     _gl.colorMask(true, true, true, true);
 
     let programData = _programs[0];
 
     for (let cameraID of _cameras.keys()) {
-        if (cameraID === '_main')
-            continue;
         let camera = _cameras.get(cameraID);
 
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
-
-        let s = _gl.checkFramebufferStatus(_gl.FRAMEBUFFER);
-
-        //console.log(camera.frameBuffer);
-        /*
-        switch (s) {
-            case _gl.FRAMEBUFFER_COMPLETE:
-                console.log(camera.cameraID + ' ready');
-                break;
-            case _gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                console.log(cameraID + ' incomplete attachment');
-                break;
-            case _gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                console.log(camera.cameraID + ' incomplete missing attachment');
-                break;
-            case _gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                console.log(camera.cameraID + ' incomplete dimensions');
-                break;
-            case _gl.FRAMEBUFFER_UNSUPPORTED:
-                console.log(camera.cameraID + ' unsupported');
-                break;
-            case _gl.FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                console.log(camera.cameraID + ' incomplete multisample');
-                break;
-            case _gl.RENDERBUFFER_SAMPLES:
-                console.log(camera.cameraID + ' renderbuffer samples');
-                break;
-        }*/
 
         _gl.viewport(0, 0, camera.width, camera.height);
 
@@ -475,38 +403,16 @@ export function render(r, g, b, a) {
             _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
             _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
             _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
+
+            if(camera.main){
+                clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
+
+                _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
+                _gl.uniform1f(programData.uniforms.yFlip, -1.0);
+                _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
+            }
         }
     }
-    _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
-
-    let mainCamera = _cameras.get("_main");
-
-    _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
-
-    clear(r, g, b, a);
-
-    _gl.useProgram(programData.program);
-
-    for (let actor of _actors.values()) {
-        _gl.bindVertexArray(actor.vertexArray);
-
-        _gl.activeTexture(_gl.TEXTURE0);
-        _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
-
-        _gl.uniform1i(programData.uniforms.image, 0);
-        _gl.uniform1f(programData.uniforms.priority, actor.priority);
-        _gl.uniform1f(programData.uniforms.yFlip, -1.0);
-        _gl.uniform2f(programData.uniforms.resolution, _gl.canvas.width, _gl.canvas.height);
-        _gl.uniform2f(programData.uniforms.translation, actor.x_translation - mainCamera.x, actor.y_translation - mainCamera.y);
-        _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - mainCamera.angle)), Math.cos(toRad(actor.angle - mainCamera.angle)));
-        _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
-        _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
-        _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
-        console.log(actor.passes);
-        _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
-    }
-
-
-    _gl.colorMask(false, false, false, true);
+     _gl.colorMask(false, false, false, true);
     clear(1, 1, 1, 1);
 }

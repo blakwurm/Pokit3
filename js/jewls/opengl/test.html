@@ -6,34 +6,23 @@
     <body>
         <canvas id="c" height=600 width=600 style="width: 600px; height: 600px;">no canvas fo you</canvas>
         <script type="module">
-            import * as gl from "./opengl.js";
+            import * as gl from "./opengl.mjs";
 
             let c = document.getElementById("c");
             render(c);
 
             async function render(c) {
                 await gl.initContext(c);
-                
-                //console.time('tileMap');
-                let i1 = await loadImage('/carts/krackedEC/santasprites.png');
+                let img = await loadImage('testimg.png');
 
-                gl.createImageTexture('i1', i1);
+                gl.createCamera('main', 600, 600, 0, 0, 0, 0, true);
 
-                let b = await fetch('/carts/krackedEC/testing.json');
-                let j = await b.json();
+                gl.createImageTexture('img', img);
 
-                gl.createTileMap('tm1', 'i1', 8, 32, 16, 16, 9, [j.layers[0].data]);
-                //console.timeEnd('tileMap');
-                //gl.scaleActor('tm1', .25, .25)
+                gl.createActor('actor', 'img', img.width, img.height);
+                gl.translateActor('actor', 300, 300);
 
-                gl.translateActor('tm1', c.width / 2, c.height / 2);
-
-                for(let i = 0; i < 10; i++){
-                    //console.time('render');
-                    gl.render(1,1,1,1);
-                    //console.timeEnd('render');
-                    await sleep(5);
-                }
+                gl.render();
             }
 
             function sleep(time) {
