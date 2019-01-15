@@ -33,6 +33,9 @@ function createProgram(gl, vertexShader, fragmentShader) {
     gl.deleteProgram(program);
 }
 
+/** Initialize WebGL context and prepare renderer
+ * @param {HTMLCanvasElement} canvas - The canvas to render to
+ */
 export async function initContext(canvas) {
     _gl = canvas.getContext("webgl2", { premultipliedAlpha: false, alpha: false });
     _textures = new Map();
@@ -90,11 +93,21 @@ export async function initContext(canvas) {
     return true;
 }
 
+/** Send image to GPU for use in rendering
+ * @param {String} name - The ID to save the texture under
+ * @param {HTMLImageElement} image - The image to send to the GPU
+ */
 export function createImageTexture(name, image) {
     let tex = createTexture(image.width, image.height, image);
     _textures.set(name, tex);
 }
 
+/** Send raw image data to GPU for use in rendering
+ * @param {String} name - The ID to save the texture under
+ * @param {Number} width - The width of the image
+ * @param {Number} height - The height of the image
+ * @param {Uint8Array} data - The image data in RGBA format
+ */
 export function createRawTexture(name, width, height, data) {
     let tex = createTexture(width, height, data);
     _textures.set(name, tex);
@@ -173,6 +186,16 @@ function createSquare(positions, uvs, width, height, x, y, layer, spriteX, sprit
     uvs.push(spriteX + 1, spriteY + 1);
 }
 
+/** Create tile map
+ * @param {String} name - The ID to save the tile map under
+ * @param {String} texture - The ID of the texture containing the sprite map
+ * @param {Number} numSpritesRow - The ammount of sprites in a single row of the sprite map
+ * @param {Number} numTilesRow - The ammount of tiles in a single row of the tile map
+ * @param {Number} tileWidth - The pixel width of a single sprite
+ * @param {Number} tileHeight - The pixel height of a single sprite
+ * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
+ * @param {Array} layers - An array of arrays containing layer data for the tile map
+ */
 export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
 
     let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers);
@@ -209,6 +232,13 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
     });
 }
 
+/** Create actor for defining sprite data on the canvas
+ * @param {String} name - The ID to save the actor under
+ * @param {String} texture - The ID of the sprite map or texure to be displayed
+ * @param {Number} width - The width of the sprite
+ * @param {Number} height - The height of the sprite
+ * @param {Boolean} textureLiteral - Parameter for internal use only, should always be false
+ */
 export function createActor(name, texture, width, height, textureLiteral = false) {
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
@@ -292,6 +322,9 @@ function bufferData(positions, uvs, vertexPosition, uvCoords) {
     return [positionBuffer, vao, coordBuffer];
 }
 
+/** Delete actor
+ * @param {String} name - The ID of the actor to be deleted
+ */
 export function deleteActor(name) {
     let actor = _actors.get(name);
     _gl.deleteVertexArray(actor.vertexArray);
@@ -300,12 +333,27 @@ export function deleteActor(name) {
     _actors.delete(name);
 }
 
+/** Set sprite metadata for actor
+ * @param {String} actor - The actor to be modified
+ * @param {Number} x - The x coordinate of the sprite in the sprite map
+ * @param {Number} y - The y coordinate of the sprite in the sprite map
+ */
 export function setActorSprite(actor, x, y) {
     _actors.get(actor).sprite_x = x;
     _actors.get(actor).sprite_y = y;
 }
 
-export function createCamera(name, width, height, clearR, clearG, clearB, clearA, isMainCamera = false) {
+/** Create camera for manipulating viewport
+ * @param {String} name - The ID to save the camera under
+ * @param {Number} width - The width of the viewport
+ * @param {Number} height - The height of the viewport
+ * @param {Boolean} isMainCamera - Determines weather or not this should be used as the main rendering camera (default False)
+ * @param {Number} clearR - The red value of the viewport clear color (default 0)
+ * @param {Number} clearG - The green value of the viewport clear color (default 0)
+ * @param {Number} clearB - The blue value of the viewport clear color (default 0)
+ * @param {Number} clearA - The alpha value of the viewport clear color (default 0)
+ */
+export function createCamera(name, width, height, isMainCamera = false, clearR = 0, clearG = 0, clearB = 0, clearA = 0) {
 
     const fb = _gl.createFramebuffer();
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
@@ -331,12 +379,22 @@ export function createCamera(name, width, height, clearR, clearG, clearB, clearA
     })
 }
 
+/** Creates an actor that displays a camera's viewport
+ * @param {String} name - The ID to save the actor under
+ * @param {String} camera - The ID of the camera to be displayed
+ */
 export function createCameraView(name, camera) {
     let tex = _cameras.get(camera).texture;
     createActor(name, tex, tex.width, tex.height, true);
 }
 
-export function clear(r, g, b, a) {
+/**  Clear render canvas (automatically done in render)
+ * @param {Number} r - The red value of the viewport clear color (default 0)
+ * @param {Number} g - The green value of the viewport clear color (default 0)
+ * @param {Number} b - The blue value of the viewport clear color (default 0)
+ * @param {Number} a - The alpha value of the viewport clear color (default 0)
+ */
+export function clear(r = 0, g = 0, b = 0, a = 0) {
     _gl.clearColor(r, g, b, a)
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 }
@@ -345,30 +403,55 @@ function toRad(deg) {
     return deg / 360 * 2 * Math.PI;
 }
 
+/** Sets actor rotation offset in degrees
+ * @param {String} actor - The ID of the actor to be modified
+ * @param {Number} degrees - The rotation offset
+ */
 export function rotateActor(actor, degrees) {
     _actors.get(actor).angle = degrees;
 }
 
+/** Sets camera rotation offset in degrees
+ * @param {String} camera - The ID of the camera to be modified
+ * @param {Number} degrees - The rotation offset
+ */
 export function rotateCamera(camera, degrees) {
     _cameras.get(camera).angle = degrees;
 }
 
+/** Sets the actor translation offset
+ * @param {String} actor - The ID of the actor to be modified
+ * @param {Number} x - The x value offset (default 0)
+ * @param {Number} y - The y value offset (default 0)
+ * @param {Number} z - The z value offset (default 0)
+ */
 export function translateActor(actor, x = 0, y = 0, z = 0) {
     _actors.get(actor).x_translation = x;
     _actors.get(actor).y_translation = y;
     _actors.get(actor).priority = z;
 }
 
+/** Sets the camera translation offset
+ * @param {String} camera - The ID of the camera to be modified
+ * @param {Number} x - The x value offset (default 0)
+ * @param {Number} y - The y value offset (default 0)
+ */
 export function translateCamera(camera, x = 0, y = 0) {
     _cameras.get(camera).x = x;
     _cameras.get(camera).y = y;
 }
 
-export function scaleActor(actor, x, y) {
+/** Sets the actor scale offset
+ * @param {String} actor - The ID of the actor to be modified
+ * @param {Number} x - The width value offset
+ * @param {Number} y - The height value offset
+ */
+export function scaleActor(actor, x = 1, y = 1) {
     _actors.get(actor).x_scale = x;
     _actors.get(actor).y_scale = y;
 }
 
+/** Renders all viewports */
 export function render() {
     _gl.colorMask(true, true, true, true);
 
