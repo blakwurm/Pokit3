@@ -133,6 +133,14 @@ function createTexture(width, height, data) {
     };
 }
 
+/** Delete texture
+ * @param {String} name - The ID of the texture to be deleted
+ */
+export function deleteTexture(name){
+    _gl.deleteTexture(_textures.get(name).texture);
+    _textures.delete(name);
+}
+
 function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
 
     //console.log(layers);
@@ -273,6 +281,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     height = height || tex.height;
 
     _actors.set(name, {
+        name: name,
         texture: tex.texture,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
@@ -370,6 +379,7 @@ export function createCamera(name, width, height, isMainCamera = false, clearR =
         main: isMainCamera,
         frameBuffer: fb,
         texture: tex,
+        views: [],
         clear: {
             r: clearR,
             g: clearG,
@@ -379,13 +389,27 @@ export function createCamera(name, width, height, isMainCamera = false, clearR =
     })
 }
 
-/** Creates an actor that displays a camera's viewport
+/** Delete camera
+ * @param {String} name - The ID of the camera to be deleted
+*/
+export function deleteCamera(name){
+    let camera = _cameras.get(name);
+    for(let cv of camera.views){
+        deleteActor(cv);
+    }
+    _gl.deleteFramebuffer(camera.frameBuffer);
+    _gl.deleteTexture(camera.texture.texture);
+    _cameras.delete(name);
+}
+
+/** Create an actor that displays a camera's viewport
  * @param {String} name - The ID to save the actor under
  * @param {String} camera - The ID of the camera to be displayed
  */
 export function createCameraView(name, camera) {
     let tex = _cameras.get(camera).texture;
     createActor(name, tex, tex.width, tex.height, true);
+    _cameras.get(camera).views.push(name);
 }
 
 /**  Clear render canvas (automatically done in render)
