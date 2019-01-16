@@ -1,31 +1,23 @@
-import * as jewls from './jewls/jewlsRenderer.js';
+import * as jewls from './jewls/opengl/opengl.mjs';
 
-function grabImage(imgsrc) {
-    let img = new Image();
-    let prom = new Promise((allgood) => {img.onload = () => allgood(img)});
-    img.src = imgsrc;
-    return prom;
-}
+let textureSystem = {
+    init: (_, imgData) => {
+        this.imgId = imgData.imgId;
+        this.spriteWidth = imgData.spriteWidth;
+        this.spriteHeight = imgData.spriteHeight;
+        this.spriteX = imgData.spriteX;
+        this.spriteY = imgData.spriteY;
+    },
+};
 
-async function loadBootImages() {
-    for (let partname of ['bottom', 'text', 'top']) {
-        console.log('thing')
-        let tex = await grabImage(`/img/bootscreen_${partname}.svg`);
-        console.log(tex);
-        jewls.uploadTexture(`bootscreen_${partname}`, tex);
-    }
-}
+let cameraSystem = {
+    init: (entity, camData) => {
+        jewls.createCamera(entity.id)
+    },
+};
 
-export default async function initializeJewls(pokitOS, canvas) {
-    console.log(canvas)
-    pokitOS.baublebox.initializeSystem('jewlsActor', new jewls.JewlsActor(pokitOS, canvas));
-    pokitOS.baublebox.initializeSystem('jewlsMainCamera', new jewls.JewlsMainCamera(pokitOS));
-    pokitOS.baublebox.initializeSystem('jewlsCamera', new jewls.JewlsCamera(pokitOS));
-    pokitOS.baublebox.initializeSystem('jewlsCameraView', new jewls.JewlsCameraView(pokitOS));
+let actorSystem = {};
 
-    pokitOS.baublebox.initializeComponent('jewlsActor', jewls.jewlsActor);
-    pokitOS.baublebox.initializeComponent('jewlsTexture', jewls.jewlsTexture);
-    pokitOS.baublebox.initializeComponent('jewlsMainCamera', () => { });
-    pokitOS.baublebox.initializeComponent('jewlsCameraView', jewls.jewlsCameraView);
-    loadBootImages();
+export default async function initializeJewls(engine, canvas) {
+    engine.ecs.setSystem('img', textureSystem);
 }
