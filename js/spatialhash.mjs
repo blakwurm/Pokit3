@@ -34,10 +34,10 @@ function makeSpatialKey(cs, e){
     let {x,y,z,width,height,depth} = e
     let hw=Math.floor((x+width)/cs)
     let hh=Math.floor((y+height)/cs)
-    let hd=Math.floor(((z+depth)|1)/cs)
+    let hd=Math.floor(((z+depth)||1)/cs)
     let keys = []
-    for (let xi=Math.floor((x|1)/cs);xi<=hw;xi=xi+1) {
-        for (let yi=Math.floor((y|1)/cs);yi<=hh;yi=yi+1) {
+    for (let xi=Math.floor((x||1)/cs);xi<=hw;xi=xi+1) {
+        for (let yi=Math.floor((y||1)/cs);yi<=hh;yi=yi+1) {
             for (let zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
                 keys.push(((1e5*xi+1e3*yi+zi)|0))
             }
