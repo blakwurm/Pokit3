@@ -47,17 +47,25 @@ function loadImage(url){
     });
 }
 
-async function queueImage(id, url) {
-    let i = await loadImage(url);
-    jewls.createImageTexture(id, i);
+function makeClosure(){
+    let assets = new Map();
+    return async function(id, url){
+        let a = assets.get(url);
+        if(a) return a;
+        id = id || Math.random() + '';
+        let i = await loadImage(url);
+        jewls.createImageTexture(id, i);
+        a = {id: id, height: i.height, width: i.width};
+        assets.set(url,a);
+        return a;
+    }
 }
 
 export default async function initializeJewls(engine, canvas) {
     jewls.initContext(canvas);
 
-    engine.assets.queueImage = queueImage;
+    engine.assets.queueImage = makeClosure();
     engine.render = ()=>jewls.render((entities, camera)=>{
-        //TODO: add spacial hash cell size
         let shm = new SpacialHash(64);
 
         shm.clear();
