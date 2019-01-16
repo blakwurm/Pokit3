@@ -13,7 +13,13 @@ function prepSystem(sys) {
 class PokitEntity{
     constructor(ecs, identity) {
         Object.assign(this,
-            {_x:0,_y:0,_z:0,height:0,width:0,depth:1,rotation:0,velocity:0,flags:new Set(),parent:{x:0,y:0,z:0}},
+                {_x:0,_y:0,_z:0,
+                height:0,width:0,depth:1,
+                rotation:0,
+                scaleX:1,scaleY:1,scaleZ:1,
+                velocity:0,
+                flags:new Set(),
+                parent:{x:0,y:0,z:0}},
             identity);
             this.id = Math.random();
             this.ecs = ecs;
