@@ -476,7 +476,9 @@ export function scaleActor(actor, x = 1, y = 1) {
 }
 
 /** Renders all viewports */
-export function render() {
+export function render(sortFunc) {
+    sortFunc = sortFunc || ((entities) => entities);
+
     _gl.colorMask(true, true, true, true);
 
     let programData = _programs[0];
@@ -492,7 +494,7 @@ export function render() {
 
         _gl.useProgram(programData.program);
 
-        for (let actor of _actors.values()) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
+        for (let actor of sortFunc(_actors.values(), camera)) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
             if (actor.texture === camera.texture.texture) continue;
 
             _gl.bindVertexArray(actor.vertexArray);
