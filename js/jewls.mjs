@@ -58,7 +58,7 @@ export default async function initializeJewls(engine, canvas) {
     engine.assets.queueImage = queueImage;
     engine.render = ()=>jewls.render((entities, camera)=>{
         //TODO: add spacial hash cell size
-        let shm = new SpacialHash();
+        let shm = new SpacialHash(64);
 
         shm.clear();
         shm.addMany(entities);
