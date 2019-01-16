@@ -5,7 +5,9 @@ export class PokitOS {
         this.renderer = null;
         this.ecs = null;
         this.assets = null;
+        this.render = null;
         Object.assign(this, initbundle);
+        this.render = ()=>{renderer.render(this)};
     }
     maketime() {
         let now = performance.now();
@@ -38,7 +40,7 @@ export class PokitOS {
             this.ecs.update()
             t.timesince -= t.interval;
         }
-        this.renderer.render(this);
+        this.render();
     }
 
 }
