@@ -71,12 +71,12 @@ class PokitEntity{
     addUniqueSystem(systemName,sys) {
         sys = prepSystem(sys)
         this.systems.set(systemName,sys)
-        this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
     removeSystem(sn) {
         this.systems.get(sn).destroy(this);
         this.systems.delete(sn);
+        this.ecs.reverseRemove(sn, this);
         return this.sortSystems();
     }
     sortSystems() {
@@ -88,8 +88,7 @@ class PokitEntity{
     }
     destroy() {
         for (let [n,x] of this.systems) {
-            this.ecs.reverseRemove(n,this)
-            x.destroy(this)
+            this.removeSystem(n)
         }
         this.ecs.popEntity(this.id)
     }
