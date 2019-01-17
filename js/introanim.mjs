@@ -19,10 +19,11 @@ export async function doIntroAnim(pokitOS) {
     let top_done = false;
     let bottom_done = false;
     text.addUniqueSystem('doanim', {update: () => {
+        console.log('stillbeingcalled');
         if (text.y > 161) {text.y -= animrate}
         else if (topbar.x < 155) {topbar.x += animrate*4}
         else if (bottombar.x > 155) {bottombar.x -= animrate*4}
-        else if (text.width < 320*32) { [text, topbar, bottombar].forEach(x=>{
+        else if (text.width * scaleX < 320*32) { [text, topbar, bottombar].forEach(x=>{
             x.scaleX+=mag*0.1
             x.scaleY+=mag*0.1
             // x.rotation += mag * .5 
