@@ -4,8 +4,8 @@ export async function doIntroAnim(pokitOS) {
     let iText = await pokitOS.assets.queueImage('load_text', '/img/bootscreen_text.svg');
     let iTop = await pokitOS.assets.queueImage('load_top', '/img/bootscreen_top.svg');
     let iBot = await pokitOS.assets.queueImage('load_bottom', '/img/bootscreen_bottom.svg');
-    let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
-               .addSystem('camera', {isMainCamera:true});
+    // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
+    //            .addSystem('camera', {isMainCamera:true});
     let text = pokitOS.ecs.makeEntity({x:160,y:160*3,height:320,width:320,z:10})
                .addSystem('img', {id:'load_text'})
                .addSystem('spriteActor')

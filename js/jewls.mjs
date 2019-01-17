@@ -80,5 +80,8 @@ export class Renderer {
         engine.ecs.setSystem('img', textureSystem);
         engine.ecs.setSystem('spriteActor', actorSystem);
         engine.ecs.setSystem('camera', cameraSystem);
+
+        engine.ecs.defaultCamera = engine.ecs.makeEntity({width:320, height:320})
+                    .addSystem('camera', {isMainCamera:true});
     }
 }
