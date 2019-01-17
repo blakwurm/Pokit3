@@ -1,3 +1,5 @@
+import { SpatialHash } from './spatialhash.mjs'
+
 export class PokitOS {
     constructor(initbundle) {
         let s = this;
@@ -5,9 +7,7 @@ export class PokitOS {
         this.renderer = null;
         this.ecs = null;
         this.assets = null;
-        this.render = null;
         Object.assign(this, initbundle);
-        this.render = ()=>{renderer.render(this)};
     }
     maketime() {
         let now = performance.now();
@@ -28,10 +28,11 @@ export class PokitOS {
         this.time.active = false;
         cancelAnimationFrame(this.time.r);
     }
-    preload() {
-        this.renderer.init(this);
-        this.ecs.init(this);
-        this.assets.init(this);
+    async preload() {
+        await this.renderer.init(this);
+        await this.ecs.init(this);
+        await this.assets.init(this);
+        return this;
     }
     spin() {
         let t = this.maketime();
@@ -40,7 +41,15 @@ export class PokitOS {
             this.ecs.update()
             t.timesince -= t.interval;
         }
-        this.render();
+        this.renderer.render(
+        //     (entities, camera)=>{
+        //     let shm = new SpatialHash(64);
+
+        //     shm.clear();
+        //     shm.addMany(entities);
+        //     return shm.findNearby(camera);
+        // }
+        );
     }
 
 }

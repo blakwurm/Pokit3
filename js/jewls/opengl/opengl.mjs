@@ -5,6 +5,7 @@ let _gl = null;
 let _textures = null;
 let _cameras = null;
 let _actors = null;
+let _actor_dirty_flag = true;
 
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
@@ -37,7 +38,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
  * @param {HTMLCanvasElement} canvas - The canvas to render to
  */
 export async function initContext(canvas) {
-    _gl = canvas.getContext("webgl2", { premultipliedAlpha: false, alpha: false });
+    _gl = canvas.getContext("webgl2", { premultipliedAlpha: true, alpha: true });
     _textures = new Map();
     _actors = new Map();
     _cameras = new Map();
@@ -46,10 +47,10 @@ export async function initContext(canvas) {
         return false;
     }
 
+    _gl.enable(_gl.DEPTH_TEST);
     _gl.depthFunc(_gl.LEQUAL);
     _gl.blendFunc(_gl.ONE, _gl.ONE_MINUS_SRC_ALPHA);
     _gl.enable(_gl.BLEND);
-    _gl.enable(_gl.DEPTH_TEST);
 
     let vertexShaderSource = await fetch("/js/jewls/opengl/shaders/default_vertex_shader.glsl").then(b => b.text());
     let fragmentShaderSource = await fetch("/js/jewls/opengl/shaders/default_fragment_shader.glsl").then(b => b.text());
@@ -483,20 +484,25 @@ export function render(sortFunc) {
 
     let programData = _programs[0];
 
-    for (let cameraID of _cameras.keys()) {
-        let camera = _cameras.get(cameraID);
+    for (let camera of _cameras.values()) {
+        _gl.viewport(0, 0, camera.width, camera.height);
+
+        if(camera.main){
+            _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
+            clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
+        }
 
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
-
-        _gl.viewport(0, 0, camera.width, camera.height);
 
         clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
 
         _gl.useProgram(programData.program);
 
-        for (let actor of sortFunc(_actors.values(), camera)) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
-            if (actor.texture === camera.texture.texture) continue;
+        let sorted = [...sortFunc(_actors.values(), camera)].sort((x,y) => y.priority - x.priority);
 
+        console.log(sorted);
+
+        for (let actor of sorted) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
             _gl.bindVertexArray(actor.vertexArray);
 
             _gl.activeTexture(_gl.TEXTURE0);
@@ -511,15 +517,17 @@ export function render(sortFunc) {
             _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
             _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
             _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
-            _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
-
+            
             if(camera.main){
-                clear(camera.clear.r, camera.clear.g, camera.clear.b, camera.clear.a);
-
                 _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
                 _gl.uniform1f(programData.uniforms.yFlip, -1.0);
                 _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
             }
+
+            if (actor.texture === camera.texture.texture) continue;
+
+            _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
+            _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
         }
     }
      _gl.colorMask(false, false, false, true);

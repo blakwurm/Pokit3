@@ -32,19 +32,19 @@ class PokitEntity{
         return this.parent.x + this._x;
     }
     set x(value) {
-        _x = value;
+        this._x = value;
     }
     get y() {
         return this.parent.y + this._y;
     }
     set y(value) {
-        _y = value;
+        this._y = value;
     }
     get z() {
         return this.parent.z + this._z;
     }
     set z(value) {
-        _z = value;
+        this._z = value;
     }
     update() {
         let self = this;
@@ -59,11 +59,18 @@ class PokitEntity{
     }
     addSystem(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
-        if (!sys) {
-            sys = prepSystem(props);
+        if(typeof sys === "function") {
+            sys = new sys();
+            prepSystem(sys)
         }
         sys.init(this, props);
         this.systems.set(systemName, sys)
+        this.ecs.reverseSet(systemName, this)
+        return this.sortSystems();
+    }
+    addUniqueSystem(systemName,sys) {
+        sys = prepSystem(sys)
+        this.systems.set(systemName,sys)
         this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
@@ -116,7 +123,9 @@ export class ECS {
         return this;
     }
     setSystem(systemName, newsystem) {
-        prepSystem(newsystem)
+        if (typeof newsystem === "object") {
+            prepSystem(newsystem)
+        }
         this.systems.set(systemName, newsystem)
         return this;
     }

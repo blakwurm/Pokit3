@@ -1,40 +1,44 @@
 import * as jewls from './jewls/opengl/opengl.mjs';
-import {SpacialHash} from './spatialhash.mjs';
+import {SpatialHash} from './spatialhash.mjs';
 
-let textureSystem = {
-    init: (_, imgData) => {
+let textureSystem = class {
+    constructor(entity) {this.entity=entity}
+    init (_, imgdata) {
+        console.log(this)
         Object.assign(this, {
             spriteX:0,
             spriteY:0,
         }, imgdata)
-    },
+    }
 };
 
-let cameraSystem = {
-    init: (entity, camData) => {
+let cameraSystem = class {
+    constructor(entity) {this.entity = entity}
+    init (entity, camData) {
         jewls.createCamera(entity.id, entity.width, entity.height, camData.isMainCamera);
-    },
-    update: (entity) => {
+    }
+    update (entity) {
         jewls.translateCamera(entity.id, entity.x, entity.y);
-    },
-    delete: (entity) => {
+    }
+    delete (entity) {
         jewls.deleteCamera(entity.id);
     }
 };
 
-let actorSystem = {
-    init: (entity) => {
+let actorSystem = class {
+    constructor(entity) {this.entity=entity}
+    init (entity) {
         this.tex = entity.systems.get('img');
         jewls.createActor(entity.id, this.tex.id, this.tex.width, this.tex.height);
-    },
-    update: (entity) => {
+    }
+    update (entity) {
         jewls.setActorSprite(entity.id, this.tex.spriteX, this.tex.spriteY);
 
         jewls.translateActor(entity.id, entity.x, entity.y, entity.z);
         jewls.rotateActor(entity.id, entity.rotation);
         jewls.scaleActor(entity.id, entity.scaleX, entity.scaleY);
-    },
-    delete: (entity) => {
+    }
+    delete (entity) {
         jewls.deleteActor(entity.id);
     }
 };
@@ -60,20 +64,21 @@ function makeClosure(){
         return a;
     }
 }
+export class Renderer {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.pokitOS = null;
+    }
+    async init(engine) {
+        console.log('this happened');
+        this.pokitOS = engine;
+        await jewls.initContext(this.canvas);
 
-export default async function initializeJewls(engine, canvas) {
-    jewls.initContext(canvas);
+        engine.assets.queueImage = makeClosure();
+        this.render = jewls.render;
 
-    engine.assets.queueImage = makeClosure();
-    engine.render = ()=>jewls.render((entities, camera)=>{
-        let shm = new SpacialHash(64);
-
-        shm.clear();
-        shm.addMany(entities);
-        return shm.findColliding(camera);
-    });
-
-    engine.ecs.setSystem('img', textureSystem);
-    engine.ecs.setSystem('spriteActor', actorSystem);
-    engine.ecs.setSystem('camera', cameraSystem);
+        engine.ecs.setSystem('img', textureSystem);
+        engine.ecs.setSystem('spriteActor', actorSystem);
+        engine.ecs.setSystem('camera', cameraSystem);
+    }
 }

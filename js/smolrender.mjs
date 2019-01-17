@@ -51,7 +51,7 @@ export class Renderer{
     removeCamera(entity) {
         this.cameras.delete(entity.id);
     }
-    render() {
+    render(sortFunc) {
         if (this._dirtyEntityFlag) {
             this._sorted_torender = rfs(this.torender.values())
             this._dirtyEntityFlag = false;
@@ -61,13 +61,14 @@ export class Renderer{
             this._dirtyCameraFlag = false;
         }
         let con = this.context;
-        let spatial_hash = new SpatialHash(160)
-        spatial_hash.addMany(this._sorted_torender)
+        // let spatial_hash = new SpatialHash(160)
+        // spatial_hash.addMany(this._sorted_torender)
         con.clearRect(0,0,320,320)
         for (let cam of this._sorted_cameras) {
             let cam_x_offset = cam.x-(cam.width/2);
             let cam_y_offset = cam.y-(cam.height/2);
-            for (let {id,x,y,width,height} of spatial_hash.findNearby(cam)) {
+            // for (let {id,x,y,width,height} of spatial_hash.findNearby(cam)) {
+            for (let {id,x,y,width,height} of sortFunc(this._sorted_torender, cam)) {
                 let {imgname,offx,offy,offwidth,offheight} = this.imgdata.get(id);
                 let i = this.pokitOS.assets.imgs.get(imgname);
                 // con.save();
