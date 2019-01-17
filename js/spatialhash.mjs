@@ -33,12 +33,13 @@ export class SpatialHash {
 }
 function makeSpatialKey(cs, e){
     let {x,y,z,width,height,depth,scaleX,scaleY,scaleZ} = e
+    depth = depth || 1;
     width *= scaleX || 1;
     height *= scaleY || 1;
     depth *= scaleZ || 1;
     let hw=Math.floor((x+width)/cs)
     let hh=Math.floor((y+height)/cs)
-    let hd=Math.floor(((z+depth)||1)/cs)
+    let hd=Math.floor((z+depth)/cs)
     let keys = []
     for (let xi=Math.floor((x||1)/cs);xi<=hw;xi=xi+1) {
         for (let yi=Math.floor((y||1)/cs);yi<=hh;yi=yi+1) {
@@ -47,5 +48,6 @@ function makeSpatialKey(cs, e){
             }
         }
     }
+    //console.log(keys);
     return keys
 }
