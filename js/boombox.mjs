@@ -1,6 +1,7 @@
 export class Mixer {
     constructor(){
         this._racks = [];
+        this._ctx = new AudioContext();
     }
 
     createRack(){
