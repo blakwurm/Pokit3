@@ -498,9 +498,21 @@ export function render(sortFunc) {
 
         _gl.useProgram(programData.program);
 
-        let sorted = [...sortFunc(_actors.values(), camera)].sort((x,y) => y.priority - x.priority);
+        let cam = Object.assign({z:-200, depth:400}, camera)
+        
+        let comprehended = [..._actors.values()];
+        comprehended.forEach(x=>{
+            x.height =x.spriteHeight
+            x.width = x.spriteWidth
+            x.x = x.x_translation
+            x.y=x.y_translation
+            x.z=0;
+            x.scaleX=x.x_scale
+            x.scaleY=x.y_scale
+        });
+        let sorted = [...sortFunc(comprehended, cam)].sort((x,y) => y.priority - x.priority);
 
-        console.log(sorted);
+        //console.log(sorted);
 
         for (let actor of sorted) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
             _gl.bindVertexArray(actor.vertexArray);
