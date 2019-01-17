@@ -42,13 +42,14 @@ export class PokitOS {
             t.timesince -= t.interval;
         }
         this.renderer.render(
-        //     (entities, camera)=>{
-        //     let shm = new SpatialHash(64);
-
-        //     shm.clear();
-        //     shm.addMany(entities);
-        //     return shm.findNearby(camera);
-        // }
+            (entities, camera)=>{
+                let shm = new SpatialHash(120);
+                shm.addMany(entities);
+                let near =  shm.findNearby(camera);
+                if(near.size > 0)
+                console.log(near);
+                return near;
+            }
         );
     }
 
