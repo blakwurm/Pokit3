@@ -45,10 +45,7 @@ export class PokitOS {
             (entities, camera)=>{
                 let shm = new SpatialHash(120);
                 shm.addMany(entities);
-                let near =  shm.findNearby(camera);
-                if(near.size > 0)
-                console.log(near);
-                return near;
+                return shm.findNearby(camera);
             }
         );
     }
