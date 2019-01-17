@@ -1,32 +1,26 @@
+export let Types = {
+    TEXT: 0,
+    JSON: 1,
+};
+
 export class AssetManager{
     constructor(){
-        this.imgs = new Map();
-        this.sounds = new Map();
-        this.json = {};
-        this.pokitOS = null;
-        this.imgWorker = createWorker(function(e) {
-            console.log(e)
-        })
-        this.assetPipe = new MessageChannel();
+        this._assets = new Map();
+        this._urls = new Map();
+        this._typedAssets = new Map();
+        this._decoders = new Map();
     }
-    init(pokitOS) {this.pokitOS = pokitOS;}
-    async queueImage(id, url) {
-        let i = imgs.get(id);
-        if(i) return id;
 
-        return await new Promise((resolve)=>{
-            let i = new Image();
-            i.onload = ()=>resolve(id);
-            i.src = url;
-        });
+    registerType(type){
+        Types[type] = Object.keys(Types).length;
     }
-    async getJson(jsonName, src) {
-        let huh = this.json[jsonName]
-        if (huh) {return huh}
-        let f = await fetch(src)
-        let j = await f.json()
-        this.json[jsonName] = j
-        return j;
+
+    async queueAsset(id, url) {
+        let asset = this._urls.get(url);
+        if(!asset) {
+            let response = await fetch(url);
+        }
+        return asset;
     }
 }
 
