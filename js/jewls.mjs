@@ -20,7 +20,7 @@ let cameraSystem = class {
     update (entity) {
         jewls.translateCamera(entity.id, entity.x, entity.y);
     }
-    delete (entity) {
+    destroy (entity) {
         jewls.deleteCamera(entity.id);
     }
 };
@@ -38,7 +38,7 @@ let actorSystem = class {
         jewls.rotateActor(entity.id, entity.rotation);
         jewls.scaleActor(entity.id, entity.scaleX, entity.scaleY);
     }
-    delete (entity) {
+    destroy (entity) {
         jewls.deleteActor(entity.id);
     }
 };
@@ -70,7 +70,6 @@ export class Renderer {
         this.pokitOS = null;
     }
     async init(engine) {
-        console.log('this happened');
         this.pokitOS = engine;
         await jewls.initContext(this.canvas);
 
