@@ -74,6 +74,6 @@ export default async function initializeJewls(engine, canvas) {
     });
 
     engine.ecs.setSystem('img', textureSystem);
-    engine.ecs.setSystem('actor', actorSystem);
+    engine.ecs.setSystem('spriteActor', actorSystem);
     engine.ecs.setSystem('camera', cameraSystem);
 }
