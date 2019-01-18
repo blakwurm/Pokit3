@@ -11,11 +11,11 @@ export class AssetManager{
         this.registerType('TEXT');
         this.registerType('JSON');
 
-        this._decoders.set(Types.TEXT,async (x)=>{
+        this._decoders.set(Types.TEXT,async (_,x)=>{
             return await x.text();
         })
 
-        this._decoders.set(Types.JSON,async (x)=>{
+        this._decoders.set(Types.JSON,async (_,x)=>{
             return await x.json();
         })
     }
@@ -42,7 +42,7 @@ export class AssetManager{
         if(!asset) {
             let response = await fetch(url);
             let decode = this._decoders.get(type);
-            asset = {id:id, type:type, url:url, data:decode(response)};
+            asset = {id:id, type:type, url:url, data:decode(id, response)};
             this._assets.set(id, asset);
             this._urls.set(url, asset);
             this._typedAssets.get(type).add(asset);
