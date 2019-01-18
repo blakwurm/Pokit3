@@ -2,8 +2,9 @@ import {InputManager} from './smolinput.mjs'
 import {ECS} from './ecs.mjs';
 // import {Renderer} from './smolrender.mjs';
 import {Renderer} from './jewls.mjs';
+import {Mixer} from './boombox.mjs'
 import {PokitOS} from './pokitos.mjs';
-import {AssetManager} from './assetmanager.mjs';
+import {Types,AssetManager} from './assetmanager.mjs';
 import {SpatialHash} from './spatialhash.mjs'
 import {doIntroAnim} from './introanim.mjs';
 import {addTileMapSupport} from './extras/tilemaps.mjs';
@@ -21,6 +22,10 @@ export default async function main() {
     // a.getImage('load_text', '/img/bootscreen_text.svg');
     // e.addSystem('img', {imgname:'load_text'})
     pokitOS.start();
+    let boombox = new Mixer();
+    boombox.init(pokitOS);
+    let sound = await a.queueAsset('xmas', '/carts/krackedEC/LastChristmas.mp3', Types.SOUND);
+    boombox.playSound(sound);
     doIntroAnim(pokitOS)
     // let load = await pokitOS.assets.queueImage('load_text', '/img/bootscreen_text.png');
     // let loa2 = await pokitOS.assets.queueImage('load_text2', '/img/bootscreen_top.png');

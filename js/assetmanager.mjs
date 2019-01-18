@@ -50,6 +50,10 @@ export class AssetManager{
         return asset.data;
     }
 
+    getAsset(id){
+        return this._assets.get(id);
+    }
+
     cleanupAsset(id){
         let assset = this._assets.get(id);
         let destruct = this._destructors.get(asset.type);
