@@ -1,5 +1,6 @@
 import { SpatialHash } from './spatialhash.mjs'
 
+let shouldLog = true;
 export class PokitOS {
     constructor(initbundle) {
         let s = this;
@@ -43,9 +44,18 @@ export class PokitOS {
         }
         this.renderer.render(
             (entities, camera)=>{
+                camera.x += camera.width/2;
+                camera.y += camera.height/2;
+                let top = entities.filter(x=>x.texture_id=='load_top')[0];
                 let shm = new SpatialHash(120);
                 shm.addMany(entities);
-                return shm.findNearby(camera);
+                let near =  shm.findNearby(camera);
+                if(near.has(top) && shouldLog){
+                    console.log(top)
+                    shouldLog = false;
+                    console.log(shouldLog);
+                }
+                return near;
             }
         );
     }

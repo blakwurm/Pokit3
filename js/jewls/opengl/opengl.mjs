@@ -100,6 +100,7 @@ export async function initContext(canvas) {
  */
 export function createImageTexture(name, image) {
     let tex = createTexture(image.width, image.height, image);
+    tex.id = name;
     _textures.set(name, tex);
 }
 
@@ -284,6 +285,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     _actors.set(name, {
         name: name,
         texture: tex.texture,
+        texture_id: tex.id,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,

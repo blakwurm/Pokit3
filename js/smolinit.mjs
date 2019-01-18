@@ -22,10 +22,10 @@ export default async function main() {
     // a.getImage('load_text', '/img/bootscreen_text.svg');
     // e.addSystem('img', {imgname:'load_text'})
     pokitOS.start();
-    let boombox = new Mixer();
-    boombox.init(pokitOS);
-    let sound = await a.queueAsset('xmas', '/carts/krackedEC/LastChristmas.mp3', Types.SOUND);
-    boombox.playSound(sound);
+    //let boombox = new Mixer();
+    //boombox.init(pokitOS);
+    //let sound = await a.queueAsset('xmas', '/carts/krackedEC/LastChristmas.mp3', Types.SOUND);
+    //boombox.playSound(sound);
     doIntroAnim(pokitOS)
     // let load = await pokitOS.assets.queueImage('load_text', '/img/bootscreen_text.png');
     // let loa2 = await pokitOS.assets.queueImage('load_text2', '/img/bootscreen_top.png');
