@@ -11,7 +11,7 @@ function prepSystem(sys) {
     return sys
 }
 class PokitEntity{
-    constructor(ecs, identity) {
+    constructor(ecs, identity, engine) {
         Object.assign(this,
                 {_x:0,_y:0,_z:0,
                 height:0,width:0,depth:1,
@@ -27,6 +27,7 @@ class PokitEntity{
             this.exts = new Map();
             this._sorted = [];
             this.runonce = [];
+            this.pokitOS = engine;
     }
     get x() {
         return this.parent.x + this._x;
@@ -60,7 +61,7 @@ class PokitEntity{
     addSystem(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
-            sys = new sys();
+            sys = new sys(this.pokitOS);
             prepSystem(sys)
         }
         sys.init(this, props);
@@ -134,7 +135,7 @@ export class ECS {
     }
     makeEntity(identity) {
         let e = new PokitEntity(this, identity);
-        this.entities.set(e.id, e);
+        this.entities.set(e.id, e, this.pokitOS);
         return e;
     }
     popEntity(id) {

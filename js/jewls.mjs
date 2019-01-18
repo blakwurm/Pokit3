@@ -2,7 +2,7 @@ import * as jewls from './jewls/opengl/opengl.mjs';
 import {Types} from './assetmanager.mjs';
 
 let textureSystem = class {
-    constructor(entity) {this.entity=entity}
+    constructor(engine) {this.engine=engine}
     init (_, imgdata) {
         console.log(this)
         Object.assign(this, {
@@ -13,7 +13,7 @@ let textureSystem = class {
 };
 
 let cameraSystem = class {
-    constructor(entity) {this.entity = entity}
+    constructor(engine) {this.engine=engine}
     init (entity, camData) {
         jewls.createCamera(entity.id, entity.width, entity.height, camData.isMainCamera);
     }
@@ -26,7 +26,7 @@ let cameraSystem = class {
 };
 
 let actorSystem = class {
-    constructor(entity) {this.entity=entity}
+    constructor(engine) {this.engine=engine}
     init (entity) {
         this.tex = entity.systems.get('img');
         jewls.createActor(entity.id, this.tex.id, this.tex.width, this.tex.height);
