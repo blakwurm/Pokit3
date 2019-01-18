@@ -1,5 +1,5 @@
 import * as jewls from './jewls/opengl/opengl.mjs';
-import {SpatialHash} from './spatialhash.mjs';
+import {Types} from './assetmanager.mjs';
 
 let textureSystem = class {
     constructor(entity) {this.entity=entity}
@@ -43,27 +43,23 @@ let actorSystem = class {
     }
 };
 
-function loadImage(url){
-    return new Promise(resolve=>{
-        let i = new Image();
-        i.onload = ()=>resolve(i);
-        i.src = url;
-    });
+async function decodeImage(id, response){
+    let i = new Image();
+    await new Promise(async (resolve)=>{
+        let blob = await response.blob();
+        i.onload = resolve;
+        i.src = URL.createObjectURL(blob);
+    })
+
+    jewls.createImageTexture(id, i);
+
+    return {id:id, height:i.height, width:i.width};
 }
 
-function makeClosure(){
-    let assets = new Map();
-    return async function(id, url){
-        let a = assets.get(url);
-        if(a) return a;
-        id = id || Math.random() + '';
-        let i = await loadImage(url);
-        jewls.createImageTexture(id, i);
-        a = {id: id, height: i.height, width: i.width};
-        assets.set(url,a);
-        return a;
-    }
+async function destructImage(id){
+    jewls.deleteTexture(id);
 }
+
 export class Renderer {
     constructor(canvas) {
         this.canvas = canvas;
@@ -73,7 +69,9 @@ export class Renderer {
         this.pokitOS = engine;
         await jewls.initContext(this.canvas);
 
-        engine.assets.queueImage = makeClosure();
+        engine.assets.registerType('IMAGE');
+        engine.assets.registerDecoder(Types.IMAGE, decodeImage);
+        engine.assets.registerDestructor(Types.IMAGE, destructImage);
         this.render = jewls.render;
 
         engine.ecs.setSystem('img', textureSystem);

@@ -1,9 +1,11 @@
+import {Types} from './assetmanager.mjs';
+
 export async function doIntroAnim(pokitOS) {
     let animrate = 4;
     let mag = 1;
-    let iText = await pokitOS.assets.queueImage('load_text', '/img/bootscreen_text.svg');
-    let iTop = await pokitOS.assets.queueImage('load_top', '/img/bootscreen_top.svg');
-    let iBot = await pokitOS.assets.queueImage('load_bottom', '/img/bootscreen_bottom.svg');
+    let iText = await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
+    let iTop = await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
+    let iBot = await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
     //            .addSystem('camera', {isMainCamera:true});
     let text = pokitOS.ecs.makeEntity({x:160,y:160*3,height:320,width:320,z:10})
