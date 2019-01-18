@@ -44,7 +44,8 @@ function makeSpatialKey(cs, e){
     for (let xi=Math.floor((x||1)/cs);xi<=hw;xi=xi+1) {
         for (let yi=Math.floor((y||1)/cs);yi<=hh;yi=yi+1) {
             for (let zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
-                keys.push(((1e5*xi+1e3*yi+zi)|0))
+                keys.push(((1e5*xi+1e3*yi+zi)||0))
+                //keys.push(xi + "," + yi + "," + zi);
             }
         }
     }
