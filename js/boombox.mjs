@@ -16,7 +16,7 @@ export class Mixer {
         this.pokitOS = engine;
 
         engine.assets.registerType('SOUND');
-        engine.assets.registerDecoder(Types.SOUND, new Proxy(this.audioDecoder, this));
+        engine.assets.registerDecoder(Types.SOUND, (_, response) => this.audioDecoder(_, response));
     }
 
     createRack(){
