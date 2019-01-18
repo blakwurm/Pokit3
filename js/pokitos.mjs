@@ -8,6 +8,7 @@ export class PokitOS {
         this.renderer = null;
         this.ecs = null;
         this.assets = null;
+        this.mixer = null;
         Object.assign(this, initbundle);
     }
     maketime() {
@@ -33,6 +34,7 @@ export class PokitOS {
         await this.renderer.init(this);
         await this.ecs.init(this);
         await this.assets.init(this);
+        await this.mixer.init(this);
         return this;
     }
     spin() {
