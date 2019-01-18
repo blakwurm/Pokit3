@@ -11,11 +11,11 @@ export class AssetManager{
         this.registerType('TEXT');
         this.registerType('JSON');
 
-        this._decoders.set(Types.TEXT,(x)=>{
+        this._decoders.set(Types.TEXT,async (x)=>{
             return await x.text();
         })
 
-        this._decoders.set(Types.JSON, (x)=>{
+        this._decoders.set(Types.JSON,async (x)=>{
             return await x.json();
         })
     }
