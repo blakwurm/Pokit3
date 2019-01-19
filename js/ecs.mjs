@@ -112,7 +112,7 @@ export class ECS {
     }
     init(pokitOS) {this.pokitOS = pokitOS}
     setSuper(systemName, system){
-        system = pokitEntity.prototype.prepSystem(system);
+        system = prepSystem(system);
         this.supers.set(systemName, system);
 
         system.init(this.pokitOS, [...this.entities.values()]);
