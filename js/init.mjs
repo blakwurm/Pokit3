@@ -53,31 +53,45 @@ import {SpatialHash} from './spatialhash.mjs'
 import {doIntroAnim} from './introanim.mjs';
 import {addTileMapSupport} from './extras/tilemaps.mjs';
 import './smolworker.mjs'
+import * as cartloader from './cartloader.mjs'
 
 export default async function main() {
     let pokitOS = await setup_pokitOS();
+    let baseURL = cartloader.getBaseCartURL()
+    console.log(baseURL)
+    let cartinfo = await cartloader.parseCartManifest(baseURL)
+    await cartloader.preloadCartAssets(cartinfo)
+    await preload_introanim_assets(pokitOS);
+
 
     enable_fullscreen_enabling(pokitOS);
     let openprom = setup_console_open(pokitOS);
 
+    await openprom
+    cartloader.startCart(cartinfo, pokitOS)
+
+    return pokitOS;
+}
+
+async function preload_introanim_assets(pokitOS) {
+    await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
+    await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
+    await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     return pokitOS;
 }
 
 async function setup_console_open(pokitOS) {
-    await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
-    await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
-    await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     return new Promise(resolve =>
-    document.querySelector('#onbutton').onclick = 
-        async function() {
-            console.log('doing')
-            document.querySelector('#powercase_right').className = 'hidden'
-            document.querySelector('#powercase_left').className = 'hidden'
-            pokitOS.start();
-            await doIntroAnim(pokitOS)
-            console.log('done')
-            resolve(pokitOS)
-        })
+       document.querySelector('#onbutton').onclick = 
+           async function() {
+               console.log('doing')
+               document.querySelector('#powercase_right').className = 'hidden'
+               document.querySelector('#powercase_left').className = 'hidden'
+               pokitOS.start();
+               await doIntroAnim(pokitOS)
+               console.log('done')
+               resolve(pokitOS)
+           })
 }
 
 async function setup_pokitOS() {
