@@ -25,11 +25,11 @@ export async function doIntroAnim(pokitOS) {
     text.addUniqueSystem('doanim', {update: () => {
         //console.log('stillbeingcalled');
         let sh = new SpatialHash(160);
-        // sh.addMany([iText, iTop, iBot])
-        sh.add(text)
-        sh.add(topbar)
-        sh.add(bottombar)
-        console.log(sh.findNearby(dummycam))
+        sh.addMany([text, topbar, bottombar])
+        // sh.add(text)
+        // sh.add(topbar)
+        // sh.add(bottombar)
+        // console.log(sh.findNearby(dummycam))
         if (text.y > 161) {text.y -= animrate}
         else if (topbar.x < 155) {topbar.x += animrate*4}
         else if (bottombar.x > 155) {bottombar.x -= animrate*4}

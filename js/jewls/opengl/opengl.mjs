@@ -503,9 +503,10 @@ export function render(sortFunc) {
         let cam = Object.assign({z:-200, depth:400}, camera)
         
         let comprehended = [..._actors.values()];
+        console.log([...comprehended])
         comprehended.forEach(x=>{
-            x.height =x.spriteHeight
-            x.width = x.spriteWidth
+            x.height =x.sheetHeight/x.spriteHeight
+            x.width = x.sheetWidth/x.spriteWidth
             x.x = x.x_translation
             x.y=x.y_translation
             x.z=0;

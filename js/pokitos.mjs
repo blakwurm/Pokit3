@@ -9,6 +9,7 @@ export class PokitOS {
         this.ecs = null;
         this.assets = null;
         this.mixer = null;
+        this.cullmap = new SpatialHash(320);
         Object.assign(this, initbundle);
     }
     maketime() {
@@ -44,26 +45,36 @@ export class PokitOS {
             this.ecs.update()
             t.timesince -= t.interval;
         }
+        let self = this;
         this.renderer.render(
-            (entities, camera)=>{
-                camera.x += camera.width/2;
-                camera.y += camera.height/2;
-                camera.z = 1;
-                camera.depth = 1000;
-                camera.width*=2;
-                camera.height*=2;
-                let top = entities.filter(x=>x.texture_id=='load_top')[0];
-                let shm = new SpatialHash(1320);
-                shm.addMany(entities);
-                let near =  shm.findNearby(camera);
-                if(near.has(top) && shouldLog){
-                    console.log(top.x)
-                    shouldLog = false;
-                    console.log(shouldLog);
-                }
-                return near;
+            function(entities, camera) {
+                camera.x += camera.width/2
+                camera.y += camera.height/2
+                self.cullmap.clear();
+                self.cullmap.addMany(entities)
+                return self.cullmap.findNearby(camera)
             }
-        );
+        )
+        // this.renderer.render(
+        //     (entities, camera)=>{
+        //         camera.x += camera.width/2;
+        //         camera.y += camera.height/2;
+        //         camera.z = 1;
+        //         camera.depth = 1000;
+        //         // camera.width*=2;
+        //         // camera.height*=2;
+        //         let top = entities.filter(x=>x.texture_id=='load_top')[0];
+        //         let shm = new SpatialHash(1320);
+        //         shm.addMany(entities);
+        //         let near =  shm.findNearby(camera);
+        //         if(near.has(top) && shouldLog){
+        //             console.log(top.x)
+        //             shouldLog = false;
+        //             console.log(shouldLog);
+        //         }
+        //         return near;
+        //     }
+        // );
     }
 
 }
