@@ -2,7 +2,7 @@ import {Types} from './assetmanager.mjs';
 import { SpatialHash } from './spatialhash.mjs';
 
 export async function doIntroAnim(pokitOS) {
-    let animrate = 1;
+    let animrate = 4;
     let mag = 1;
     let iText = await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
     let iTop = await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
