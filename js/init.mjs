@@ -89,7 +89,8 @@ async function setup_pokitOS() {
     let a = new AssetManager();
     let m = new Mixer();
     addTileMapSupport();
-    let pokitOS = await new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m}).preload();
+    let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m});
+    await pokitOS.preload();
     window.pokitOS = pokitOS;
     return pokitOS;
 }
