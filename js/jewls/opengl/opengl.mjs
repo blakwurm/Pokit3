@@ -503,7 +503,7 @@ export function render(sortFunc) {
         let cam = Object.assign({z:-200, depth:400}, camera)
         
         let comprehended = [..._actors.values()];
-        console.log([...comprehended])
+        // console.log([...comprehended])
         comprehended.forEach(x=>{
             x.x = x.x_translation
             x.y=x.y_translation

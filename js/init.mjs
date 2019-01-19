@@ -1,23 +1,104 @@
-import {InputManager} from './smolinput.mjs'
-import {ECS} from './ecs.mjs';
-import {Renderer} from './smolrender.mjs';
-import {PokitOS} from './pokitos.mjs';
-import {AssetManager} from './assetmanager.mjs';
-import {SpatialHash} from './spatialhash.mjs'
-import { doIntroAnim } from './introanim.mjs';
+// import {InputManager} from './smolinput.mjs'
+// import {ECS} from './ecs.mjs';
+// import {Renderer} from './smolrender.mjs';
+// import {PokitOS} from './pokitos.mjs';
+// import {Types,AssetManager} from './assetmanager.mjs';
+// import {SpatialHash} from './spatialhash.mjs'
+// import { doIntroAnim } from './introanim.mjs';
+// import {addTileMapSupport} from './extras/tilemaps.mjs';
+// import {Mixer} from './boombox.mjs'
 
-export default function main() {
+// export default async function main() {
+//     let ecs = new ECS();
+//     let e = ecs.makeEntity({width: 320, height: 320});
+//     ecs.update();
+//     let i = new InputManager();
+//     let r = new Renderer(document.querySelector('#gamescreen'));
+//     let a = new AssetManager();
+//     let m = new Mixer();
+//     addTileMapSupport();
+//     let pokitOS = await new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m}).preload();
+//     // a.getImage('load_text', '/img/bootscreen_text.svg');
+//     // e.addSystem('img', {imgname:'load_text'})
+//     pokitOS.start();
+//     //let boombox = new Mixer();
+//     //boombox.init(pokitOS);
+//     //let sound = await a.queueAsset('xmas', '/carts/krackedEC/LastChristmas.mp3', Types.SOUND);
+//     //boombox.playSound(sound);
+//     doIntroAnim(pokitOS)
+//     // let load = await pokitOS.assets.queueImage('load_text', '/img/bootscreen_text.png');
+//     // let loa2 = await pokitOS.assets.queueImage('load_text2', '/img/bootscreen_top.png');
+//     // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
+//     //            .addSystem('camera', {isMainCamera:true});
+//     // let durr = pokitOS.ecs.makeEntity({x:160,y:160*1,height:320,width:320,z:10})
+//     //             .addSystem('img', {id: 'load_text'})
+//     //             .addSystem('spriteActor')
+//     // let dur2 = pokitOS.ecs.makeEntity({x:160,y:160*1,height:loa2.height,width:loa2.width,z:1})
+//     //             .addSystem('img', {id: 'load_text2'})
+//     //             .addSystem('spriteActor')
+//     // console.log(durr)
+
+//     window.pokitOS = pokitOS;
+//     return pokitOS;
+// }
+
+import {InputManager} from './inputmanager.mjs'
+import {ECS} from './ecs.mjs';
+// import {Renderer} from './smolrender.mjs';
+import {Renderer} from './jewls.mjs';
+import {Mixer} from './boombox.mjs'
+import {PokitOS} from './pokitos.mjs';
+import {Types,AssetManager} from './assetmanager.mjs';
+import {SpatialHash} from './spatialhash.mjs'
+import {doIntroAnim} from './introanim.mjs';
+import {addTileMapSupport} from './extras/tilemaps.mjs';
+import './smolworker.mjs'
+
+export default async function main() {
+    let pokitOS = await setup_pokitOS();
+
+    enable_fullscreen_enabling(pokitOS);
+    let openprom = setup_console_open(pokitOS);
+
+    return pokitOS;
+}
+
+async function setup_console_open(pokitOS) {
+    await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
+    await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
+    await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
+    return new Promise(resolve =>
+    document.querySelector('#onbutton').onclick = 
+        async function() {
+            console.log('doing')
+            document.querySelector('#powercase_right').className = 'hidden'
+            document.querySelector('#powercase_left').className = 'hidden'
+            pokitOS.start();
+            await doIntroAnim(pokitOS)
+            console.log('done')
+            resolve(pokitOS)
+        })
+}
+
+async function setup_pokitOS() {
     let ecs = new ECS();
     let e = ecs.makeEntity({width: 320, height: 320});
     ecs.update();
     let i = new InputManager();
     let r = new Renderer(document.querySelector('#gamescreen'));
     let a = new AssetManager();
-    let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a});
-    pokitOS.preload();
-    // a.getImage('load_text', '/img/bootscreen_text.svg');
-    // e.addSystem('img', {imgname:'load_text'})
-    doIntroAnim(pokitOS)
-    pokitOS.start();
+    let m = new Mixer();
+    addTileMapSupport();
+    let pokitOS = await new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m}).preload();
+    window.pokitOS = pokitOS;
     return pokitOS;
 }
+
+async function enable_fullscreen_enabling(pokitOS) {
+    document.querySelector('#fullscreen').onclick = () => screenfull.toggle();
+    document.querySelector('#gamescreen').ondblclick = () => screenfull.toggle();
+}
+
+
+
+// main();
