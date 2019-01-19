@@ -13,7 +13,7 @@ export let collisionSystem = {
         this.map.clear();
         let colliders = entities.filter(x=>x.flags.has('collidable'));
         this.map.addMany(colliders);
-        Array.prototype.forEach(x=>x=false, this.collisions.values());
+        Array.prototype.forEach(x=>x.collided=false, this.collisions.values());
         for(let collider of colliders){
             for(let collision of map.findColliding(collider)){
                 if(collider !== collision){
