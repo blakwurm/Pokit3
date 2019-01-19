@@ -1,4 +1,5 @@
 import {Types} from './assetmanager.mjs';
+import { SpatialHash } from './spatialhash.mjs';
 
 export async function doIntroAnim(pokitOS) {
     let animrate = 1;
@@ -8,7 +9,7 @@ export async function doIntroAnim(pokitOS) {
     let iBot = await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
     //            .addSystem('camera', {isMainCamera:true});
-    let text = pokitOS.ecs.makeEntity({x:160,y:160*3,height:320,width:320,z:10})
+    let text = pokitOS.ecs.makeEntity({name:'text',x:160,y:160*3,height:320,width:320,z:10})
                .addSystem('img', {id:'load_text'})
                .addSystem('spriteActor')
     let topbar = pokitOS.ecs.makeEntity({x:160*-3,y:160,width:320,height:320,z:1})
@@ -20,8 +21,15 @@ export async function doIntroAnim(pokitOS) {
     let text_done = false;
     let top_done = false;
     let bottom_done = false;
+    let dummycam = {x: 160, y: 160, z: 1, width: 320, height: 320, depth: 1000}
     text.addUniqueSystem('doanim', {update: () => {
         //console.log('stillbeingcalled');
+        let sh = new SpatialHash(160);
+        // sh.addMany([iText, iTop, iBot])
+        sh.add(text)
+        sh.add(topbar)
+        sh.add(bottombar)
+        console.log(sh.findNearby(dummycam))
         if (text.y > 161) {text.y -= animrate}
         else if (topbar.x < 155) {topbar.x += animrate*4}
         else if (bottombar.x > 155) {bottombar.x -= animrate*4}

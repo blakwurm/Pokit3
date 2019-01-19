@@ -34,21 +34,38 @@ export class SpatialHash {
 function makeSpatialKey(cs, e){
     let {x,y,z,width,height,depth,scaleX,scaleY,scaleZ} = e
     depth = depth || 1;
-    width *= scaleX || 1;
-    height *= scaleY || 1;
-    depth *= scaleZ || 1;
-    let hw=Math.floor((x+width)/cs)
-    let hh=Math.floor((y+height)/cs)
-    let hd=Math.floor((z+depth)/cs)
+    // width *= scaleX || 1;
+    // height *= scaleY || 1;
+    // depth *= scaleZ || 1;
+    let hw=Math.floor((x+(width/2))/cs)
+    let hh=Math.floor((y+(height/2))/cs)
+    let hd=Math.floor((z+(depth/2))/cs)
+    // x = x-(width/2)
+    // y = y-(height/2)
+    // z = z-(depth/2)
     let keys = []
-    for (let xi=Math.floor((x||1)/cs);xi<=hw;xi=xi+1) {
-        for (let yi=Math.floor((y||1)/cs);yi<=hh;yi=yi+1) {
-            for (let zi=Math.floor(z/cs);zi<=hd;zi=zi+1) {
-                keys.push(((1e5*xi+1e3*yi+zi)||0))
-                //keys.push(xi + "," + yi + "," + zi);
+    for (let xi=Math.floor(((x||1)-(width/2))/cs);xi<=hw;xi=xi+1) {
+        for (let yi=Math.floor((((y||1))-(height/2))/cs);yi<=hh;yi=yi+1) {
+            for (let zi=Math.floor((z-(depth/2))/cs);zi<=hd;zi=zi+1) {
+                // keys.push(((1e5*xi+1e3*yi+zi)||0))
+                keys.push(xi + "," + yi + "," + zi);
             }
         }
     }
     //console.log(keys);
     return keys
 }
+
+let ent1 = {width: 320, height: 320, depth: 1, x: 160, y: 160, z: 1}
+let ent2 = {width: 320, height: 320, depth: 1, x: -160, y: 160, z: 1}
+let ent3 = {width: 320, height: 320, depth: 1, x: -1, y: 160, z: 1}
+
+let keys1 = makeSpatialKey(1120, ent1)
+let keys2 = makeSpatialKey(1120, ent2)
+let keys3 = makeSpatialKey(1120, ent3)
+let keyscheck = new Set([...keys1, ...keys3])
+
+console.log(keys1)
+console.log(keys2)
+console.log(keys3)
+console.log(keyscheck)
