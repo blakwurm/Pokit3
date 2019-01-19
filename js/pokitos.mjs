@@ -32,8 +32,8 @@ export class PokitOS {
         cancelAnimationFrame(this.time.r);
     }
     async preload() {
-        await this.renderer.init(this);
         await this.ecs.init(this);
+        await this.renderer.init(this);
         await this.assets.init(this);
         await this.mixer.init(this);
         return this;

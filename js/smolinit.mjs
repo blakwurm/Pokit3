@@ -43,5 +43,3 @@ export default async function main() {
     window.pokitOS = pokitOS;
     return pokitOS;
 }
-
-main();
