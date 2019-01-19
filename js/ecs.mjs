@@ -2,7 +2,7 @@
 let prisort = (a, b) => a.priority - b.priority
 function no_op(){}
 function prepSystem(sys) {
-    for (let x of ['init', 'update', 'destroy', 'runonce']) {
+    for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit']) {
         if (!sys[x]) {
             sys[x] = no_op
         }
@@ -58,6 +58,12 @@ class PokitEntity{
     runOnce(ro) {
         this.runonce.push(ro);
     }
+    onCollisionEnter(collider, collision){
+        this._sorted.forEach(a=>a.onCollisionEnter(collider, collision));
+    }
+    onCollisionExit(collider, collision){
+        this._sorted.forEach(a=>a.onCollisionExit(collider, collision));
+    }
     addSystem(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
@@ -100,10 +106,21 @@ export class ECS {
         this.entities = new Map();
         // TODO: Add cache array of entities
         this.systems = new Map();
+        this.supers = new Map();
         this.reverse_lookup = {}
         this.pokitOS = null;
     }
     init(pokitOS) {this.pokitOS = pokitOS}
+    setSuper(systemName, system){
+        system = pokitEntity.prototype.prepSystem(system);
+        this.supers.set(systemName, system);
+
+        system.init(this.pokitOS, [...this.entities.values()]);
+    }
+    removeSuper(systemName){
+        this.supers(systemName).destroy([...this.entities.values()]);
+        this.supers.delete(systemName);
+    }
     reverseSet(systemName, entity) {
         let s = this.reverse_lookup[systemName]
         if (s) {
@@ -145,6 +162,7 @@ export class ECS {
     }
     update() {
         [...this.entities.values()].forEach(e=>e.update());
+        [...this.supers.values()].forEach(e=>e.update([...this.entities.values()]));
     }
     dumpall() {
         this.entities.values().forEach(e=>e.destroy())
