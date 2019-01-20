@@ -105,7 +105,7 @@ class PokitEntity{
         return Math.sqrt(Math.abs((entity.x - this.x)**2 + (entity.y-this.y)**2));
     }
     bearing(entity){
-        return this.rad2deg(Math.atan2(entity.y - this.y, entity.x - this.x));
+        return this.rad2deg(Math.atan2(entity.y - this.y, entity.x - this.x)) + 90;
     }
     deg2rad(angle){
         return (angle/360) * (Math.PI * 2);
