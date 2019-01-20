@@ -24,15 +24,15 @@ export class Mixer {
         engine.ecs.setSystem('audioListener', AudioListener);
         engine.ecs.setSystem('audioSource', AudioSource);
 
-        this.createRack();
-        let n = this._racks[0][1];
+        this.createRack(false);
+        let n = this.getNode(1, 0);
         console.log(n)
         n.connect(this._ctx.destination);
 
         engine.ecs.defaultCamera.addSystem('audioListener', {});
     }
 
-    createRack(connectToMaster){
+    createRack(connectToMaster=true){
         let entryNode = new AnalyserNode(this._ctx);
         let exitNode = new AnalyserNode(this._ctx);
         entryNode.connect(exitNode);
