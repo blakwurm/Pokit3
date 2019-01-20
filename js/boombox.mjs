@@ -115,14 +115,14 @@ let AudioSource = class {
         Object.assign(this, audioData)
         let buffer = await this.engine.assets.getAsset(this.id).data;
         this.engine.assets.getAsset(this.id).data = buffer;
-        console.log(buffer)
-        console.log(this.engine.assets)
+        //console.log(buffer)
+        //console.log(this.engine.assets)
         let src = this.engine.mixer.makeSource(buffer, this.rack);
-        console.log(src)
+        //console.log(src)
         this.src = src;
 
         this.src.src.loop = this.loop;
-        this.src.src.playbackRate = this.speed;
+        this.src.src.playbackRate.value = this.speed;
 
         if(this.spatial){
             this._volume = 0;
@@ -133,13 +133,14 @@ let AudioSource = class {
         }
     }
     update(entity){
-        let audioListener = this.engine.mixer.audioSource;
+        let audioListener = this.engine.mixer.audioListener;
         if(this.spatial && audioListener){
             this._volume = 1- (entity.distance(audioListener.entity)/audioListener.maxHearingDistance);
             if(this._volume < 0) this._volume = 0;
             
-            this.pan = Math.sin(entity.deg2rad(audioListener.bearing(entity)));
+            this.pan = Math.sin(entity.deg2rad(audioListener.entity.bearing(entity)));
         }
+        //console.log({pan:this.pan, volume: this._volume})
         this.src.pan.value = this.pan;
         this.src.vol.gain.value = this.maxVolume * this._volume;
     }
