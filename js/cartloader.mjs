@@ -1,9 +1,12 @@
 export function getBaseCartURL() {
     let urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('cart') ? urlParams.get('cart') : '/carts/democart'
+    return urlParams.has('cart') ? urlParams.get('cart') : new URL('/carts/democart', window.location.href).href
 }
 export async function parseCartManifest(baseurl) {
-    let manifest = await fetch(baseurl + '/cart.json')
+    baseurl = baseurl+'/'
+    let url = new URL('./cart.json', baseurl)
+    let manifest = await fetch(url)
+    console.log(url)
     console.log(manifest.json())
 
 }
