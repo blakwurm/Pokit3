@@ -28,6 +28,7 @@ class PokitEntity{
             this._sorted = [];
             this.runonce = [];
             this.pokitOS = engine;
+            console.log(engine);
     }
     get x() {
         return this.parent.x + this._x;
@@ -67,6 +68,7 @@ class PokitEntity{
     addSystem(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
+            console.log(this.pokitOS);
             sys = new sys(this.pokitOS);
             prepSystem(sys)
         }
@@ -163,8 +165,8 @@ export class ECS {
         delete this.reverse_lookup[systemName]
     }
     makeEntity(identity) {
-        let e = new PokitEntity(this, identity);
-        this.entities.set(e.id, e, this.pokitOS);
+        let e = new PokitEntity(this, identity, this.pokitOS);
+        this.entities.set(e.id, e);
         return e;
     }
     popEntity(id) {
