@@ -60,7 +60,7 @@ export default async function main() {
     let baseURL = cartloader.getBaseCartURL()
     console.log(baseURL)
     let cartinfo = await cartloader.parseCartManifest(baseURL)
-    await cartloader.preloadCartAssets(cartinfo)
+    await cartloader.preloadCartAssets(cartinfo, pokitOS)
     await preload_introanim_assets(pokitOS);
 
 
