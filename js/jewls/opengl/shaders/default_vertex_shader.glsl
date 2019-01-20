@@ -23,9 +23,9 @@ void main() {
 		scaledPosition.y * u_rotation.y - scaledPosition.x * u_rotation.x);
 	vec2 position = rotatedOrigin + u_translation;
 	vec2 zto = position / u_resolution;
-	vec2 ztt = zto * 2.0;
-	vec2 clip = ztt - 1.0;
+	//vec2 ztt = zto * 2.0;
+	//vec2 clip = ztt - 1.0;
 
-	gl_Position = vec4(clip * vec2(1, u_flip_y), a_vertexPosition.z + (u_priority / 100.0), 1);
+	gl_Position = vec4(zto * vec2(1, u_flip_y), a_vertexPosition.z + (u_priority / 100.0), 1);
 	v_uvCoord = a_uvCoord * u_uvModifier + u_uvTranslator;
 }
