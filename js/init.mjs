@@ -60,6 +60,7 @@ export default async function main() {
     let baseURL = cartloader.getBaseCartURL()
     console.log(baseURL)
     let cartinfo = await cartloader.parseCartManifest(baseURL)
+    await cartloader.loadCartModule(cartinfo, pokitOS)
     await cartloader.preloadCartAssets(cartinfo, pokitOS)
     await preload_introanim_assets(pokitOS);
 
@@ -68,7 +69,7 @@ export default async function main() {
     let openprom = setup_console_open(pokitOS);
 
     await openprom
-    cartloader.startCart(cartinfo, pokitOS)
+    await cartloader.startCart(cartinfo, pokitOS)
 
     return pokitOS;
 }

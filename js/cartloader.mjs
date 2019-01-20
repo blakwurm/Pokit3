@@ -21,13 +21,23 @@ export async function preloadCartAssets(cartinfo, pokitOS) {
     for (let [k,[type, url]] of Object.entries(cartinfo.assets)) {
         console.log(type)
         let newurl = new URL(url, cartinfo.baseURL.href)
-        promises.push(pokitOS.assets.queueAsset(k, newurl, type))
+        promises.push(pokitOS.assets.queueAsset(k, newurl, Types[type]))
     }
     for (let p in promises) {
         await p
     }
 
 }
+export async function loadCartModule(cartinfo, pokitOS) {
+    let modurl = new URL(cartinfo.main, cartinfo.baseURL.href)
+    console.log(modurl)
+    let mod = await import(modurl)
+    console.log(mod)
+    cartinfo.module = mod
+    mod.preload ? mod.preload() : ''
+    
+}
 export async function startCart(cartinfo, pokitOS) {
-
+    console.log('loading')
+    cartinfo.module.main(pokitOS);
 }
