@@ -10,8 +10,9 @@ export class Mixer {
 
     async audioDecoder(_, response){
         let buffer = await response.arrayBuffer();
+        console.log(buffer)
         let ctx = this._ctx;
-        return await new Promise((resolve)=>ctx.decodeAudioData(buffer, resolve));
+        return await ctx.decodeAudioData(buffer);
     }
 
     init(engine){
@@ -101,9 +102,12 @@ let AudioSource = class {
 
         this._volume = 1;
     };
-    init(entity, audioData) {
-        Object.assign(this, audioData);
-        let buffer = this.engine.assets.getAsset(this.id);
+    async init(entity, audioData) {
+        Object.assign(this, audioData)
+        let buffer = await this.engine.assets.getAsset(this.id).data;
+        this.engine.assets.getAsset(this.id).data = buffer;
+        console.log(buffer)
+        console.log(this.engine.assets)
         this.src = this.engine.mixer.makeSource(buffer, this.rack);
 
         this.src.src.loop = this.loop;
