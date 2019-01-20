@@ -76,9 +76,9 @@ export class Mixer {
         console.log('created vol')
         let pan = this._ctx.createStereoPanner();
         console.log('created pan')
-        src.connect(vol, rack);
-        vol.connect(pan, rack);
-        vol.connect(this.getNode(0,rack), rack)
+        src.connect(vol);
+        vol.connect(pan);
+        vol.connect(this.getNode(0,rack))
         console.log('connected things')
         console.log(src)
         console.log(pan)

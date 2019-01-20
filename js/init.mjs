@@ -57,6 +57,7 @@ import * as cartloader from './cartloader.mjs'
 
 export default async function main() {
     let pokitOS = await setup_pokitOS();
+    await loadExtras(pokitOS)
     let baseURL = cartloader.getBaseCartURL()
     console.log(baseURL)
     let cartinfo = await cartloader.parseCartManifest(baseURL)
@@ -103,11 +104,14 @@ async function setup_pokitOS() {
     let r = new Renderer(document.querySelector('#gamescreen'));
     let a = new AssetManager();
     let m = new Mixer();
-    addTileMapSupport();
     let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m});
     await pokitOS.preload();
     window.pokitOS = pokitOS;
     return pokitOS;
+}
+
+async function loadExtras(pokitOS) {
+    addTileMapSupport(pokitOS)
 }
 
 async function enable_fullscreen_enabling(pokitOS) {
