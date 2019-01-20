@@ -63,7 +63,7 @@ export class Mixer {
     }
 
     getNode(index, rack=0) {
-        this._racks[rack][index];
+        return this._racks[rack][index];
     }
 
     makeSource(buffer, rack = 0){
