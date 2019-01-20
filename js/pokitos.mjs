@@ -48,8 +48,6 @@ export class PokitOS {
         let self = this;
         this.renderer.render(
             function(entities, camera) {
-                camera.x += camera.width/2
-                camera.y += camera.height/2
                 self.cullmap.clear();
                 self.cullmap.addMany(entities)
                 return self.cullmap.findNearby(camera)

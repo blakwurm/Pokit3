@@ -3,8 +3,9 @@ import {Types} from './assetmanager.mjs';
 export class Mixer {
     constructor(){
         this._racks = [];
-        this._srcs = new Map();
         this._ctx = new AudioContext();
+
+        this.audioListener = null;
     }
 
     async audioDecoder(_, response){
@@ -19,19 +20,24 @@ export class Mixer {
         engine.assets.registerType('SOUND');
         engine.assets.registerDecoder(Types.SOUND, (_, response) => this.audioDecoder(_, response));
         
+        engine.ecs.setSystem('audioListener', AudioListener);
         engine.ecs.setSystem('audioSource', AudioSource);
 
-        let entryNode = new AnalyserNode(this._ctx);
-        entryNode.connect(this._ctx.destination);
+        this.createRack();
+        let n = this._racks[0][1];
+        console.log(n)
+        n.connect(this._ctx.destination);
 
-        this._racks.push([entryNode,this._ctx.destination]);
+        engine.ecs.defaultCamera.addSystem('audioListener', {});
     }
 
-    createRack(){
+    createRack(connectToMaster){
         let entryNode = new AnalyserNode(this._ctx);
-        let exitNode = new AnalyzerNode(this._ctx);
+        let exitNode = new AnalyserNode(this._ctx);
         entryNode.connect(exitNode);
-        exitNode.connect(this._racks[0][0]);
+        if(connectToMaster){
+            exitNode.connect(this._racks[0][0]);
+        }
         this._racks.push([entryNode,exitNode]);
         return this._racks.length -1;
     }
@@ -62,9 +68,22 @@ export class Mixer {
     makeSource(buffer, rack = 0){
         let src = this._ctx.createBufferSource();
         src.buffer = buffer;
-        src.connect(this._racks[rack][0]);
-        this._srcs[rack].push(src);
-        return src;
+        let vol = this._ctx.createGain();
+        let pan = this._ctx.createStereoPanner();
+        src.connect(vol);
+        vol.connect(pan);
+        vol.connect(this.getNode(0,rack))
+        return {src: src, pan:pan, vol:vol};
+    }
+}
+
+let AudioListener = class {
+    constructor(engine) {
+        engine.mixer.audioListener = this;
+    }
+    init(entity,initParams){
+        Object.assign(this, {maxHearingDistance:13*20}, initParams);
+        this.entity = entity;
     }
 }
 
@@ -73,26 +92,46 @@ let AudioSource = class {
         this.engine=engine
         this.startOnInit = false;
         this.loop = false;
+        this.pan = 0;
         this.spatial = false;
         this.id = null;
         this.rack = 0;
         this.speed = 1;
+        this.maxVolume = 1;
+
+        this._volume = 1;
     };
     init(entity, audioData) {
         Object.assign(this, audioData);
         let buffer = this.engine.assets.getAsset(this.id);
         this.src = this.engine.mixer.makeSource(buffer, this.rack);
 
-        this.src.loop = this.loop;
-        this.src.playbackRate = this.speed;
+        this.src.src.loop = this.loop;
+        this.src.src.playbackRate = this.speed;
+
+        if(this.spatial){
+            this._volume = 0;
+        }
+
         if(this.startOnInit){
-            this.src.start();
+            this.play();
         }
     }
+    update(entity){
+        let audioListener = this.engine.mixer.audioSource;
+        if(this.spatial && audioListener){
+            this._volume = 1- (entity.distance(audioListener.entity)/audioListener.maxHearingDistance);
+            if(this._volume < 0) this._volume = 0;
+            
+            this.pan = Math.sin(entity.deg2rad(audioListener.bearing(entity)));
+        }
+        this.src.pan.pan.value = this.pan;
+        this.src.vol.gain.value = this.maxVolume * this._volume;
+    }
     play() {
-        this.src.start();
+        this.src.src.start();
     }
     stop() {
-        this.src.stop();
+        this.src.src.stop();
     }
 }

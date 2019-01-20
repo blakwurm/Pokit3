@@ -9,13 +9,13 @@ export async function doIntroAnim(pokitOS) {
     let iBot = await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
     //            .addSystem('camera', {isMainCamera:true});
-    let text = pokitOS.ecs.makeEntity({name:'text',x:160,y:160*3,height:320,width:320,z:10})
+    let text = pokitOS.ecs.makeEntity({name:'text',x:0,y:160*2,height:320,width:320,z:10})
                .addSystem('img', {id:'load_text'})
                .addSystem('spriteActor')
-    let topbar = pokitOS.ecs.makeEntity({x:160*-3,y:160,width:320,height:320,z:1})
+    let topbar = pokitOS.ecs.makeEntity({x:160*-2,y:0,width:320,height:320,z:1})
                .addSystem('img', {id:'load_top'})
                .addSystem('spriteActor')
-    let bottombar = pokitOS.ecs.makeEntity({x:160*3,y:160,width:320,height:320,z:1})
+    let bottombar = pokitOS.ecs.makeEntity({x:160*2,y:0,width:320,height:320,z:1})
                .addSystem('img', {id:'load_bottom'})
                .addSystem('spriteActor')
     let text_done = false;
@@ -31,9 +31,9 @@ export async function doIntroAnim(pokitOS) {
         // sh.add(topbar)
         // sh.add(bottombar)
         // console.log(sh.findNearby(dummycam))
-        if (text.y > 161) {text.y -= animrate}
-        else if (topbar.x < 155) {topbar.x += animrate*4}
-        else if (bottombar.x > 155) {bottombar.x -= animrate*4}
+        if (text.y > 0) {text.y -= animrate}
+        else if (topbar.x < 0) {topbar.x += animrate*4}
+        else if (bottombar.x > 0) {bottombar.x -= animrate*4}
         else if (text.width * text.scaleX < 320*32) { [text, topbar, bottombar].forEach(x=>{
             x.scaleX+=mag*0.1
             x.scaleY+=mag*0.1
