@@ -67,13 +67,22 @@ export class Mixer {
     }
 
     makeSource(buffer, rack = 0){
+        console.log('making audio source')
         let src = this._ctx.createBufferSource();
+        console.log('created src')
         src.buffer = buffer;
+        console.log('added buffer to src')
         let vol = this._ctx.createGain();
+        console.log('created vol')
         let pan = this._ctx.createStereoPanner();
-        src.connect(vol);
-        vol.connect(pan);
-        vol.connect(this.getNode(0,rack))
+        console.log('created pan')
+        src.connect(vol, rack);
+        vol.connect(pan, rack);
+        vol.connect(this.getNode(0,rack), rack)
+        console.log('connected things')
+        console.log(src)
+        console.log(pan)
+        console.log(vol)
         return {src: src, pan:pan, vol:vol};
     }
 }
@@ -108,7 +117,9 @@ let AudioSource = class {
         this.engine.assets.getAsset(this.id).data = buffer;
         console.log(buffer)
         console.log(this.engine.assets)
-        this.src = this.engine.mixer.makeSource(buffer, this.rack);
+        let src = this.engine.mixer.makeSource(buffer, this.rack);
+        console.log(src)
+        this.src = src;
 
         this.src.src.loop = this.loop;
         this.src.src.playbackRate = this.speed;
@@ -129,7 +140,7 @@ let AudioSource = class {
             
             this.pan = Math.sin(entity.deg2rad(audioListener.bearing(entity)));
         }
-        this.src.pan.pan.value = this.pan;
+        this.src.pan.value = this.pan;
         this.src.vol.gain.value = this.maxVolume * this._volume;
     }
     play() {
