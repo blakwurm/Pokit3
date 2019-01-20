@@ -1,13 +1,15 @@
 export function getBaseCartURL() {
     let urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has('cart') ? urlParams.get('cart') : new URL('/carts/democart', window.location.href).href
+    let urlpart = urlParams.get('cart')
+    let carturl = new URL(urlpart ? urlpart + '/' : '/carts/democart//', window.location.origin)
+    console.log(carturl.href)
+    return carturl
 }
 export async function parseCartManifest(baseurl) {
-    baseurl = baseurl+'/'
-    let url = new URL('./cart.json', baseurl)
-    let manifest = await fetch(url)
-    console.log(url)
-    console.log(manifest.json())
+    let newurl = new URL('cart.json', baseurl.href)
+    let manifest = await (await fetch(newurl)).json()
+    console.log(newurl)
+    console.log(manifest)
 
 }
 export async function preloadCartAssets(cartinfo) {
