@@ -26,7 +26,6 @@ export class Mixer {
 
         this.createRack(false);
         let n = this.getNode(1, 0);
-        console.log(n)
         n.connect(this._ctx.destination);
 
         engine.ecs.defaultCamera.addSystem('audioListener', {});
@@ -67,22 +66,13 @@ export class Mixer {
     }
 
     makeSource(buffer, rack = 0){
-        console.log('making audio source')
         let src = this._ctx.createBufferSource();
-        console.log('created src')
         src.buffer = buffer;
-        console.log('added buffer to src')
         let vol = this._ctx.createGain();
-        console.log('created vol')
         let pan = this._ctx.createStereoPanner();
-        console.log('created pan')
         src.connect(vol);
         vol.connect(pan);
-        vol.connect(this.getNode(0,rack))
-        console.log('connected things')
-        console.log(src)
-        console.log(pan)
-        console.log(vol)
+        pan.connect(this.getNode(0,rack))
         return {src: src, pan:pan, vol:vol};
     }
 }
@@ -125,7 +115,7 @@ let AudioSource = class {
         this.src.src.playbackRate.value = this.speed;
 
         if(this.spatial){
-            this._volume = 0;
+            //this._volume = 0;
         }
 
         if(this.startOnInit){
@@ -135,14 +125,31 @@ let AudioSource = class {
     update(entity){
         let audioListener = this.engine.mixer.audioListener;
         if(this.spatial && audioListener){
-            this._volume = 1- (entity.distance(audioListener.entity)/audioListener.maxHearingDistance);
-            if(this._volume < 0) this._volume = 0;
+            let atten =  (entity.distance(audioListener.entity)/audioListener.maxHearingDistance);
+            if(atten > 1) atten = 1;
             
-            this.pan = Math.sin(entity.deg2rad(audioListener.entity.bearing(entity)));
+            this._volume = 1- atten;
+            this.pan = this.getHorizontalBearing(audioListener.entity,entity) * atten;
         }
         //console.log({pan:this.pan, volume: this._volume})
-        this.src.pan.value = this.pan;
+        this.src.pan.pan.value = this.pan;
         this.src.vol.gain.value = this.maxVolume * this._volume;
+    }
+    getSide(b){
+        if(b === 0 || b === 180) return 0;
+        return b < 180 ? 1 : -1;
+    }
+    getHorizontalBearing(reference, compare){
+        let b = reference.bearing(compare);
+        let s = this.getSide(b);
+        switch(s){
+            case 0:
+                return 0;
+            case 1:
+                return b / 180;
+            case -1:
+                return -((360 - b) / 180);
+        }
     }
     play() {
         this.src.src.start();
