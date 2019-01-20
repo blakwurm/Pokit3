@@ -99,6 +99,18 @@ class PokitEntity{
         }
         this.ecs.popEntity(this.id)
     }
+    distance(entity){
+        return Math.sqrt(Math.abs((entity.x - this.x)**2 + (entity.y-this.y)**2));
+    }
+    bearing(entity){
+        return this.rad2deg(Math.atan2(entity.y - this.y, entity.x - this.x));
+    }
+    deg2rad(angle){
+        return (angle/360) * (Math.PI * 2);
+    }
+    rad2deg(angle){
+        return (angle/(Math.PI * 2)) * 360;
+    }
 }
 
 export class ECS {
