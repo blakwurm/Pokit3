@@ -20,12 +20,13 @@ export class Mixer {
         engine.assets.registerType('SOUND');
         engine.assets.registerDecoder(Types.SOUND, (_, response) => this.audioDecoder(_, response));
         
+        engine.ecs.setSystem('audioListener', AudioListener);
         engine.ecs.setSystem('audioSource', AudioSource);
 
-        let entryNode = new AnalyserNode(this._ctx);
-        entryNode.connect(this._ctx.destination);
+        this.createRack();
+        this.getNode(1, 0).connect(this._ctx.destination);
 
-        this._racks.push([entryNode,this._ctx.destination]);
+        engine.ecs.defaultCamera.addSystem('audioListener', {});
     }
 
     createRack(){
