@@ -5,6 +5,8 @@
         "preload": ["santasprites"]
     },
     "assets": {
-        "santasprites":["IMAGE", "assets/santasprites.png"]
+        "offensive": ["IMAGE", "assets/offensive.png"],
+        "santasprites":["IMAGE", "assets/santasprites.png"],
+        "cali":["SOUND", "assets/cali.ogg"]
     }
 }
