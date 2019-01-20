@@ -22,6 +22,7 @@ export async function doIntroAnim(pokitOS) {
     let top_done = false;
     let bottom_done = false;
     let dummycam = {x: 160, y: 160, z: 1, width: 320, height: 320, depth: 1000}
+    return new Promise((resolve) =>
     text.addUniqueSystem('doanim', {update: () => {
         //console.log('stillbeingcalled');
         let sh = new SpatialHash(160);
@@ -44,7 +45,8 @@ export async function doIntroAnim(pokitOS) {
             bottombar.destroy()
             pokitOS.ecs.removeSystem('doanim')
             //console.log(pokitOS)
+            resolve()
         }
-
     }})
+    )
 }

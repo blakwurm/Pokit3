@@ -1,0 +1,10 @@
+{
+    "name": "Pokit3 Demo",
+    "main": "main.mjs",
+    "assetgroups": {
+        "preload": ["santasprites"]
+    },
+    "assets": {
+        "santasprites":["IMAGE", "assets/santasprites.png"]
+    }
+}
