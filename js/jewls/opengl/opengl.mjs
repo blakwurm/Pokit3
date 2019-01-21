@@ -143,7 +143,7 @@ export function deleteTexture(name){
     _textures.delete(name);
 }
 
-function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
+function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
 
     //console.log(layers);
 
@@ -167,7 +167,8 @@ function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTi
 
             //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 
-            createSquare(positions, uvs, tileWidth, tileHeight, offsetX + tileWidth * x, offsetY + tileHeight * y, l, spriteX, spriteY)
+            createSquare(positions,tileWidth, tileHeight, offsetX + tileWidth * x, offsetY + tileHeight * y, l * zWidth)
+            createUvSquare(uvs, spriteX, spriteY);
             //return [positions, uvs];
         }
         l--;
@@ -176,23 +177,55 @@ function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTi
     return [positions, uvs];
 }
 
-function createSquare(positions, uvs, width, height, x, y, layer, spriteX, spriteY) {
+export function setTileWithCoords(actor, x, y, tile, layers){
+    let tilemap = _actors.get(actor)._tilemapData;
+    setTile(actor, y*tilemap.numtilesRow + x, tile, layer);
+}
+
+export function setTile(actor, index, tile, layer){
+    _actors.get(actor)._tilemapData.layers[layer][index] = tile;
+}
+
+export function updateTileMap(actor){
+    let uvs = []
+    let actor = _actors.get(actor);
+    let tilemap = actor._tilemapData;
+    for (let layer of tilemap.layers) {
+        for (let i = 0; i < layer.length; i++) {
+            let tile = alphaTile;
+
+            if (layer[i] > 0)
+                tile = layer[i] - 1;
+
+            let spriteX = tile % numSpritesRow;
+            let spriteY = Math.floor(tile / numSpritesRow);
+
+            //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
+
+            createUvSquare(uvs, spriteX, spriteY);
+            //return [positions, uvs];
+        }
+    }
+
+    let uvCoords = _programs[0].attributes.uvCoords;
+    bufferUvs(uvs, uvCoords, actor.coordBuffer);
+}
+
+function createSquare(positions, width, height, x, y, layer) {
     positions.push(x, y, layer);
-    uvs.push(spriteX, spriteY);
-
     positions.push(x + width, y, layer);
-    uvs.push(spriteX + 1, spriteY);
-
     positions.push(x, y + height, layer);
-    uvs.push(spriteX, spriteY + 1);
-
     positions.push(x + width, y, layer);
-    uvs.push(spriteX + 1, spriteY);
-
     positions.push(x, y + height, layer);
-    uvs.push(spriteX, spriteY + 1);
-
     positions.push(x + width, y + width, layer);
+}
+
+function createUvSquare(uvs, spriteX, spriteY){
+    uvs.push(spriteX, spriteY);
+    uvs.push(spriteX + 1, spriteY);
+    uvs.push(spriteX, spriteY + 1);
+    uvs.push(spriteX + 1, spriteY);
+    uvs.push(spriteX, spriteY + 1);
     uvs.push(spriteX + 1, spriteY + 1);
 }
 
@@ -206,9 +239,9 @@ function createSquare(positions, uvs, width, height, x, y, layer, spriteX, sprit
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
 
-    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, alphaTile, layers);
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers);
 
     //console.log(positions);
     //console.log(uvs);
@@ -217,9 +250,19 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
     let vertexPosition = _programs[0].attributes.vertexPosition;
     let uvCoords = _programs[0].attributes.uvCoords;
 
-    let [positionBuffer, vao, coordBuffer] = bufferData(positions, uvs, vertexPosition, uvCoords);
+    let [positionBuffer, vao] = bufferObject(positions, vertexPosition);
+    let coordBuffer = bufferUvs(uvs, uvCoords);
 
     _actors.set(name, {
+        _tilemapData: {
+            numSpritesRow: numSpritesRow,
+            numTilesRow: numTilesRow,
+            tileWidth: tileWidth,
+            tileHeight: tileHeight,
+            zWidth: zWidth,
+            alphaTile: alphaTile,
+            layers: layers,
+        },
         texture: tex.texture,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
@@ -277,7 +320,8 @@ export function createActor(name, texture, width, height, textureLiteral = false
         1.0, 1.0,
     ];
 
-    let [positionBuffer, vao, coordBuffer] = bufferData(positions, uvs, vertexPosition, uvCoords);
+    let [positionBuffer, vao] = bufferObject(positions, vertexPosition);
+    let coordBuffer = bufferUvs(uvs, uvCoords);
 
     width = width || tex.width;
     height = height || tex.height;
@@ -307,7 +351,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     });
 }
 
-function bufferData(positions, uvs, vertexPosition, uvCoords) {
+function bufferObject(positions, vertexPosition) {
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
@@ -317,21 +361,20 @@ function bufferData(positions, uvs, vertexPosition, uvCoords) {
     _gl.bindVertexArray(vao);
     _gl.enableVertexAttribArray(vertexPosition);
 
-    let size = 3;
-    let type = _gl.FLOAT;
-    let normalize = false;
-    let stride = 0;
-    let offset = 0;
-    _gl.vertexAttribPointer(vertexPosition, size, type, normalize, stride, offset);
+    _gl.vertexAttribPointer(vertexPosition, 3, _gl.FLOAT, false, 0, 0);
 
-    let coordBuffer = _gl.createBuffer();
+    return [positionBuffer, vao];
+}
+
+function bufferUvs(uvs, uvCoords, coordBuffer){
+    coordBuffer = coordBuffer || _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
     _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(uvs), _gl.STATIC_DRAW);
 
-    _gl.vertexAttribPointer(uvCoords, 2, type, normalize, stride, offset);
+    _gl.vertexAttribPointer(uvCoords, 2, _gl.FLOAT, false, 0, 0);
     _gl.enableVertexAttribArray(uvCoords);
 
-    return [positionBuffer, vao, coordBuffer];
+    return coordBuffer;
 }
 
 /** Delete actor
