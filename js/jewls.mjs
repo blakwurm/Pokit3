@@ -44,11 +44,13 @@ let actorSystem = class {
 };
 
 let tileMapSystem = class extends actorSystem {
-    init(entity){
+    init(entity, info){
+        super();
+        Object.assign(this, {zPad:0.1}, info);
+        let tileMap = super.engine.assets.getAsset(this.id);
         this.tex = entity.systems.get('img');
-        this.tileMap = entity.systems.get('tileMap');
         this.img = super.engine.assets.getAsset(this.tex.id);
-        jewls.createTileMap(entity.id, this.tex.id, this.tileMap.width, this.img.width/this.tileMap.tilewidth, this.tileMap.tilehidth, this.tileMap.tileheight, this.tileMap.zSpacer, this.tileMap.alphaTile, this.tileMap.layers)
+        jewls.createTileMap(entity.id, this.tex.id, tileMap.width, this.img.width/tileMap.tilewidth, tileMap.tilewidth, tileMap.tileheight, this.zPad, tileMap.alphaTile, tileMap.tilelayers)
     }
 }
 

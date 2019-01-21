@@ -9,33 +9,6 @@ export function addTileMapSupport(pokitOS) {
     // }
 }
 
-class TileMap {
-    constructor(pokitOS) {
-        this.pokitOS = pokitOS;
-        this.tileLayers = null;
-    }
-    init(entity, {id, textureID, alphaTile, zSpacer, handlers}) {
-        let {tileLayers, objects, tileheight, tilewidth, width, maxZ} = this.pokitOS.assets.getAsset(id)
-        let newlayers = [...new Array(maxZ).forEach(()=>[])]
-        for (let layer in tileLayers) {
-            newlayers[layer.z] = layer.data
-        }
-        let jewlsInfo = {
-            name: entity.id, texture: textureID,
-            numSpritesRow: width,
-            numTilesRow: img.width/tilewidth,
-            tileWidth: tilewidth,
-            tileHeight: tileheight,
-            alphaTile: alphaTile,
-            zpad: zSpacer,
-            layers: newlayers
-        }
-    }
-    update(entity) {
-
-    }
-}
-
 async function decodeTiled(_, response) {
     let ob = await response.json();
     let {tilewidth, tileheight, width, height, layers} = ob
@@ -51,6 +24,7 @@ async function decodeTiled(_, response) {
                 tilelayers.push(layer)
             }
             if (layer.type == "objectgroup") {
+                tilelayers.push([]);
                 for (let o of layer.objects) {
                     console.log(o)
                     o.x += layer.x
@@ -73,6 +47,5 @@ async function decodeTiled(_, response) {
         width: width,
         maxZ: zind
     }
-    console.log(ret)
     return ret
 }
