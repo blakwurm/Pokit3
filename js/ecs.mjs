@@ -23,7 +23,7 @@ class PokitEntity{
             identity);
             this.id = Math.random();
             this.ecs = ecs;
-            this.systems = new Map();
+            this.cogs = new Map();
             this.exts = new Map();
             this._sorted = [];
             this.runonce = [];
@@ -73,30 +73,30 @@ class PokitEntity{
             prepCog(sys)
         }
         sys.init(this, props);
-        this.systems.set(systemName, sys)
+        this.cogs.set(systemName, sys)
         this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
     addUniqueCog(systemName,sys) {
         sys = prepCog(sys)
-        this.systems.set(systemName,sys)
+        this.cogs.set(systemName,sys)
         return this.sortSystems();
     }
     removeCog(sn) {
-        this.systems.get(sn).destroy(this);
-        this.systems.delete(sn);
+        this.cogs.get(sn).destroy(this);
+        this.cogs.delete(sn);
         this.ecs.reverseRemove(sn, this);
         return this.sortSystems();
     }
     sortSystems() {
-        this._sorted = [...this.systems.values()].sort(prisort)
+        this._sorted = [...this.cogs.values()].sort(prisort)
         return this;
     }
     hydrate(jsono) {
         let o = JSON.parse(jsono);
     }
     destroy() {
-        for (let [n,x] of this.systems) {
+        for (let [n,x] of this.cogs) {
             this.removeCog(n)
         }
         this.ecs.popEntity(this.id)

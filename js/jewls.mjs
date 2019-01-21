@@ -28,7 +28,7 @@ let cameraSystem = class {
 let actorSystem = class {
     constructor(engine) {this.engine=engine}
     init (entity) {
-        this.tex = entity.systems.get('img');
+        this.tex = entity.cogs.get('img');
         jewls.createActor(entity.id, this.tex.id, this.tex.width, this.tex.height);
     }
     update (entity) {
@@ -48,7 +48,7 @@ let tileMapSystem = class extends actorSystem {
         super();
         Object.assign(this, {zPad:0.1}, info);
         let tileMap = super.engine.assets.getAsset(this.id);
-        this.tex = entity.systems.get('img');
+        this.tex = entity.cogs.get('img');
         this.img = super.engine.assets.getAsset(this.tex.id);
         jewls.createTileMap(entity.id, this.tex.id, tileMap.width, this.img.width/tileMap.tilewidth, tileMap.tilewidth, tileMap.tileheight, this.zPad, tileMap.alphaTile, tileMap.tilelayers)
     }
