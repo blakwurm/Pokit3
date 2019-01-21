@@ -8,6 +8,20 @@ export function addTileMapSupport(pokitOS) {
     // }
 }
 
+class TiledMap {
+    constructor(pokitOS) {
+        this.pokitOS = pokitOS;
+        this.tileLayers = null;
+    }
+    init(entity, {id, zSpacer, handlers}) {
+        let {tileLayers, objects, tileheight, tilewidth, width} = this.pokitOS.assets.getAsset(id)
+        tileLayers.forEach(el => el.z*=zSpacer);
+    }
+    update(entity) {
+
+    }
+}
+
 async function decodeTiled(_, response) {
     let ob = await response.json();
     let {tilewidth, tileheight, width, height, layers} = ob
