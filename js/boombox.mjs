@@ -4,6 +4,7 @@ export class Mixer {
     constructor(){
         this._racks = [];
         this._ctx = new AudioContext();
+        this._started = false;
 
         this.audioListener = null;
     }
@@ -65,7 +66,11 @@ export class Mixer {
         return this._racks[rack][index];
     }
 
-    makeSource(buffer, rack = 0){
+    async makeSource(buffer, rack = 0){
+        if(!this._started){
+            await this._ctx.resume();
+            this._started = true;
+        }
         let src = this._ctx.createBufferSource();
         src.buffer = buffer;
         let vol = this._ctx.createGain();
@@ -107,7 +112,7 @@ let AudioSource = class {
         this.engine.assets.getAsset(this.id).data = buffer;
         //console.log(buffer)
         //console.log(this.engine.assets)
-        let src = this.engine.mixer.makeSource(buffer, this.rack);
+        let src = await this.engine.mixer.makeSource(buffer, this.rack);
         //console.log(src)
         this.src = src;
 
