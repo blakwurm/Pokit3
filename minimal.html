@@ -1,0 +1,35 @@
+﻿<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+
+  <title>The Pokit3 Handheld Game Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+#gamescreen {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 100vw;
+    max-height: 100vw;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    background-color: black;
+}
+  </style>
+</head>
+
+<body>
+  <canvas id="gamescreen" height="320" width="320"></canvas>
+  <div id="debug_point"></div>
+  <div id="cart_slot"></div>
+  <script type="module">
+    import main from './js/smolinit.mjs'
+    main();
+  </script>
+</body>
+</html>

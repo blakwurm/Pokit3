@@ -6,43 +6,31 @@
     <body>
         <canvas id="c" height=600 width=600 style="width: 600px; height: 600px;">no canvas fo you</canvas>
         <script type="module">
-            import * as gl from "./opengl.js";
+            import * as gl from "./opengl.mjs";
 
             let c = document.getElementById("c");
             render(c);
 
             async function render(c) {
                 await gl.initContext(c);
+                let img = await loadImage('/img/bootscreen_top.svg');
+                let img2 = await loadImage('/img/bootscreen_bottom.svg');
+                let img3 = await loadImage('/img/bootscreen_text.svg');
 
-                let i1 = await loadImage('testimg.png');
-                let i2 = await loadImage('testimg2.png');
+                gl.createCamera('main', 600, 600, true, 255, 255, 255, 255);
 
-                gl.createImageTexture("t1", i1);
-                gl.createImageTexture("t2", i2);
+                gl.createImageTexture('img', img);
+                gl.createImageTexture('img2', img2);
+                gl.createImageTexture('img3', img3);
+                
+                gl.createActor('actor', 'img', img.width, img.height);
+                gl.translateActor('actor', 300, 300,0);
+                gl.createActor('actor3', 'img3', img.width, img.height);
+                gl.translateActor('actor3', 300, 300, 10);
+                gl.createActor('actor2', 'img2', img.width, img.height);
+                gl.translateActor('actor2', 300, 300,0);
 
-                gl.createActor("a1", "t1");
-                gl.createActor("a2", "t2");
-
-                gl.translateActor("a1", c.width/2, c.height/2);
-                gl.translateActor("a2",-8000 + c.width/2, c.width/2);
-
-                gl.createCamera("cam1", c.width, c.height, 0, 0, 0, 0);
-                gl.createCameraView("view1", "cam1");
-                gl.translateActor("view1", c.width/2, c.height/2);
-
-                gl.translateCamera("cam1", -8000);
-
-                let i = 0;
-                while (true) {
-                    gl.rotateActor("a1", 360-i)
-                    gl.rotateActor("a2", i);
-                    gl.render(1, 0, 0, 1);
-                    return;
-
-                    ++i;
-                    if (i === 360) i = 0;
-                    await sleep(5);
-                }
+                gl.render();
             }
 
             function sleep(time) {
