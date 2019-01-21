@@ -43,6 +43,15 @@ let actorSystem = class {
     }
 };
 
+let tileMapSystem = class extends actorSystem {
+    init(entity){
+        this.tex = entity.systems.get('img');
+        this.tileMap = entity.systems.get('tileMap');
+        this.img = super.engine.assets.getAsset(this.tex.id);
+        jewls.createTileMap(entity.id, this.tex.id, this.tileMap.width, this.img.width/this.tileMap.tilewidth, this.tileMap.tilehidth, this.tileMap.tileheight, this.tileMap.zSpacer, this.tileMap.alphaTile, this.tileMap.layers)
+    }
+}
+
 async function decodeImage(id, response){
     let i = new Image();
     await new Promise(async (resolve)=>{
