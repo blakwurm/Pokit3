@@ -3,7 +3,6 @@ import { Types, AssetManager } from "../assetmanager.mjs";
 export function addTileMapSupport(pokitOS) {
     pokitOS.assets.registerType("TILED") 
     pokitOS.assets.registerDecoder(Types.TILED, decodeTiled)
-    pokitOS.ecs.setCog('tileMap', TileMap);
     // AssetManager.prototype.getTileMap = async function(tilemapName, src) {
     //     let j =  await this.getJson(tilemapName, src)
     // }
