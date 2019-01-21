@@ -18,7 +18,7 @@ export class Renderer{
     init(pokitOS) {
         this.pokitOS = pokitOS
         let s = this;
-        pokitOS.ecs.setSystem('img', 
+        pokitOS.ecs.setCog('img', 
         {init: (entity, imgdata) => {
             console.log(entity)
             s.addEntity(entity, imgdata);
@@ -27,12 +27,12 @@ export class Renderer{
         delete: (entity) => {
             this.torender.delete(entity.id)
         }})
-        pokitOS.ecs.setSystem('camera',
+        pokitOS.ecs.setCog('camera',
         {init: (entity) => {
             s.addCamera(entity)
             entity.flags.add('camera')
         }})
-        pokitOS.ecs.makeEntity({width:320,height:320,x:160,y:160}).addSystem('camera')
+        pokitOS.ecs.makeEntity({width:320,height:320,x:160,y:160}).addCog('camera')
         console.log(this.cameras)
     }
     addEntity(entity, imgdata) {

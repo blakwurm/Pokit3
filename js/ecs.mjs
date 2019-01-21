@@ -1,7 +1,7 @@
 
 let prisort = (a, b) => a.priority - b.priority
 function no_op(){}
-function prepSystem(sys) {
+function prepCog(sys) {
     for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit']) {
         if (!sys[x]) {
             sys[x] = no_op
@@ -65,24 +65,24 @@ class PokitEntity{
     onCollisionExit(collider, collision){
         this._sorted.forEach(a=>a.onCollisionExit(collider, collision));
     }
-    addSystem(systemName, props) {
+    addCog(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
             console.log(this.pokitOS);
             sys = new sys(this.pokitOS);
-            prepSystem(sys)
+            prepCog(sys)
         }
         sys.init(this, props);
         this.systems.set(systemName, sys)
         this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
-    addUniqueSystem(systemName,sys) {
-        sys = prepSystem(sys)
+    addUniqueCog(systemName,sys) {
+        sys = prepCog(sys)
         this.systems.set(systemName,sys)
         return this.sortSystems();
     }
-    removeSystem(sn) {
+    removeCog(sn) {
         this.systems.get(sn).destroy(this);
         this.systems.delete(sn);
         this.ecs.reverseRemove(sn, this);
@@ -97,7 +97,7 @@ class PokitEntity{
     }
     destroy() {
         for (let [n,x] of this.systems) {
-            this.removeSystem(n)
+            this.removeCog(n)
         }
         this.ecs.popEntity(this.id)
     }
@@ -125,16 +125,6 @@ export class ECS {
         this.pokitOS = null;
     }
     init(pokitOS) {this.pokitOS = pokitOS}
-    setSuper(systemName, system){
-        system = prepSystem(system);
-        this.supers.set(systemName, system);
-
-        system.init(this.pokitOS, [...this.entities.values()]);
-    }
-    removeSuper(systemName){
-        this.supers(systemName).destroy([...this.entities.values()]);
-        this.supers.delete(systemName);
-    }
     reverseSet(systemName, entity) {
         let s = this.reverse_lookup[systemName]
         if (s) {
@@ -153,14 +143,14 @@ export class ECS {
         }
         return this;
     }
-    setSystem(systemName, newsystem) {
+    setCog(systemName, newsystem) {
         if (typeof newsystem === "object") {
-            prepSystem(newsystem)
+            prepCog(newsystem)
         }
         this.systems.set(systemName, newsystem)
         return this;
     }
-    removeSystem(systemName) {
+    removeCog(systemName) {
         this.systems.delete(systemName)
         delete this.reverse_lookup[systemName]
     }

@@ -8,22 +8,22 @@ export async function doIntroAnim(pokitOS) {
     let iTop = await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
     let iBot = await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     // let cam = pokitOS.ecs.makeEntity({x:0,y:0,height:320,width:320,z:0})
-    //            .addSystem('camera', {isMainCamera:true});
+    //            .addCog('camera', {isMainCamera:true});
     let text = pokitOS.ecs.makeEntity({name:'text',x:0,y:160*2,height:320,width:320,z:10})
-               .addSystem('img', {id:'load_text'})
-               .addSystem('spriteActor')
+               .addCog('img', {id:'load_text'})
+               .addCog('spriteActor')
     let topbar = pokitOS.ecs.makeEntity({x:160*-2,y:0,width:320,height:320,z:1})
-               .addSystem('img', {id:'load_top'})
-               .addSystem('spriteActor')
+               .addCog('img', {id:'load_top'})
+               .addCog('spriteActor')
     let bottombar = pokitOS.ecs.makeEntity({x:160*2,y:0,width:320,height:320,z:1})
-               .addSystem('img', {id:'load_bottom'})
-               .addSystem('spriteActor')
+               .addCog('img', {id:'load_bottom'})
+               .addCog('spriteActor')
     let text_done = false;
     let top_done = false;
     let bottom_done = false;
     let dummycam = {x: 160, y: 160, z: 1, width: 320, height: 320, depth: 1000}
     return new Promise((resolve) =>
-    text.addUniqueSystem('doanim', {update: () => {
+    text.addUniqueCog('doanim', {update: () => {
         //console.log('stillbeingcalled');
         let sh = new SpatialHash(160);
         sh.addMany([text, topbar, bottombar])
@@ -43,7 +43,7 @@ export async function doIntroAnim(pokitOS) {
             text.destroy()
             topbar.destroy()
             bottombar.destroy()
-            pokitOS.ecs.removeSystem('doanim')
+            pokitOS.ecs.removeCog('doanim')
             //console.log(pokitOS)
             resolve()
         }

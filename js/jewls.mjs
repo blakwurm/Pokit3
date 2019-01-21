@@ -85,11 +85,11 @@ export class Renderer {
         engine.assets.registerDestructor(Types.IMAGE, destructImage);
         this.render = jewls.render;
 
-        engine.ecs.setSystem('img', textureSystem);
-        engine.ecs.setSystem('spriteActor', actorSystem);
-        engine.ecs.setSystem('camera', cameraSystem);
+        engine.ecs.setCog('img', textureSystem);
+        engine.ecs.setCog('spriteActor', actorSystem);
+        engine.ecs.setCog('camera', cameraSystem);
 
         engine.ecs.defaultCamera = engine.ecs.makeEntity({width:320, height:320})
-                    .addSystem('camera', {isMainCamera:true});
+                    .addCog('camera', {isMainCamera:true});
     }
 }
