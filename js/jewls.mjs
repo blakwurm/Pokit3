@@ -44,8 +44,10 @@ let actorSystem = class {
 };
 
 let tileMapSystem = class extends actorSystem {
+    constructor(engine){
+        super(engine);
+    }
     init(entity, info){
-        super();
         Object.assign(this, {zPad:0.1}, info);
         let tileMap = super.engine.assets.getAsset(this.id);
         this.tex = entity.cogs.get('img');
