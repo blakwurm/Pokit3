@@ -7,7 +7,7 @@
     "assets": {
         "offensive": ["IMAGE", "assets/offensive.png"],
         "santasprites":["IMAGE", "assets/santasprites.png"],
-        "cali":["SOUND", "assets/LastChristmas.mp3"],
+        "cali":["SOUND", "assets/testton.flac"],
         "sampmap":["TILED", "assets/sampmap.json"]
     }
 }
