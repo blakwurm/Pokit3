@@ -47,11 +47,11 @@ let tileMapSystem = class extends actorSystem {
     constructor(engine){
         super(engine);
     }
-    init(entity, info){
+    async init(entity, info){
         Object.assign(this, {zPad:0.1}, info);
-        let tileMap = super.engine.assets.getAsset(this.id);
+        let tileMap = await super.engine.assets.getAsset(this.id);
         this.tex = entity.cogs.get('img');
-        this.img = super.engine.assets.getAsset(this.tex.id);
+        this.img = await super.engine.assets.getAsset(this.tex.id);
         jewls.createTileMap(entity.id, this.tex.id, tileMap.width, this.img.width/tileMap.tilewidth, tileMap.tilewidth, tileMap.tileheight, this.zPad, tileMap.alphaTile, tileMap.tilelayers)
     }
 }
