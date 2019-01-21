@@ -129,7 +129,7 @@ let AudioSource = class {
             if(atten > 1) atten = 1;
             
             this._volume = 1- atten;
-            this.pan = this.getHorizontalBearing(audioListener.entity,entity) * atten;
+            this.pan = Math.sin(entity.deg2rad(audioListener.entity.bearing(entity)) * atten);
         }
         //console.log({pan:this.pan, volume: this._volume})
         this.src.pan.pan.value = this.pan;
