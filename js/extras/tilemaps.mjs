@@ -18,9 +18,8 @@ async function decodeTiled(_, response) {
             console.log('processing layer')
             console.log(layer)
         if (layer.visible) {
-            layer.z = zind;
             if (layer.type == "tilelayer") {
-                tilelayers.push(layer)
+                tilelayers.push(layer.data)
             }
             if (layer.type == "objectgroup") {
                 tilelayers.push([]);
@@ -38,13 +37,13 @@ async function decodeTiled(_, response) {
         zind++;
     }
     let ret = {
-        tileLayers: tilelayers,
+        layers: tilelayers,
         objects: objects,
         tileheight: tileheight,
         tilewidth: tilewidth,
         height: height,
         width: width,
-        maxZ: zind
+        maxZ: zind,
     }
     return ret
 }

@@ -32,6 +32,7 @@ let actorSystem = class {
         jewls.createActor(entity.id, this.tex.id, this.tex.width, this.tex.height);
     }
     update (entity) {
+        console.log(this.tex)
         jewls.setActorSprite(entity.id, this.tex.spriteX, this.tex.spriteY);
 
         jewls.translateActor(entity.id, entity.x, entity.y, entity.z);
@@ -51,8 +52,20 @@ let tileMapSystem = class extends actorSystem {
         Object.assign(this, {zPad:0.1}, info);
         let tileMap = await super.engine.assets.getAsset(this.id);
         this.tex = entity.cogs.get('img');
+        console.log(this.tex)
         this.img = await super.engine.assets.getAsset(this.tex.id);
-        jewls.createTileMap(entity.id, this.tex.id, tileMap.width, this.img.width/tileMap.tilewidth, tileMap.tilewidth, tileMap.tileheight, this.zPad, tileMap.alphaTile, tileMap.tilelayers)
+        console.log(this.img)
+        let alphaTile = info.alphaTile || this.img.width/tileMap.tilewidth*(this.img.height/tileMap.tileheight)
+        jewls.createTileMap(
+            entity.id,
+            this.tex.id,
+            tileMap.width, 
+            this.img.width/tileMap.tilewidth, 
+            tileMap.tilewidth, 
+            tileMap.tileheight, 
+            this.zPad, 
+            alphaTile, 
+            tileMap.tilelayers)
     }
 }
 
@@ -90,6 +103,7 @@ export class Renderer {
         engine.ecs.setCog('img', textureSystem);
         engine.ecs.setCog('spriteActor', actorSystem);
         engine.ecs.setCog('camera', cameraSystem);
+        engine.ecs.setCog('tilemap', tileMapSystem);
 
         engine.ecs.defaultCamera = engine.ecs.makeEntity({width:320, height:320})
                     .addCog('camera', {isMainCamera:true});
