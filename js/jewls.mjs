@@ -51,23 +51,23 @@ let tileMapSystem = class extends actorSystem {
         console.log(info)
         Object.assign(this, {zPad:0.1}, info);
         console.log(this)
-        let tileMap = await this.engine.assets.getAsset(this.id);
+        let tileMap = await this.engine.assets.getAsset(this.id).data;
         console.log(tileMap)
         this.tex = entity.cogs.get('img');
         console.log(this.tex)
-        this.img = await this.engine.assets.getAsset(this.tex.id);
+        this.img = await this.engine.assets.getAsset(this.tex.id).data;
         console.log(this.img)
         let alphaTile = info.alphaTile || this.img.width/tileMap.tilewidth*(this.img.height/tileMap.tileheight)
         jewls.createTileMap(
             entity.id,
             this.tex.id,
-            tileMap.width, 
             this.img.width/tileMap.tilewidth, 
+            tileMap.width, 
             tileMap.tilewidth, 
             tileMap.tileheight, 
             this.zPad, 
             alphaTile, 
-            tileMap.tilelayers)
+            tileMap.layers)
     }
 }
 
