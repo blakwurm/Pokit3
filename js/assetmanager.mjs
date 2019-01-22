@@ -42,7 +42,7 @@ export class AssetManager{
         if(!asset) {
             let response = await fetch(url);
             let decode = this._decoders.get(type);
-            asset = {id:id, type:type, url:url, data:decode(id, response)};
+            asset = {id:id, type:type, url:url, data:await decode(id, response)};
             this._assets.set(id, asset);
             this._urls.set(url, asset);
             this._typedAssets.get(type).add(asset);
