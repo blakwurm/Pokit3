@@ -32,7 +32,6 @@ let actorSystem = class {
         jewls.createActor(entity.id, this.tex.id, this.tex.width, this.tex.height);
     }
     update (entity) {
-        console.log(this.tex)
         jewls.setActorSprite(entity.id, this.tex.spriteX, this.tex.spriteY);
 
         jewls.translateActor(entity.id, entity.x, entity.y, entity.z);
@@ -49,11 +48,14 @@ let tileMapSystem = class extends actorSystem {
         super(engine);
     }
     async init(entity, info){
+        console.log(info)
         Object.assign(this, {zPad:0.1}, info);
-        let tileMap = await super.engine.assets.getAsset(this.id);
+        console.log(this)
+        let tileMap = await this.engine.assets.getAsset(this.id);
+        console.log(tileMap)
         this.tex = entity.cogs.get('img');
         console.log(this.tex)
-        this.img = await super.engine.assets.getAsset(this.tex.id);
+        this.img = await this.engine.assets.getAsset(this.tex.id);
         console.log(this.img)
         let alphaTile = info.alphaTile || this.img.width/tileMap.tilewidth*(this.img.height/tileMap.tileheight)
         jewls.createTileMap(
