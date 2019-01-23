@@ -239,7 +239,7 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers, cached = true) {
 
     let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers);
 
@@ -262,6 +262,10 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
             zPad: zPad,
             alphaTile: alphaTile,
             layers: layers,
+            cached: cached,
+            vertexBuffer: positionBuffer,
+            vertexArray: vao,
+            uvBuffer: coordBuffer,
         },
         texture: tex.texture,
         vertexBuffer: positionBuffer,
@@ -269,7 +273,7 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
         uvBuffer: coordBuffer,
         passes: positions.length/3,
         width: numTilesRow * tileWidth,
-        height: Math.floor(layers[0] / numTilesRow) * tileHeight,
+        height: numTilesLayer / numTilesRow * tileHeight,
         sheetWidth: tex.width,
         sheetHeight: tex.height,
         spriteWidth: tileWidth / tex.width,
@@ -283,6 +287,10 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
         angle: 0,
         priority: 0,
     });
+
+    if(cached){
+        cacheObject(name);
+    }
 }
 
 /** Create actor for defining sprite data on the canvas
@@ -521,6 +529,35 @@ export function scaleActor(actor, x = 1, y = 1) {
     _actors.get(actor).y_scale = y;
 }
 
+function drawActor(actor, viewport){
+    let programData = _programs[0];
+    _gl.bindVertexArray(actor.vertexArray);
+
+    _gl.activeTexture(_gl.TEXTURE0);
+    _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
+
+    _gl.uniform1i(programData.uniforms.image, 0);
+    _gl.uniform1f(programData.uniforms.priority, actor.priority);
+    _gl.uniform1f(programData.uniforms.yFlip, 1.0);
+    _gl.uniform2f(programData.uniforms.resolution, viewport.width, viewport.height);
+    _gl.uniform2f(programData.uniforms.translation, actor.x_translation - viewport.x, actor.y_translation - viewport.y);
+    _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - viewport.angle)), Math.cos(toRad(actor.angle - viewport.angle)));
+    _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
+    _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
+    _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
+    
+    if(viewport.main){
+        _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
+        _gl.uniform1f(programData.uniforms.yFlip, -1.0);
+        _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
+    }
+
+    if (actor.texture === viewport.texture.texture) return;
+
+    _gl.bindFramebuffer(_gl.FRAMEBUFFER, viewport.frameBuffer);
+    _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
+}
+
 /** Renders all viewports */
 export function render(sortFunc) {
     sortFunc = sortFunc || ((entities) => entities);
@@ -558,31 +595,7 @@ export function render(sortFunc) {
         //console.log(sorted);
 
         for (let actor of sorted) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
-            _gl.bindVertexArray(actor.vertexArray);
-
-            _gl.activeTexture(_gl.TEXTURE0);
-            _gl.bindTexture(_gl.TEXTURE_2D, actor.texture);
-
-            _gl.uniform1i(programData.uniforms.image, 0);
-            _gl.uniform1f(programData.uniforms.priority, actor.priority);
-            _gl.uniform1f(programData.uniforms.yFlip, 1.0);
-            _gl.uniform2f(programData.uniforms.resolution, camera.width, camera.height);
-            _gl.uniform2f(programData.uniforms.translation, actor.x_translation - camera.x, actor.y_translation - camera.y);
-            _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - camera.angle)), Math.cos(toRad(actor.angle - camera.angle)));
-            _gl.uniform2f(programData.uniforms.scale, actor.x_scale, actor.y_scale);
-            _gl.uniform2f(programData.uniforms.uvModifier, actor.spriteWidth, actor.spriteHeight);
-            _gl.uniform2f(programData.uniforms.uvTranslator, actor.sprite_x * actor.spriteWidth, actor.sprite_y * actor.spriteHeight);
-            
-            if(camera.main){
-                _gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
-                _gl.uniform1f(programData.uniforms.yFlip, -1.0);
-                _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
-            }
-
-            if (actor.texture === camera.texture.texture) continue;
-
-            _gl.bindFramebuffer(_gl.FRAMEBUFFER, camera.frameBuffer);
-            _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
+            drawActor(actor, camera);
         }
     }
      _gl.colorMask(false, false, false, true);
