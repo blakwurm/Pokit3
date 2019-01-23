@@ -58,7 +58,7 @@ export class AssetManager{
         let assset = this._assets.get(id);
         let destruct = this._destructors.get(asset.type);
         if(destruct){
-            destruct(id);
+            destruct(id, asset.data);
         }
         this._assets.delete(id);
         this._urls.delete(asset.url);

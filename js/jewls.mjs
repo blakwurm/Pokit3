@@ -53,7 +53,6 @@ let tileMapSystem = class extends actorSystem {
         let tileMap = await this.engine.assets.getAsset(this.id).data;
         this.tex = entity.cogs.get('img');
         this.img = await this.engine.assets.getAsset(this.tex.id).data;
-        let alphaTile = info.alphaTile || this.img.width/tileMap.tilewidth*(this.img.height/tileMap.tileheight)
         jewls.createTileMap(
             entity.id,
             this.tex.id,
@@ -62,8 +61,7 @@ let tileMapSystem = class extends actorSystem {
             tileMap.width * tileMap.height,
             tileMap.tilewidth, 
             tileMap.tileheight, 
-            this.zPad, 
-            alphaTile, 
+            this.zPad,
             tileMap.layers,
             this.cache);
         entity.width = tileMap.width * tileMap.tilewidth;
