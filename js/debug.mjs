@@ -1,9 +1,8 @@
 export class Logging{
-    pattern = '.*';
+    pattern = /.*/;
     Log(label, data, ...optionalParams){
-        let regex = new RegExp(this.pattern);
-        if(regex.test(label)){
-            console.log(data, ...optionalParams);
+        if(pattern.test(label)){
+            console.log(label + ': ' + data, ...optionalParams);
         }
     }
 }
