@@ -238,6 +238,7 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} zPad - The z coordinate padding space size between layers
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
+ * @param {Boolean} cached - Determines weather the tilemap is kept as an object with indvidual cells relating to the tile map or rendered to a texture and treated as one object
  */
 export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers, cached = true) {
 
