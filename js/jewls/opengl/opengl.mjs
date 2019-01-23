@@ -142,7 +142,7 @@ export function deleteTexture(name){
     _textures.delete(name);
 }
 
-function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zWidth, alphaTile, layers) {
+function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zWidth, layers) {
 
     ////console.log(layers);
 
@@ -153,13 +153,13 @@ function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tile
     let l = 0;
     for (let layer of layers) {
         for (let i = 0; i < layer.length; i++) {
+            if(layer[i] === 0)
+                continue;
+
             let x = i % numTilesRow;
             let y = Math.floor(i / numTilesRow);
 
-            let tile = alphaTile;
-
-            if (layer[i] > 0)
-                tile = layer[i] - 1;
+            let tile = layer[i] - 1;
 
             let spriteX = tile % numSpritesRow;
             let spriteY = Math.floor(tile / numSpritesRow);
@@ -236,13 +236,12 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} tileWidth - The pixel width of a single sprite
  * @param {Number} tileHeight - The pixel height of a single sprite
  * @param {Number} zPad - The z coordinate padding space size between layers
- * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  * @param {Boolean} cached - Determines weather the tilemap is kept as an object with indvidual cells relating to the tile map or rendered to a texture and treated as one object
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers, cached = true) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, layers, cached = true) {
 
-    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers);
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, layers);
 
     ////console.log(positions);
     ////console.log(uvs);
@@ -261,7 +260,6 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
             tileWidth: tileWidth,
             tileHeight: tileHeight,
             zPad: zPad,
-            alphaTile: alphaTile,
             layers: layers,
             cached: cached,
             vertexBuffer: positionBuffer,
