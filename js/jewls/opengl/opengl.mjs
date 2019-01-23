@@ -142,14 +142,14 @@ export function deleteTexture(name){
     _textures.delete(name);
 }
 
-function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
+function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zWidth, alphaTile, layers) {
 
     //console.log(layers);
 
     let positions = [];
     let uvs = [];
     let offsetX = -((numTilesRow / 2) * tileWidth);
-    let offsetY = -((layers[0].length / numTilesRow / 2) * tileWidth);
+    let offsetY = -((numTilesLayer / numTilesRow / 2) * tileWidth);
     let l = 0;
     for (let layer of layers) {
         for (let i = 0; i < layer.length; i++) {
@@ -239,9 +239,9 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, zPad, alphaTile, layers) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers) {
 
-    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zPad, alphaTile, layers);
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers);
 
     //console.log(positions);
     //console.log(uvs);

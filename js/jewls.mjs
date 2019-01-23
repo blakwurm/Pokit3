@@ -64,6 +64,7 @@ let tileMapSystem = class extends actorSystem {
             this.tex.id,
             this.img.width/tileMap.tilewidth, 
             tileMap.width, 
+            tileMap.width * tileMap.height,
             tileMap.tilewidth, 
             tileMap.tileheight, 
             this.zPad, 
