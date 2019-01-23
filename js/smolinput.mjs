@@ -38,12 +38,12 @@ export class InputManager {
             };
         document.addEventListener('keydown', (ev) => {
             this.current_keys.delete(ev.code);
-            console.log('pressing a key: ' + ev.code)
+            //console.log('pressing a key: ' + ev.code)
             this.dirty_keys = true;
         });
         document.addEventListener('keyup', (ev) => {
             this.current_keys.delete(ev.code);
-            console.log('releasing a key: ' + ev.code)
+            //console.log('releasing a key: ' + ev.code)
             this.dirty_keys = true;
         });
     }

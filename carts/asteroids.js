@@ -99,12 +99,12 @@ function makeBullet(ship) {
 
 let cart = {
     init: async function() {
-       console.log("%c I AM ALIVE!", "color: red"); 
+       //console.log("%c I AM ALIVE!", "color: red"); 
        for (var i = 0; i < 10; i++) {
            makeAsteroid();
        }
        makePlayer();
-       console.log(kontra);
+       //console.log(kontra);
     },
     update: function() {
         sprites.forEach(sprite => {

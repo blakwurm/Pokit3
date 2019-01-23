@@ -52,7 +52,7 @@ function makeSpatialKey(cs, e){
             }
         }
     }
-    //console.log(keys);
+    ////console.log(keys);
     return keys
 }
 
@@ -65,7 +65,7 @@ let keys2 = makeSpatialKey(1120, ent2)
 let keys3 = makeSpatialKey(1120, ent3)
 let keyscheck = new Set([...keys1, ...keys3])
 
-console.log(keys1)
-console.log(keys2)
-console.log(keys3)
-console.log(keyscheck)
+//console.log(keys1)
+//console.log(keys2)
+//console.log(keys3)
+//console.log(keyscheck)

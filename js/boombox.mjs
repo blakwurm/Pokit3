@@ -11,7 +11,7 @@ export class Mixer {
 
     async audioDecoder(_, response){
         let buffer = await response.arrayBuffer();
-        console.log(buffer)
+        //console.log(buffer)
         let ctx = this._ctx;
         return await ctx.decodeAudioData(buffer);
     }
@@ -110,10 +110,10 @@ let AudioSource = class {
         Object.assign(this, audioData)
         let buffer = await this.engine.assets.getAsset(this.id).data;
         this.engine.assets.getAsset(this.id).data = buffer;
-        //console.log(buffer)
-        //console.log(this.engine.assets)
+        ////console.log(buffer)
+        ////console.log(this.engine.assets)
         let src = await this.engine.mixer.makeSource(buffer, this.rack);
-        //console.log(src)
+        ////console.log(src)
         this.src = src;
 
         this.src.src.loop = this.loop;
@@ -136,7 +136,7 @@ let AudioSource = class {
             this._volume = 1- atten;
             this.pan = Math.sin(entity.deg2rad(audioListener.entity.bearing(entity)) * atten);
         }
-        //console.log({pan:this.pan, volume: this._volume})
+        ////console.log({pan:this.pan, volume: this._volume})
         this.src.pan.pan.value = this.pan;
         this.src.vol.gain.value = this.maxVolume * this._volume;
     }

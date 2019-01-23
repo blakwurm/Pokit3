@@ -39,11 +39,11 @@ export default async function loadMap(pokitOS) {
 
     }
     console.timeEnd('loadtiles');
-    console.log(floortiles);
-    console.log(walls);
-    console.log(chims);
-    console.log(presents);
-    console.log(startpoints);
+    //console.log(floortiles);
+    //console.log(walls);
+    //console.log(chims);
+    //console.log(presents);
+    //console.log(startpoints);
     pokitOS.baublebox.makeEntity({}, [['walllist', walls]]);
     pokitOS.baublebox.makeEntity({}, [['chimneylist', chims]]);
     for (let {transform} of presents) {

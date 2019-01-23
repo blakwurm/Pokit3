@@ -1,11 +1,11 @@
 export class GameCart {
     constructor(pokitOS) {
-        console.log('constructed')
+        //console.log('constructed')
     }
     preload(){
-        console.log('test cart loaded')
+        //console.log('test cart loaded')
     }
     start(){
-        console.log('test cart started')
+        //console.log('test cart started')
     }
 }

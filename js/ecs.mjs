@@ -28,7 +28,7 @@ class PokitEntity{
             this._sorted = [];
             this.runonce = [];
             this.pokitOS = engine;
-            console.log(engine);
+            //console.log(engine);
     }
     get x() {
         return this.parent.x + this._x;
@@ -68,7 +68,7 @@ class PokitEntity{
     addCog(systemName, props) {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
-            console.log(this.pokitOS);
+            //console.log(this.pokitOS);
             sys = new sys(this.pokitOS);
             prepCog(sys)
         }
@@ -133,7 +133,7 @@ export class ECS {
             this.reverse_lookup[systemName] = new Set([entity])
         }
         // TODO: ECHO global with debug boolean. Also minifier exclusion?
-        console.log(this.reverse_lookup)
+        //console.log(this.reverse_lookup)
         return this;
     }
     reverseRemove(systemName, entity) {

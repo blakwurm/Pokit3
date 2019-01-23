@@ -38,7 +38,7 @@ export default async function main() {
     // let dur2 = pokitOS.ecs.makeEntity({x:160,y:160*1,height:loa2.height,width:loa2.width,z:1})
     //             .addCog('img', {id: 'load_text2'})
     //             .addCog('spriteActor')
-    // console.log(durr)
+    // //console.log(durr)
 
     window.pokitOS = pokitOS;
     return pokitOS;

@@ -99,7 +99,7 @@ export class JewlsCamera {
 
     entityUpdate([entityID, camera, identity]) {
         if (!camera.initialized) {
-            console.log(identity)
+            //console.log(identity)
             //camera.clear = Object.assign({R: 0, G: 0, B: 0, A: 0}, camera.clear);
             backend.createCamera(entityID, identity.width, identity.height, camera.clear.R, camera.clear.G, camera.clear.B, camera.clear.A);
             camera.initialized = true;

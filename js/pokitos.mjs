@@ -66,9 +66,9 @@ export class PokitOS {
         //         shm.addMany(entities);
         //         let near =  shm.findNearby(camera);
         //         if(near.has(top) && shouldLog){
-        //             console.log(top.x)
+        //             //console.log(top.x)
         //             shouldLog = false;
-        //             console.log(shouldLog);
+        //             //console.log(shouldLog);
         //         }
         //         return near;
         //     }

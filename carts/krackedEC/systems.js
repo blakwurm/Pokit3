@@ -21,12 +21,12 @@ export class PlayerControlSystem {
         this.componentsRequired = ['playersprite', 'moves', 'identity'];
         this.ticksUntilMove = 0;
         //this.ifResetTicks = false;
-        console.log(this);
+        //console.log(this);
     }
     resetTicks(playersprite) { playersprite.ticksUntilMove = movetime }
     entityUpdate([entityID, playersprite, moves, identity]) {
         if (playersprite.ticksUntilMove <= 0) {
-            //console.log(entityID);
+            ////console.log(entityID);
             let velXDelta = false;
             let velYDelta = true;
             identity.velocityX = 0;
@@ -54,7 +54,7 @@ export class PlayerControlSystem {
                 this.moveTowardsZero(identity.velocityY, moveSpeed);
         }
         playersprite.ticksUntilMove--;
-        console.log(playersprite.ticksUntilMove);
+        //console.log(playersprite.ticksUntilMove);
     }
 
     moveTowardsZero(orig, amt) {

@@ -4,7 +4,7 @@ import {Types} from './assetmanager.mjs';
 let textureSystem = class {
     constructor(engine) {this.engine=engine}
     init (_, imgdata) {
-        console.log(this)
+        //console.log(this)
         Object.assign(this, {
             spriteX:0,
             spriteY:0,

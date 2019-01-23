@@ -15,7 +15,7 @@ function createShader(gl, type, source) {
         return shader;
     }
 
-    console.log(gl.getShaderInfoLog(shader));
+    //console.log(gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
 }
 
@@ -29,7 +29,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
         return program;
     }
 
-    console.log(gl.getProgramInfoLog(program));
+    //console.log(gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
 }
 
@@ -144,7 +144,7 @@ export function deleteTexture(name){
 
 function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zWidth, alphaTile, layers) {
 
-    //console.log(layers);
+    ////console.log(layers);
 
     let positions = [];
     let uvs = [];
@@ -164,7 +164,7 @@ function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tile
             let spriteX = tile % numSpritesRow;
             let spriteY = Math.floor(tile / numSpritesRow);
 
-            //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
+            ////console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 
             createSquare(positions,tileWidth, tileHeight, offsetX + tileWidth * x, offsetY + tileHeight * y, l * zWidth)
             createUvSquare(uvs, spriteX, spriteY);
@@ -199,7 +199,7 @@ export function updateTileMap(actor){
             let spriteX = tile % numSpritesRow;
             let spriteY = Math.floor(tile / numSpritesRow);
 
-            //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
+            ////console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 
             createUvSquare(uvs, spriteX, spriteY);
             //return [positions, uvs];
@@ -244,8 +244,8 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
 
     let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tileHeight, zPad, alphaTile, layers);
 
-    //console.log(positions);
-    //console.log(uvs);
+    ////console.log(positions);
+    ////console.log(uvs);
 
     let tex = _textures.get(texture);
     let vertexPosition = _programs[0].attributes.vertexPosition;
@@ -306,7 +306,7 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
 export function createActor(name, texture, width, height, textureLiteral = false) {
     let tex = _textures.get(texture);
     if (textureLiteral) tex = texture;
-    //console.log(_programs);
+    ////console.log(_programs);
     let vertexPosition = _programs[0].attributes.vertexPosition;
     let uvCoords = _programs[0].attributes.uvCoords;
 
@@ -638,7 +638,7 @@ export function render(sortFunc) {
         });
         let sorted = [...sortFunc(comprehended, cam)].sort((x,y) => y.priority - x.priority);
 
-        //console.log(sorted);
+        ////console.log(sorted);
 
         for (let actor of sorted) {//filterMap(_actors.values(), x => checkOverlap(camera.x, camera.y, camera.width, camera.height, x.x_translation, x.y_translation, x.width, x.height))) {
             drawActor(actor, camera);

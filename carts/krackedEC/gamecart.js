@@ -14,7 +14,7 @@ export class GameCart {
         this.input = pokitOS.inputManager;
     }
     async preload() {
-        console.log('preload happened');
+        //console.log('preload happened');
         await this.assetPool.loadImage('startScreen', '/carts/krackedEC/rawsprites/startscreen.png');
         this.assetPool.loadImage('world', '/carts/krackedEC/world.png');
         this.assetPool.loadImage('spritesheet', '/carts/krackedEC/santasprites.png');
@@ -27,7 +27,7 @@ export class GameCart {
 
         systems.setupPlayerControl(this.pokitOS);
         loadMap(this.pokitOS);
-        console.log(Object.assign({
+        //console.log(Object.assign({
             entityID: 'arb',
             x: 0, y: 0, z: 0,
             scale: 1, scaleX: 1, scaleY: 1,
@@ -37,7 +37,7 @@ export class GameCart {
             requestDelete: false, willDelete: false
         }, { x: 0, y: 0, z: 0, width: 160, height: 160 }));
 
-        console.log('start happened');
+        //console.log('start happened');
         let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
         let mapA = this.makeActor(-8000, -8000, 'world');
         let santa1 = this.makeSanta(-8000, -8000, 'spritesheet', 0, 16, 16, .25, .25, 0, 0, 'santa');

@@ -36,7 +36,7 @@
 //     // let dur2 = pokitOS.ecs.makeEntity({x:160,y:160*1,height:loa2.height,width:loa2.width,z:1})
 //     //             .addCog('img', {id: 'load_text2'})
 //     //             .addCog('spriteActor')
-//     // console.log(durr)
+//     // //console.log(durr)
 
 //     window.pokitOS = pokitOS;
 //     return pokitOS;
@@ -59,7 +59,7 @@ export default async function main() {
     let pokitOS = await setup_pokitOS();
     await loadExtras(pokitOS)
     let baseURL = cartloader.getBaseCartURL()
-    console.log(baseURL)
+    //console.log(baseURL)
     let cartinfo = await cartloader.parseCartManifest(baseURL)
     await cartloader.loadCartModule(cartinfo, pokitOS)
     await cartloader.preloadCartAssets(cartinfo, pokitOS)
@@ -86,12 +86,12 @@ async function setup_console_open(pokitOS) {
     return new Promise(resolve =>
        document.querySelector('#onbutton').onclick = 
            async function() {
-               console.log('doing')
+               //console.log('doing')
                document.querySelector('#powercase_right').className = 'hidden'
                document.querySelector('#powercase_left').className = 'hidden'
                pokitOS.start();
                await doIntroAnim(pokitOS)
-               console.log('done')
+               //console.log('done')
                resolve(pokitOS)
            })
 }

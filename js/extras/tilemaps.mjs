@@ -15,8 +15,8 @@ async function decodeTiled(_, response) {
     let objects = {}
     let zind = 1;
     for (let layer of layers) {
-            console.log('processing layer')
-            console.log(layer)
+            //console.log('processing layer')
+            //console.log(layer)
         if (layer.visible) {
             if (layer.type == "tilelayer") {
                 tilelayers.push(layer.data)
@@ -24,7 +24,7 @@ async function decodeTiled(_, response) {
             if (layer.type == "objectgroup") {
                 tilelayers.push([]);
                 for (let o of layer.objects) {
-                    console.log(o)
+                    //console.log(o)
                     o.x += layer.x
                     o.y += layer.y
                     o.x -= o.width/2

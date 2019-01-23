@@ -47,7 +47,7 @@ export class GameCart {
         this.img.height = this.height;
         this.img.src = this.imgsrc;
         
-        console.log(this.img);
+        //console.log(this.img);
         this.pokitOS.baublebox.initializeSystem('basiccameramove', new BasicCameraMovement(this.pokitOS));
     }
     async start() {

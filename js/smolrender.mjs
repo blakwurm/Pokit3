@@ -20,7 +20,7 @@ export class Renderer{
         let s = this;
         pokitOS.ecs.setCog('img', 
         {init: (entity, imgdata) => {
-            console.log(entity)
+            //console.log(entity)
             s.addEntity(entity, imgdata);
             entity.flags.add('visible')
         },
@@ -33,7 +33,7 @@ export class Renderer{
             entity.flags.add('camera')
         }})
         pokitOS.ecs.makeEntity({width:320,height:320,x:160,y:160}).addCog('camera')
-        console.log(this.cameras)
+        //console.log(this.cameras)
     }
     addEntity(entity, imgdata) {
         entity.flags.add('visible')

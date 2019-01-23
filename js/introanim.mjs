@@ -24,13 +24,13 @@ export async function doIntroAnim(pokitOS) {
     let dummycam = {x: 160, y: 160, z: 1, width: 320, height: 320, depth: 1000}
     return new Promise((resolve) =>
     text.addUniqueCog('doanim', {update: () => {
-        //console.log('stillbeingcalled');
+        ////console.log('stillbeingcalled');
         let sh = new SpatialHash(160);
         sh.addMany([text, topbar, bottombar])
         // sh.add(text)
         // sh.add(topbar)
         // sh.add(bottombar)
-        // console.log(sh.findNearby(dummycam))
+        // //console.log(sh.findNearby(dummycam))
         if (text.y > 0) {text.y -= animrate}
         else if (topbar.x < 0) {topbar.x += animrate*4}
         else if (bottombar.x > 0) {bottombar.x -= animrate*4}
@@ -44,7 +44,7 @@ export async function doIntroAnim(pokitOS) {
             topbar.destroy()
             bottombar.destroy()
             pokitOS.ecs.removeCog('doanim')
-            //console.log(pokitOS)
+            ////console.log(pokitOS)
             resolve()
         }
     }})
