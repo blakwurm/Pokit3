@@ -4,12 +4,12 @@ export function main(pokitOS) {
             // .addCog("audioSource", {startOnInit: true, loop:true, spatial: true, id: 'cali'})
             .addCog("img", {id: "santasprites"})
             // .addCog('spriteActor')
-            .addCog('tilemap', {id:"sampmap", alphaTile:1})
-            // .addUniqueCog('inc', {
-            //     c: 0,
-            //     update () {
-            //         this.c+=.01;
-            //         e.x = Math.sin(this.c) * 16 * 20   
-            //     }
-            // })
+            .addCog('tilemap', {id:"sampmap", alphaTile:8})
+            .addUniqueCog('inc', {
+                c: 0,
+                update () {
+                    this.c+=.01;
+                    e.x = Math.sin(this.c) * 16 * 20   
+                }
+            })
 }
