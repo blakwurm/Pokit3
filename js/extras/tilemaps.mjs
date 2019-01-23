@@ -37,7 +37,7 @@ async function decodeTiled(_, response) {
         zind++;
     }
     let ret = {
-        layers: tilelayers.reverse(),
+        layers: tilelayers,
         objects: objects,
         tileheight: tileheight,
         tilewidth: tilewidth,
