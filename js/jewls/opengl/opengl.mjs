@@ -5,7 +5,6 @@ let _gl = null;
 let _textures = null;
 let _cameras = null;
 let _actors = null;
-let _actor_dirty_flag = true;
 
 function createShader(gl, type, source) {
     let shader = gl.createShader(type);
@@ -236,12 +235,13 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} numTilesRow - The ammount of tiles in a single row of the tile map
  * @param {Number} tileWidth - The pixel width of a single sprite
  * @param {Number} tileHeight - The pixel height of a single sprite
+ * @param {Number} zPad - The z coordinate padding space size between layers
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
+export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, zPad, alphaTile, layers) {
 
-    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers);
+    let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zPad, alphaTile, layers);
 
     //console.log(positions);
     //console.log(uvs);
@@ -259,7 +259,7 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
             numTilesRow: numTilesRow,
             tileWidth: tileWidth,
             tileHeight: tileHeight,
-            zWidth: zWidth,
+            zPad: zPad,
             alphaTile: alphaTile,
             layers: layers,
         },
