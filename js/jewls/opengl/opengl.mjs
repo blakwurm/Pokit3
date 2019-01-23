@@ -253,7 +253,7 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
     let [positionBuffer, vao] = bufferObject(positions, vertexPosition);
     let coordBuffer = bufferUvs(uvs, uvCoords);
 
-    _actors.set(name, {
+    let actor = {
         _tilemapData: {
             numSpritesRow: numSpritesRow,
             numTilesRow: numTilesRow,
@@ -286,11 +286,13 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
         y_scale: 1,
         angle: 0,
         priority: 0,
-    });
+    }
 
     if(cached){
-        cacheObject(name);
+        cacheObject(actor);
     }
+
+    _actors.set(name, actor);
 }
 
 /** Create actor for defining sprite data on the canvas
@@ -529,6 +531,49 @@ export function scaleActor(actor, x = 1, y = 1) {
     _actors.get(actor).y_scale = y;
 }
 
+function cacheObject(actor){
+    const fb = _gl.createFramebuffer();
+    _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
+
+    let tex = createTexture(actor.width, actor.height, null);
+    _gl.framebufferTexture2D(_gl.FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, _gl.TEXTURE_2D, tex.texture, 0);
+
+    _gl.viewport(0, 0, actor.width, actor.height)
+    _gl.colorMask(true, true, true, true);
+
+    drawActor(actor, {
+        x:0,
+        y:0,
+        angle:0,
+        width:actor.width,
+        height:actor.height,
+        main:false,
+        frameBuffer:fb,
+        texture: tex,
+        clear: {
+            r:0,
+            g:0,
+            b:0,
+            a:0,
+        },
+    })
+    let positions = [];
+    let uvs = [];
+    createSquare(positions, actor.width, actor.height, -actor.width/2, -actor.height/2, 0);
+    createUvSquare(uvs, 0, 0);
+
+    let [positionBuffer, vao] = bufferObject(positions, _programs[0].attributes.vertexPosition);
+    let coordBuffer = bufferUvs(uvs, _programs[0].attributes.uvCoords);
+
+    actor.vertexBuffer = positionBuffer;
+    actor.vertexArray = vao;
+    actor.uvBuffer = coordBuffer;
+    actor.passes = 6
+    actor.texture = tex.texture;
+    actor.spriteWidth = 1;
+    actor.spriteHeight = 1;
+}
+
 function drawActor(actor, viewport){
     let programData = _programs[0];
     _gl.bindVertexArray(actor.vertexArray);
@@ -538,7 +583,6 @@ function drawActor(actor, viewport){
 
     _gl.uniform1i(programData.uniforms.image, 0);
     _gl.uniform1f(programData.uniforms.priority, actor.priority);
-    _gl.uniform1f(programData.uniforms.yFlip, 1.0);
     _gl.uniform2f(programData.uniforms.resolution, viewport.width, viewport.height);
     _gl.uniform2f(programData.uniforms.translation, actor.x_translation - viewport.x, actor.y_translation - viewport.y);
     _gl.uniform2f(programData.uniforms.rotation, Math.sin(toRad(actor.angle - viewport.angle)), Math.cos(toRad(actor.angle - viewport.angle)));
@@ -553,6 +597,7 @@ function drawActor(actor, viewport){
     }
 
     if (actor.texture === viewport.texture.texture) return;
+    _gl.uniform1f(programData.uniforms.yFlip, 1.0);
 
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, viewport.frameBuffer);
     _gl.drawArrays(_gl.TRIANGLES, 0, actor.passes);
