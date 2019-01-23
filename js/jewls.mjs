@@ -46,17 +46,18 @@ let actorSystem = class {
 let tileMapSystem = class extends actorSystem {
     constructor(engine){
         super(engine);
+        this.type = 1;
     }
     async init(entity, info){
-        console.log(info)
+        //console.log(info)
         Object.assign(this, {zPad:0.1}, info);
-        console.log(this)
+        //console.log(this)
         let tileMap = await this.engine.assets.getAsset(this.id).data;
-        console.log(tileMap)
+        //console.log(tileMap)
         this.tex = entity.cogs.get('img');
-        console.log(this.tex)
+        //console.log(this.tex)
         this.img = await this.engine.assets.getAsset(this.tex.id).data;
-        console.log(this.img)
+        //console.log(this.img)
         let alphaTile = info.alphaTile || this.img.width/tileMap.tilewidth*(this.img.height/tileMap.tileheight)
         jewls.createTileMap(
             entity.id,
@@ -67,7 +68,9 @@ let tileMapSystem = class extends actorSystem {
             tileMap.tileheight, 
             this.zPad, 
             alphaTile, 
-            tileMap.layers)
+            tileMap.layers);
+        entity.width = tileMap.width * tileMap.tilewidth;
+        entity.height = tileMap.height * tileMap.tileheight;
     }
 }
 
