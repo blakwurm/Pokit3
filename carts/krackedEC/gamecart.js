@@ -27,7 +27,8 @@ export class GameCart {
 
         systems.setupPlayerControl(this.pokitOS);
         loadMap(this.pokitOS);
-        //console.log(Object.assign({
+        //console.log(
+            Object.assign({
             entityID: 'arb',
             x: 0, y: 0, z: 0,
             scale: 1, scaleX: 1, scaleY: 1,
@@ -35,7 +36,7 @@ export class GameCart {
             width: 0, height: 0,
             velocityX: 0, velocityY: 0,
             requestDelete: false, willDelete: false
-        }, { x: 0, y: 0, z: 0, width: 160, height: 160 }));
+        }, { x: 0, y: 0, z: 0, width: 160, height: 160 })//);
 
         //console.log('start happened');
         let startScreen = this.makeActor(160, 160, 'startScreen', -1, 80, 80, 4, 4);
