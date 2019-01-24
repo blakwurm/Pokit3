@@ -24,13 +24,17 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin){
 
     c.width = 10 * (width + horizontalMargin);
     c.height = 10 * (height + verticalMargin);
+    ctx.font = font;
 
-    for(let k of Object.keys(ASCII)){
+    console.log(ctx)
+    console.log(ASCII)
+    for(let k in Object.keys(ASCII)){
         let size = ctx.measureText(k);
         let x = c.width % ASCII[k] + (width + horizontalMargin - size.width) /2;
-        let y = Math.floor(c.width / ASCII[k]) + (height + verticalMargin - size.height) /2;
+        let y = (Math.floor(c.width / ASCII[k]) + (height + verticalMargin - size.height) /2)+height;
         ctx.fillText(k, x, y);
     }
+    // ctx.fillText("Testing", 0, 10)
     return await c.convertToBlob();
 }
 
