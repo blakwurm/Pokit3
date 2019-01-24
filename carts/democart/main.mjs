@@ -3,7 +3,7 @@ import * as text from '../../../js/extras/text.mjs'
 export async function main(pokitOS) {
     //console.log('loaded')
     text.init(pokitOS)
-    let bl = await text.makeSpriteSheet('normal 19px monospace', 2, 2)
+    let bl = await text.makeSpriteSheet('normal 39px monospace', 2, 2)
     console.log(bl)
     let bl_url = URL.createObjectURL(bl)
     let i = document.createElement("a")
