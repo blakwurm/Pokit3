@@ -1,5 +1,6 @@
 import * as jewls from './jewls/opengl/opengl.mjs';
 import {Types} from './assetmanager.mjs';
+import * as Logging from './debug.mjs';
 
 let textureSystem = class {
     constructor(engine) {this.engine=engine}
@@ -43,29 +44,52 @@ let actorSystem = class {
     }
 };
 
-let tileMapSystem = class extends actorSystem {
+let tileMapSystem = class{
     constructor(engine){
-        super(engine);
-        this.type = 1;
+        this.engine = engine;
+        this._layers = [];
     }
     async init(entity, info) {
         Object.assign(this, {zPad:0.1, cache:true}, info);
         let tileMap = await this.engine.assets.getAsset(this.id).data;
         this.tex = entity.cogs.get('img');
         this.img = await this.engine.assets.getAsset(this.tex.id).data;
-        jewls.createTileMap(
-            entity.id,
-            this.tex.id,
-            this.img.width/tileMap.tilewidth, 
-            tileMap.width, 
-            tileMap.width * tileMap.height,
-            tileMap.tilewidth, 
-            tileMap.tileheight, 
-            this.zPad,
-            tileMap.layers,
-            this.cache);
+        for(let layer of tileMap.layers){
+            if(!layer.bufferLayer){
+                jewls.createTileMap(
+                    entity.id + '_' + layer.name,
+                    this.tex.id,
+                    this.img.width/tileMap.tilewidth, 
+                    tileMap.width, 
+                    tileMap.width * tileMap.height,
+                    tileMap.tilewidth, 
+                    tileMap.tileheight, 
+                    0.1,
+                    [layer.data],
+                    true);
+                this._layers.push(layer.name)
+            }
+        }
+        this._layers = this._layers.reverse();
         entity.width = tileMap.width * tileMap.tilewidth;
         entity.height = tileMap.height * tileMap.tileheight;
+    }
+    update (entity) {
+        let i = 0;
+        for(let layer of this._layers){
+            jewls.translateActor(entity.id + '_' + layer, entity.x, entity.y, entity.z + i);
+            jewls.rotateActor(entity.id + '_' + layer, entity.rotation);
+            jewls.scaleActor(entity.id + '_' + layer, entity.scaleX, entity.scaleY);
+            if(!this.throttleLog)
+                Logging.Log(layer, i);
+            i += this.zPad;
+        }
+        this.throttleLog = true;
+    }
+    destroy (entity) {
+        for(let layer of this._layers){
+            jewls.deleteActor(entity.id);
+        }
     }
 }
 

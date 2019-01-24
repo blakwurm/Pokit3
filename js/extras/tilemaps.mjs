@@ -19,10 +19,10 @@ async function decodeTiled(_, response) {
             //console.log(layer)
         if (layer.visible) {
             if (layer.type == "tilelayer") {
-                tilelayers.push(layer.data)
+                tilelayers.push({name:layer.name, data:layer.data})
             }
             if (layer.type == "objectgroup") {
-                tilelayers.push([]);
+                tilelayers.push({bufferLayer:true});
                 for (let o of layer.objects) {
                     //console.log(o)
                     o.x += layer.x
