@@ -39,21 +39,18 @@ async function decodeFont(id, response){
 //     // ctx.fillText("Testing", 0, 10)
 //     return await c.convertToBlob();
 // }
-export async function makeSpriteSheet(font, verticalMargin, horizontalMargin, cellsize) {
-    cellsize = cellsize || 32;
+export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     let c = new OffscreenCanvas(10, 10)
     let ctx = c.getContext('2d')
     ctx.font = font;
 
-    let height = cellsize*1.5;
-    let width = cellsize;
+    let height = parseInt(ctx.font.match(/\d+/), 10) + verticalMargin;
+    let width = 0;
 
     let len = ASCII.length
     for (let i = 0; i < len; i++) {
         let size = ctx.measureText(ASCII[i])
-        console.log(ASCII[i], size)
         if (size.width > width) {width = size.width}
-        if (size.height > height) {height = size.width}
     }
 
     c.width = 10 * (width + horizontalMargin)
@@ -63,8 +60,9 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin, ce
     for (let i = 0; i < len; i++) {
         let t = ASCII[i]
         let size = ctx.measureText(t)
-        let x = (i % 10) * width
-        let y = (Math.floor(i/10) * height) + height
+        let x = (i % 10) * width + (width + horizontalMargin - size.width) / 2
+        let y = (Math.floor(i/10) * height) + height + verticalMargin / 2;
+        console.log(y);
         ctx.fillText(t, x, y)
     }
 
