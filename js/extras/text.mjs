@@ -1,14 +1,14 @@
-import {Types} from './assetmanager.mjs'
+import {Types} from '../assetmanager.mjs'
 
 let ASCII = {}
 
-function decodeFont(id, response){
+async function decodeFont(id, response){
     let blob = await response.blob();
     let url = URL.createObjectURL(blob);
     return await new FontFace(id, url).load();
 }
 
-function makeSpriteSheet(font, verticalMargin, horizontalMargin){
+export async function makeSpriteSheet(font, verticalMargin, horizontalMargin){
     var c = new OffscreenCanvas(10,10);
     var ctx = c.getContext('2d');
     ctx.font = font;
@@ -28,13 +28,13 @@ function makeSpriteSheet(font, verticalMargin, horizontalMargin){
     for(let k of Object.keys(ASCII)){
         let size = ctx.measureText(k);
         let x = c.width % ASCII[k] + (width + horizontalMargin - size.width) /2;
-        let y = Math.floor(c.width / ASCII[k]) + (heigth + verticalMargin - size.height) /2;
+        let y = Math.floor(c.width / ASCII[k]) + (height + verticalMargin - size.height) /2;
         ctx.fillText(k, x, y);
     }
-    return c.convertToBlob();
+    return await c.convertToBlob();
 }
 
-export default function init(engine){
+export function init(engine){
     for(let i = 32; i < 127; i++){
         ASCII[String.fromCharCode(i)] = i - 32;
     }
