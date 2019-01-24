@@ -11,12 +11,32 @@ function decodeFont(id, response){
 function makeSpriteSheet(font, verticalMargin, horizontalMargin){
     var c = new OffscreenCanvas(10,10);
     var ctx = c.getContext('2d');
+    ctx.font = font;
+    
+    let height = 0;
+    let width = 0;
 
+    for(let k of Object.keys(ASCII)){
+        let size = ctx.measureText(k);
+        if(size.width > width) width = size.width;
+        if(size.height > height) height = size.height;
+    }
+
+    c.width = 10 * (width + horizontalMargin);
+    c.height = 10 * (height + verticalMargin);
+
+    for(let k of Object.keys(ASCII)){
+        let size = ctx.measureText(k);
+        let x = c.width % ASCII[k] + (width + horizontalMargin - size.width) /2;
+        let y = Math.floor(c.width / ASCII[k]) + (heigth + verticalMargin - size.height) /2;
+        ctx.fillText(k, x, y);
+    }
+    return c.convertToBlob();
 }
 
 export default function init(engine){
     for(let i = 32; i < 127; i++){
-        
+        ASCII[String.fromCharCode(i)] = i - 32;
     }
 
     engine.assets.registerType('FONT');
