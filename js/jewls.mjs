@@ -16,7 +16,7 @@ let textureSystem = class {
 let cameraSystem = class {
     constructor(engine) {this.engine=engine}
     init (entity, camData) {
-        jewls.createCamera(entity.id, entity.width, entity.height, camData.isMainCamera);
+        jewls.createCamera(entity.id, entity.width, entity.height, camData.isMainCamera, 255, 255, 255, 255);
     }
     update (entity) {
         jewls.translateCamera(entity.id, entity.x, entity.y);

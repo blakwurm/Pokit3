@@ -1,4 +1,5 @@
 import {Types} from '../assetmanager.mjs'
+import * as Logging from '../debug.mjs'
 
 let ASCII = []
 let ASCII_lookup = {}
@@ -39,7 +40,7 @@ async function decodeFont(id, response){
 //     // ctx.fillText("Testing", 0, 10)
 //     return await c.convertToBlob();
 // }
-export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
+async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     let c = new OffscreenCanvas(10, 10)
     let ctx = c.getContext('2d')
     ctx.font = font;
@@ -62,20 +63,73 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
         let size = ctx.measureText(t)
         let x = (i % 10) * width + (width + horizontalMargin - size.width) / 2
         let y = (Math.floor(i/10) * height) + height + verticalMargin / 2;
-        console.log(y);
         ctx.fillText(t, x, y)
     }
 
     return await c.convertToBlob();
 }
 
-export function init(engine){
-    for(let i = 32; i < 127; i++){
-        let char = String.fromCharCode(i)
-        ASCII_lookup[char] = i - 32;
-        ASCII.push(char)
+function createTileMap(text, tilewidth, tileheight, layerwidth, layerheight){
+    let layer = [];
+    for(let k of text){
+        layer.push(ASCII_lookup[k]+1);
     }
+    for(let i = text.length; i < layerwidth*layerheight; i++) {
+        layer.push(100);
+    }
+    return {
+        layers: [{name:'text', type:'tilelayer', visible:true, data:layer}],
+        tileheight:tileheight,
+        tilewidth:tilewidth,
+        height:layerheight,
+        width:layerwidth,
+    }
+}
 
-    engine.assets.registerType('FONT');
-    engine.assets.registerDecoder(Types.FONT, decodeFont)
+class TextRenderer{
+    constructor(engine){
+        this.engine=engine;
+    }
+    async init(entity, info){
+        Object.assign(this,
+            {
+                font: 'monospace',
+                fontSize: 20,
+                horizontalMargin: 2,
+                verticalMargin: 2,
+            }, info)
+        let s = await makeSpriteSheet(this.fontSize + 'px ' + this.font, this.verticalMargin, this.horizontalMargin);
+        let url = URL.createObjectURL(s);
+        let sheetId = entity.id + '_' + this.font + '_' + this.fontSize + '_sprites';
+        let sheet = await this.engine.assets.queueAsset(sheetId, url, Types.IMAGE);
+        let ch = sheet.height / 10;
+        let cw = sheet.width / 10;
+        let hc = Math.floor(320/cw);
+        let vc = Math.floor(320/ch);
+
+        let map = createTileMap('this is a test', cw, ch, hc, vc);
+        let json = JSON.stringify(map);
+        Logging.Log('json', json);
+        let blob = new Blob([json], {type:'application/json'});
+        let jsonUrl = URL.createObjectURL(blob);
+        let decodedMap = entity.id + '_' + this.font + '_' + this.fontSize + '_map';
+        await this.engine.assets.queueAsset(decodedMap, jsonUrl, Types.TILED);
+
+        entity.addCog('img', {id:sheetId});
+        entity.addCog('tilemap', {id:decodedMap});
+    }
+}
+
+export class TextSystem{
+    init(engine){
+        for(let i = 32; i < 127; i++){
+            let char = String.fromCharCode(i)
+            ASCII_lookup[char] = i - 32;
+            ASCII.push(char)
+        }
+
+        engine.assets.registerType('FONT');
+        engine.assets.registerDecoder(Types.FONT, decodeFont)
+        engine.ecs.setCog('textRenderer', TextRenderer)
+    }
 }
