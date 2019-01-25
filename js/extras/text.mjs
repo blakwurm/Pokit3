@@ -40,17 +40,39 @@ async function decodeFont(id, response){
 //     // ctx.fillText("Testing", 0, 10)
 //     return await c.convertToBlob();
 // }
+
+function measureText(text, font){
+    let div = document.createElement('div');
+    div.style.position = 'absolute';
+    div.style.visibility = 'hidden';
+    div.style.height = 'auto';
+    div.style.width = 'auto';
+    div.style.whiteSpace = 'nowrap';
+    div.style.font = font;
+    div.appendChild(document.createTextNode(text));
+    Logging.setPattern(/body/);
+    Logging.Log('body', document.body)
+    document.body.appendChild(div);
+    let size = {height:div.clientHeight + 1, width:div.clientWidth + 1};
+    document.body.remove(div);
+    Logging.Log('body', size);
+    return size;
+}
+
 async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     let c = new OffscreenCanvas(10, 10)
     let ctx = c.getContext('2d')
     ctx.font = font;
+    ctx.textAlign = 'center';
 
     let height = parseInt(ctx.font.match(/\d+/), 10) + verticalMargin;
     let width = 0;
 
     let len = ASCII.length
     for (let i = 0; i < len; i++) {
-        let size = ctx.measureText(ASCII[i])
+        let size = measureText(ASCII[i], font);
+        //console.log(size);
+        Logging.Log(ASCII[i], size);
         if (size.width > width) {width = size.width}
     }
 
@@ -61,8 +83,8 @@ async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     for (let i = 0; i < len; i++) {
         let t = ASCII[i]
         let size = ctx.measureText(t)
-        let x = (i % 10) * width + (width + horizontalMargin - size.width) / 2
-        let y = (Math.floor(i/10) * height) + height + verticalMargin / 2;
+        let x = (i % 10) * width + (width + horizontalMargin) / 2
+        let y = (Math.floor(i/10) * height) + (height + verticalMargin) / 2;
         ctx.fillText(t, x, y)
     }
 
