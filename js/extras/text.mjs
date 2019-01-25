@@ -41,51 +41,63 @@ async function decodeFont(id, response){
 //     return await c.convertToBlob();
 // }
 
-function measureText(text, font){
-    let div = document.createElement('div');
-    div.style.position = 'absolute';
-    div.style.visibility = 'hidden';
-    div.style.height = 'auto';
-    div.style.width = 'auto';
-    div.style.whiteSpace = 'nowrap';
-    div.style.font = font;
-    div.appendChild(document.createTextNode(text));
-    Logging.setPattern(/body/);
-    Logging.Log('body', document.body)
-    document.body.appendChild(div);
-    let size = {height:div.clientHeight + 1, width:div.clientWidth + 1};
-    document.body.remove(div);
-    Logging.Log('body', size);
-    return size;
+function measureTextHeight(font){
+    let text = ASCII.join('');
+    let c = new OffscreenCanvas(10,10);
+    c.font = font;
+    let s = parseInt(font.match(/\d+/), 10);
+    let w = c.measureText(text).width + 40;
+    let h = s * 4;
 }
 
-async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
+export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     let c = new OffscreenCanvas(10, 10)
     let ctx = c.getContext('2d')
     ctx.font = font;
-    ctx.textAlign = 'center';
+    //ctx.textAlign="center"; 
+    ctx.textBaseline = "middle";
 
-    let height = parseInt(ctx.font.match(/\d+/), 10) + verticalMargin;
+    let h = await measureTextHeight(font);
+    let height = h + verticalMargin;
     let width = 0;
 
     let len = ASCII.length
     for (let i = 0; i < len; i++) {
-        let size = measureText(ASCII[i], font);
-        //console.log(size);
-        Logging.Log(ASCII[i], size);
+        let size = ctx.measureText(ASCII[i]);
         if (size.width > width) {width = size.width}
     }
 
-    c.width = 10 * (width + horizontalMargin)
-    c.height = 10 * (height + verticalMargin)
+    width = width + horizontalMargin
+    c.width = 10 * width
+    c.height = 10 * height
     ctx.font = font
 
     for (let i = 0; i < len; i++) {
         let t = ASCII[i]
-        let size = ctx.measureText(t)
-        let x = (i % 10) * width + (width + horizontalMargin) / 2
-        let y = (Math.floor(i/10) * height) + (height + verticalMargin) / 2;
-        ctx.fillText(t, x, y)
+        let w = ctx.measureText(t).width;
+        let x = ((i % 10) * width) + (width / 2)
+        let y = (Math.floor(i/10) * height) +( height / 2 );
+        ctx.strokeStyle = "#FF0000";
+        ctx.beginPath();
+        ctx.ellipse(x, y, w/2, h / 2, 0, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.strokeStyle = "#000000";
+        ctx.fillText(t, x - w/2, y - h/2)
+    }
+
+    ctx.strokeStyle = "#0000FF";
+    for(let i = 0; i < 10; i++){
+        ctx.beginPath();
+        ctx.moveTo(0, height * i);
+        ctx.lineTo(c.width, height * i);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(width * i, 0);
+        ctx.lineTo(width * i, c.height);
+        ctx.closePath();
+        ctx.stroke();
     }
 
     return await c.convertToBlob();
