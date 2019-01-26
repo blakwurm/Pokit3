@@ -41,13 +41,44 @@ async function decodeFont(id, response){
 //     return await c.convertToBlob();
 // }
 
-function measureTextHeight(font){
+async function measureTextHeight(font){
     let text = ASCII.join('');
     let c = new OffscreenCanvas(10,10);
-    c.font = font;
+    let ctx = c.getContext('2d');
+    ctx.font = font;
     let s = parseInt(font.match(/\d+/), 10);
-    let w = c.measureText(text).width + 40;
+    let w = ctx.measureText(text).width + 40;
     let h = s * 4;
+    c.width = w;
+    c.height = h;
+    ctx.font = font;
+
+
+    ctx.strokeText(text, 20, h/2);
+
+    let f = null;
+    let l = null;
+
+    let d = ctx.getImageData(0,0, w, h);
+    d = d.data;
+    for(let i = 0; i < d.length; i++){
+        if(d[i]){
+            f = Math.floor(i / (w * 4));
+            break;
+        }
+    }
+    for(let i = d.length-1; i >= 0; i--){
+        if(d[i]){
+            l = Math.floor(i / (w * 4));
+            break;
+        }
+    }
+    
+    return {
+        height: l - f,
+        ascent: h/2 - f,
+        descent: l - h/2,
+    }
 }
 
 export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
@@ -56,8 +87,10 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     ctx.font = font;
     //ctx.textAlign="center"; 
     ctx.textBaseline = "middle";
-
-    let h = await measureTextHeight(font);
+    
+    let metrics =  await measureTextHeight(font);
+    Logging.Log('metrics', metrics);
+    let h = metrics.height;
     let height = h + verticalMargin;
     let width = 0;
 
@@ -77,35 +110,41 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
         let w = ctx.measureText(t).width;
         let x = ((i % 10) * width) + (width / 2)
         let y = (Math.floor(i/10) * height) +( height / 2 );
-        ctx.strokeStyle = "#FF0000";
-        ctx.beginPath();
-        ctx.ellipse(x, y, w/2, h / 2, 0, 0, 2*Math.PI);
-        ctx.closePath();
-        ctx.stroke();
+        // ctx.strokeStyle = "#FF0000";
+        // ctx.beginPath();
+        // ctx.ellipse(x, y, w/2, h / 2, 0, 0, 2*Math.PI);
+        // ctx.closePath();
+        // ctx.stroke();
         ctx.strokeStyle = "#000000";
-        ctx.fillText(t, x - w/2, y - h/2)
+        ctx.fillText(t, x - w/2, y - h/2 - metrics.descent)
     }
 
-    ctx.strokeStyle = "#0000FF";
-    for(let i = 0; i < 10; i++){
-        ctx.beginPath();
-        ctx.moveTo(0, height * i);
-        ctx.lineTo(c.width, height * i);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(width * i, 0);
-        ctx.lineTo(width * i, c.height);
-        ctx.closePath();
-        ctx.stroke();
-    }
-
-    return await c.convertToBlob();
+    // ctx.strokeStyle = "#0000FF";
+    // for(let i = 0; i < 10; i++){
+    //     ctx.beginPath();
+    //     ctx.moveTo(0, height * i);
+    //     ctx.lineTo(c.width, height * i);
+    //     ctx.closePath();
+    //     ctx.stroke();
+    //     ctx.beginPath();
+    //     ctx.moveTo(width * i, 0);
+    //     ctx.lineTo(width * i, c.height);
+    //     ctx.closePath();
+    //     ctx.stroke();
+    // }
+    let blob = await c.convertToBlob();
+    return await {
+        blob:blob,
+        height: height,
+        width: width,
+    };
 }
 
 function createTileMap(text, tilewidth, tileheight, layerwidth, layerheight){
     let layer = [];
     for(let k of text){
+        let lookup = ASCII_lookup[k]
+        Logging.Log(k, lookup, ASCII[lookup])
         layer.push(ASCII_lookup[k]+1);
     }
     for(let i = text.length; i < layerwidth*layerheight; i++) {
@@ -133,7 +172,7 @@ class TextRenderer{
                 verticalMargin: 2,
             }, info)
         let s = await makeSpriteSheet(this.fontSize + 'px ' + this.font, this.verticalMargin, this.horizontalMargin);
-        let url = URL.createObjectURL(s);
+        let url = URL.createObjectURL(s.blob);
         let sheetId = entity.id + '_' + this.font + '_' + this.fontSize + '_sprites';
         let sheet = await this.engine.assets.queueAsset(sheetId, url, Types.IMAGE);
         let ch = sheet.height / 10;
