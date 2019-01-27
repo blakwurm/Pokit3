@@ -133,6 +133,7 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     //     ctx.stroke();
     // }
     let blob = await c.convertToBlob();
+    Logging.downloadBlob(blob)
     return await {
         blob:blob,
         height: height,
