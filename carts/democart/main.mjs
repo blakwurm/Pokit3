@@ -5,7 +5,7 @@ export async function main(pokitOS) {
     // text.init(pokitOS);
     let e = pokitOS.ecs.makeEntity({height: 640, width: 640, depth: 10, x: 0, y: 0, z: 10})
     //         // .addCog("audioSource", {startOnInit: true, loop:true, spatial: true, id: 'cali'})
-            .addCog("img", {id: "text_tile_img"})
+            .addCog("img", {id: "text_tile_sheet"})
     //         //.addCog('spriteActor')
             .addCog('tilemap', {id:"text_tile_map", alphaTile:8})
             // .addCog('textRenderer', {fontSize:20})

@@ -7,8 +7,8 @@
     "assets": {
         "offensive": ["IMAGE", "assets/offensive.png"],
         "santasprites":["IMAGE", "assets/santasprites.png"],
-        "text_tile_map": ["IMAGE", "assets/text_tiles.png"],
-        "text_tile_sheet": ["TILED", "assets/sample_text.json"],
+        "text_tile_sheet": ["IMAGE", "assets/text_tiles.png"],
+        "text_tile_map": ["TILED", "assets/sample_text.json"],
         "cali":["SOUND", "assets/testtone.flac"],
         "sampmap":["TILED", "assets/sampmap.json"]
     }
