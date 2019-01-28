@@ -164,7 +164,7 @@ function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tile
             let spriteX = tile % numSpritesRow;
             let spriteY = Math.floor(tile / numSpritesRow);
 
-            Logging.Log(tile, spriteX, spriteY)
+            // Logging.Log(tile, spriteX, spriteY)
 
             ////console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 

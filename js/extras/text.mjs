@@ -183,7 +183,6 @@ class TextRenderer{
 
         let map = createTileMap('this is a test', cw, ch, hc, vc);
         let json = JSON.stringify(map);
-        Logging.Log('json', json);
         let blob = new Blob([json], {type:'application/json'});
         let jsonUrl = URL.createObjectURL(blob);
         let decodedMap = entity.id + '_' + this.font + '_' + this.fontSize + '_map';

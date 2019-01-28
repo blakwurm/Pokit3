@@ -80,11 +80,8 @@ let tileMapSystem = class{
             jewls.translateActor(entity.id + '_' + layer, entity.x, entity.y, entity.z + i);
             jewls.rotateActor(entity.id + '_' + layer, entity.rotation);
             jewls.scaleActor(entity.id + '_' + layer, entity.scaleX, entity.scaleY);
-            if(!this.throttleLog)
-                Logging.Log(layer, i);
             i += this.zPad;
         }
-        this.throttleLog = true;
     }
     destroy (entity) {
         for(let layer of this._layers){
