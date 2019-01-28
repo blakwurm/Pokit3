@@ -216,7 +216,7 @@ function createSquare(positions, width, height, x, y, layer) {
     positions.push(x, y + height, layer);
     positions.push(x + width, y, layer);
     positions.push(x, y + height, layer);
-    positions.push(x + width, y + width, layer);
+    positions.push(x + width, y + height, layer);
 }
 
 function createUvSquare(uvs, spriteX, spriteY){
