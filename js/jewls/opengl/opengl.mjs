@@ -1,4 +1,4 @@
-﻿"use strict";
+﻿import * as Logging from '/js/debug.mjs'
 
 let _programs = [];
 let _gl = null;
@@ -163,6 +163,8 @@ function parseTileMap(numSpritesRow, numTilesRow, numTilesLayer, tileWidth, tile
 
             let spriteX = tile % numSpritesRow;
             let spriteY = Math.floor(tile / numSpritesRow);
+
+            Logging.Log(tile, spriteX, spriteY)
 
             ////console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 

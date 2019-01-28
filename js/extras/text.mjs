@@ -41,8 +41,8 @@ async function decodeFont(id, response){
 //     return await c.convertToBlob();
 // }
 
-async function measureTextHeight(font){
-    let text = ASCII.join('');
+async function measureTextHeight(font, char){
+    let text = char || ASCII.join('');
     let c = new OffscreenCanvas(10,10);
     let ctx = c.getContext('2d');
     ctx.font = font;
@@ -75,9 +75,9 @@ async function measureTextHeight(font){
     }
     
     return {
-        height: l - f,
-        ascent: h/2 - f,
-        descent: l - h/2,
+        height: l - f + 1,
+        ascent: h/2 - f + 1,
+        descent: l - h/2 + 1,
     }
 }
 
@@ -86,10 +86,9 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     let ctx = c.getContext('2d')
     ctx.font = font;
     //ctx.textAlign="center"; 
-    ctx.textBaseline = "middle";
+    //ctx.textBaseline = "middle";
     
     let metrics =  await measureTextHeight(font);
-    Logging.Log('metrics', metrics);
     let h = metrics.height;
     let height = h + verticalMargin;
     let width = 0;
@@ -115,8 +114,10 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
         // ctx.ellipse(x, y, w/2, h / 2, 0, 0, 2*Math.PI);
         // ctx.closePath();
         // ctx.stroke();
-        ctx.strokeStyle = "#000000";
-        ctx.fillText(t, x - w/2, y - h/2 - metrics.descent)
+        // Logging.setPattern(/spritemap/);
+        // Logging.Log('spritemap', t, i%10, Math.floor(i/10), x, y - h/2 - metrics.descent);
+        // ctx.strokeStyle = "#000000";
+        ctx.fillText(t, x - w/2, y - h/2 + metrics.ascent)
     }
 
     // ctx.strokeStyle = "#0000FF";
@@ -133,7 +134,7 @@ export async function makeSpriteSheet(font, verticalMargin, horizontalMargin) {
     //     ctx.stroke();
     // }
     let blob = await c.convertToBlob();
-    Logging.downloadBlob(blob)
+    // Logging.downloadBlob(blob)
     return await {
         blob:blob,
         height: height,
@@ -145,7 +146,6 @@ function createTileMap(text, tilewidth, tileheight, layerwidth, layerheight){
     let layer = [];
     for(let k of text){
         let lookup = ASCII_lookup[k]
-        Logging.Log(k, lookup, ASCII[lookup])
         layer.push(ASCII_lookup[k]+1);
     }
     for(let i = text.length; i < layerwidth*layerheight; i++) {
