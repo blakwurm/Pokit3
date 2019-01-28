@@ -228,6 +228,33 @@ function createUvSquare(uvs, spriteX, spriteY){
     uvs.push(spriteX + 1, spriteY + 1);
 }
 
+function createWavefront(positions, uvs, uMod, vMod){
+    let ver = [];
+    let vt = [];
+    let f = [];
+    let uv = 0;
+    for(let i = 0; i < positions.length; i++){
+        let x = i;i++
+        let y = i;i++
+        let z = i;
+        let u = uvs[uv];uv++
+        let v = uvs[uv];uv++
+        ver.push('v '  + positions[x] + ' ' + positions[y] + ' ' + positions[z]);
+        vt.push('vt ' + (u * uMod) + ' ' + (v * vMod))
+    }
+    for(let i = 1; i <= ver.length; i+=3){
+        f.push('f ' + i + ' ' + (i+1) + ' ' + (i+2));
+    }
+
+    let obj =  ver.join('\n') + '\n' + vt.join('\n') + '\n' + f.join('\n');
+    let blob  = new Blob([obj], {type:'text/plain'});
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'tilemap.obj';
+    a.click();
+}
+
 /** Create tile map
  * @param {String} name - The ID to save the tile map under
  * @param {String} texture - The ID of the texture containing the sprite map
@@ -286,6 +313,8 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, numTile
         angle: 0,
         priority: 0,
     }
+
+    createWavefront(positions, uvs, tileWidth / tex.width, tileHeight / tex.height);
 
     if(cached){
         cacheObject(actor);
