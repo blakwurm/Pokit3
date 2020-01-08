@@ -186,9 +186,9 @@ export function setTile(actor, index, tile, layer){
     _actors.get(actor)._tilemapData.layers[layer][index] = tile;
 }
 
-export function updateTileMap(actor){
+export function updateTileMap(actorID){
     let uvs = []
-    let actor = _actors.get(actor);
+    let actor = _actors.get(actorID);
     let tilemap = actor._tilemapData;
     for (let layer of tilemap.layers) {
         for (let i = 0; i < layer.length; i++) {
