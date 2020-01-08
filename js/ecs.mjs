@@ -19,7 +19,7 @@ class PokitEntity{
                 scaleX:1,scaleY:1,scaleZ:1,
                 velocity:0,
                 flags:new Set(),
-                parent:{x:0,y:0,z:0}},
+                parent:{x:0,y:0,z:0, rotation: 0}},
             identity);
             this.id = Math.random();
             this.ecs = ecs;
@@ -31,16 +31,20 @@ class PokitEntity{
             console.log(engine);
     }
     get x() {
-        let rad = this.deg2rad(this._rotation);
-        let rotX = (this._x * Math.cos(rad)) + (this._y * Math.sin(rad));
+        let rad = this.deg2rad(-this.parent.rotation);
+        let s = Math.sin(rad);
+        let c = Math.cos(rad);
+        let rotX = this._x * c - this._y * s;
         return this.parent.x + rotX;
     }
     set x(value) {
         this._x = value;
     }
     get y() {
-        let rad = this.deg2rad(this._rotation);
-        let rotY = (this._x * (-Math.sin(rad))) + (this._y * Math.cos(rad));
+        let rad = this.deg2rad(-this.parent.rotation);
+        let s = Math.sin(rad);
+        let c = Math.cos(rad);
+        let rotY = this._x * s + this._y * c;
         return this.parent.y + rotY;
     }
     set y(value) {
@@ -53,7 +57,7 @@ class PokitEntity{
         this._z = value;
     }
     get rotation() {
-        this.parent.rotation + this._rotation;
+        return this.parent.rotation + this._rotation;
     }
     set rotation(value) {
         this._rotation = value;
