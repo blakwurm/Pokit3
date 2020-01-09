@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-        "outDir": "./built",
+        "outDir": "./js",
         "allowJs": true,
         "target": "es6"
     },
     "include": [
-        "./js/**/*",
+        "./ts/**/*",
         "./typedefs/**/*.ts"
     ]
 }
