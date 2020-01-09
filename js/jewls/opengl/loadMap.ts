@@ -61,7 +61,7 @@ function makeJewlsTileMap(layermap) {
 }
 
 
-function mapInd(index, map) {
+function mapInd(index: number, map) {
     let newmap = new Map();
     for (let [key, valvec] of map) {
         newmap.set(key, valvec[index]);
@@ -69,12 +69,12 @@ function mapInd(index, map) {
     return newmap;
 }
 
-function getPosFromOffset(index, width, height, multiplierwidth, multiplierheight) {
+function getPosFromOffset(index: number, width: number, height: number, multiplierwidth?: number, multiplierheight?: number) {
     multiplierheight = multiplierheight || 1;
     multiplierwidth = multiplierwidth || 1;
     return [Math.floor(index % width) * multiplierwidth, Math.floor(index/height) * multiplierheight]
 }
 
-function getOffsetFromPos([x, y], width, height) {
+function getOffsetFromPos([x, y]: number[], width: number, height: number) {
     return x + (y * height);
 }

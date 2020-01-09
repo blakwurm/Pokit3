@@ -1,4 +1,7 @@
-export let Types = {};
+interface Enum {
+    [number: string]: any
+}
+export let Types : Enum = {};
 
 export class AssetManager{
     constructor(){

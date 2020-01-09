@@ -1,5 +1,5 @@
-import * as jewls from './jewls/opengl/opengl.mjs';
-import {Types} from './assetmanager.mjs';
+import * as jewls from './jewls/opengl/opengl';
+import {Types} from './assetmanager';
 
 let textureSystem = class {
     constructor(engine) {this.engine=engine}

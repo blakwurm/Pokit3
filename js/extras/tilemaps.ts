@@ -1,4 +1,4 @@
-import { Types, AssetManager } from "../assetmanager.mjs";
+import { Types, AssetManager } from "../assetmanager";
 
 export function addTileMapSupport(pokitOS) {
     pokitOS.assets.registerType("TILED") 

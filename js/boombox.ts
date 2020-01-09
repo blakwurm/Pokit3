@@ -1,4 +1,4 @@
-import {Types} from './assetmanager.mjs';
+import {Types} from './assetmanager';
 
 export class Mixer {
     constructor(){

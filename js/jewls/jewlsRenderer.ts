@@ -1,4 +1,4 @@
-﻿import * as backend from './opengl/opengl.js';
+﻿import * as backend from './opengl/opengl';
 
 export function jewlsActor() {
     return {initialized:false};

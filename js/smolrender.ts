@@ -1,4 +1,4 @@
-import { SpatialHash } from './spatialhash.mjs';
+import { SpatialHash } from './spatialhash';
 
 let rfs = (vals) => [...Array.prototype.sort.call(vals, (a,b)=>a.z-b.z)]
 let id_fn = a => a
