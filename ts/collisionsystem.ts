@@ -1,4 +1,4 @@
-import {SpatialHash} from 'spatialhash'
+import {SpatialHash} from 'spatialhash.js'
 
 function getReference(obj1, obj2){
     return obj1.id + '.' + obj2.id;

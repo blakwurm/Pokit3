@@ -42,18 +42,18 @@
 //     return pokitOS;
 // }
 
-import {InputManager} from './inputmanager'
-import {ECS} from './ecs';
+import {InputManager} from './inputmanager.js'
+import {ECS} from './ecs.js';
 // import {Renderer} from './smolrender.mjs';
-import {Renderer} from './jewls';
-import {Mixer} from './boombox'
-import {PokitOS} from './pokitos';
-import {Types,AssetManager} from './assetmanager';
-import {SpatialHash} from './spatialhash'
-import {doIntroAnim} from './introanim';
-import {addTileMapSupport} from './extras/tilemaps';
-import './smolworker'
-import * as cartloader from './cartloader'
+import {Renderer} from './jewls.js';
+import {Mixer} from './boombox.js'
+import {PokitOS} from './pokitos.js';
+import {Types,AssetManager} from './assetmanager.js';
+import {SpatialHash} from './spatialhash.js'
+import {doIntroAnim} from './introanim.js';
+import {addTileMapSupport} from './extras/tilemaps.js';
+import './smolworker.js'
+import * as cartloader from './cartloader.js'
 
 export default async function main() {
     let pokitOS = await setup_pokitOS();

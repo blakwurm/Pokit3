@@ -1,4 +1,4 @@
-import { SpatialHash } from './spatialhash'
+import { SpatialHash } from './spatialhash.js'
 
 let shouldLog = true;
 export class PokitOS {

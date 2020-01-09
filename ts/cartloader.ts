@@ -1,4 +1,4 @@
-import {Types} from "./assetmanager"
+import {Types} from "./assetmanager.js"
 export function getBaseCartURL() {
     let urlParams = new URLSearchParams(window.location.search);
     let urlpart = urlParams.get('cart')

@@ -1,14 +1,14 @@
-import {InputManager} from './smolinput'
-import {ECS} from './ecs';
+import {InputManager} from './smolinput.js'
+import {ECS} from './ecs.js';
 // import {Renderer} from './smolrender.mjs';
-import {Renderer} from './jewls';
-import {Mixer} from './boombox'
-import {PokitOS} from './pokitos';
-import {Types,AssetManager} from './assetmanager';
-import {SpatialHash} from './spatialhash'
-import {doIntroAnim} from './introanim';
-import {addTileMapSupport} from './extras/tilemaps';
-import './smolworker'
+import {Renderer} from './jewls.js';
+import {Mixer} from './boombox.js'
+import {PokitOS} from './pokitos.js';
+import {Types,AssetManager} from './assetmanager.js';
+import {SpatialHash} from './spatialhash.js'
+import {doIntroAnim} from './introanim.js';
+import {addTileMapSupport} from './extras/tilemaps.js';
+import './smolworker.js'
 
 export default async function main() {
     let ecs = new ECS();
