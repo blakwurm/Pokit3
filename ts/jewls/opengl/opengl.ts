@@ -74,16 +74,6 @@ interface IActor {
     angle: number,
     priority: number
 }
-
-interface IRenderedObject {
-    x?: number,
-    y?: number,
-    z?: number,
-    scaleX?: number,
-    scaleY?: number,
-    [any: string]: any
-}
-
 function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
     let shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -602,7 +592,7 @@ export function scaleActor(actor: string, x: number = 1, y: number = 1) {
 }
 
 /** Renders all viewports */
-export function render(sortFunc: (entities: IRenderedObject[], cam: IRenderedObject)=>IRenderedObject[]) {
+export function render(sortFunc: CullingFunction) {
     sortFunc = sortFunc || ((entities) => entities);
 
     _gl.colorMask(true, true, true, true);

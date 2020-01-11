@@ -1,6 +1,7 @@
 import { Types, AssetManager } from "../assetmanager.js";
+import { PokitOS } from "../pokitos.js";
 
-export function addTileMapSupport(pokitOS) {
+export function addTileMapSupport(pokitOS: PokitOS) {
     pokitOS.assets.registerType("TILED") 
     pokitOS.assets.registerDecoder(Types.TILED, decodeTiled)
     // AssetManager.prototype.getTileMap = async function(tilemapName, src) {

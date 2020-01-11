@@ -1,8 +1,34 @@
-import { SpatialHash } from './spatialhash.js'
+import { SpatialHash, ISpatialEntity } from './spatialhash.js'
+import { ECS } from './ecs.js';
+import { InputManager } from './inputmanager.js';
+import { Renderer } from './jewls.js';
+import { AssetManager } from './assetmanager.js';
+import { Mixer } from './boombox.js';
 
 let shouldLog = true;
 export class PokitOS {
-    constructor(initbundle) {
+    time: {
+        r: number,
+        framerate: number,
+        interval: number,
+        timelapsed: number,
+        timesince: number,
+        delta: number,
+        prev: number
+        active?: boolean
+    }
+    renderer: Renderer;
+    ecs: ECS;
+    assets: AssetManager;
+    mixer: Mixer;
+    cullmap: SpatialHash;
+    constructor(initbundle:{
+        ecs: ECS,
+        inputmanager: InputManager,
+        renderer: Renderer,
+        assets: AssetManager,
+        mixer: Mixer
+    }) {
         let s = this;
         this.time = null;
         this.renderer = null;
@@ -31,7 +57,7 @@ export class PokitOS {
         this.time.active = false;
         cancelAnimationFrame(this.time.r);
     }
-    async preload() {
+    async preload(): Promise<PokitOS> {
         await this.ecs.init(this);
         await this.renderer.init(this);
         await this.assets.init(this);
@@ -49,8 +75,8 @@ export class PokitOS {
         this.renderer.render(
             function(entities, camera) {
                 self.cullmap.clear();
-                self.cullmap.addMany(entities)
-                return self.cullmap.findNearby(camera)
+                self.cullmap.addMany(<ISpatialEntity[]>entities)
+                return self.cullmap.findNearby(<ISpatialEntity>camera)
             }
         )
         // this.renderer.render(
