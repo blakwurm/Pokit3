@@ -69,5 +69,5 @@ typings/
 # visual studio metadata stuff
 .vs/
 
-# compiled typescript
-js/
+# uncompiled typescript
+ts/
