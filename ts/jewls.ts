@@ -117,7 +117,7 @@ async function destructImage(asset: IAsset){
     jewls.deleteTexture(asset.id);
 }
 
-export class Renderer {
+export class Renderer implements IRenderer {
     private _canvas: HTMLCanvasElement;
     private _engine: PokitOS;
     render: (cullFunc: CullingFunction)=>void;

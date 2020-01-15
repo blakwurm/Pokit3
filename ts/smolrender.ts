@@ -1,8 +1,29 @@
 import { SpatialHash } from './spatialhash.js';
+import { PokitEntity } from './ecs.js';
+import { PokitOS } from './pokitos.js';
+
+interface IImageAsset {
+    imgname: string,
+    offx: number,
+    offy: number,
+    offwidth?: number,
+    offheight?: number
+}
 
 let rfs = (vals) => [...Array.prototype.sort.call(vals, (a,b)=>a.z-b.z)]
 let id_fn = a => a
-export class Renderer{
+export class Renderer implements IRenderer {
+    private _sorted_torender: PokitEntity[];
+    private _sorted_cameras: PokitEntity[];
+    private _dirtyEntityFlag: boolean;
+    private _dirtyCameraFlag: boolean;
+    private _engine: PokitOS;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    torender: Map<number, PokitEntity>;
+    imgdata: Map<string, IImageAsset>;
+    cameras: Map<number, PokitEntity>
+
     constructor(canvas){
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
@@ -13,10 +34,10 @@ export class Renderer{
         this._dirtyCameraFlag = false;
         this.imgdata = new Map();
         this.cameras = new Map();
-        this.pokitOS = null;
+        this._engine = null;
     }
     init(pokitOS) {
-        this.pokitOS = pokitOS
+        this._engine = pokitOS
         let s = this;
         pokitOS.ecs.setCog('img', 
         {init: (entity, imgdata) => {
@@ -70,7 +91,7 @@ export class Renderer{
             // for (let {id,x,y,width,height} of spatial_hash.findNearby(cam)) {
             for (let {id,x,y,width,height} of sortFunc(this._sorted_torender, cam)) {
                 let {imgname,offx,offy,offwidth,offheight} = this.imgdata.get(id);
-                let i = this.pokitOS.assets.imgs.get(imgname);
+                let i = <HTMLImageElement>this._engine.assets.getAsset(imgname).data;
                 // con.save();
                 // con.translate(x-(cam.x-160),y-(cam.y-160));
                 // con.drawImage(i,offx||0,offy||0,offwidth||i.width,offheight||i.height,-width/2,-height/2,width||i.width,height||i.height);

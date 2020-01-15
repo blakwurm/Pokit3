@@ -56,7 +56,7 @@ const gamepaddpadaxis = new Map([
  * Object for handling the state of the console's input. Afte constructing,
  * call full_setup().
  */
-export class InputManager {
+export class InputManager implements IInputManager{
     buttons: {
         up: boolean,
         down: boolean,

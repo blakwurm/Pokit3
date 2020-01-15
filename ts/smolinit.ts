@@ -18,8 +18,8 @@ export default async function main() {
     let r = new Renderer(document.querySelector('#gamescreen'));
     let a = new AssetManager();
     let m = new Mixer();
-    addTileMapSupport();
     let pokitOS = await new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m}).preload();
+    addTileMapSupport(pokitOS);
     // a.getImage('load_text', '/img/bootscreen_text.svg');
     // e.addCog('img', {imgname:'load_text'})
     pokitOS.start();

@@ -2,7 +2,31 @@
  * Object for handling the state of the console's input. Afte constructing,
  * call full_setup().
  */
-export class InputManager {
+export class InputManager implements IInputManager {
+    buttons: {
+        up: boolean,
+        down: boolean,
+        right: boolean,
+        left: boolean,
+        a: boolean,
+        b: boolean,
+        x: boolean,
+        y: boolean,
+        start: boolean,
+        select: boolean
+    };
+    current_touches: Map<number, Touch>;
+    current_keys: Set<string>;
+    debug_callback: Function;
+    cust_keymap: {[key:string]: string};
+    cust_gamepadbuttonmap: Map<string, string>;
+    cust_gamepaddpadaxeis: Map<number, {
+        '-1': string,
+        '1': string
+    }>
+    dirty_keys: boolean;
+    dirty_touch: boolean;
+
     constructor () {
         this.dirty_keys = false;
         this.buttons = {

@@ -56,26 +56,6 @@ import './smolworker.js'
 import * as cartloader from './cartloader.js'
 import * as screenfull from './lib/screenful/dev.js'
 
-declare global {
-    interface Window {
-        pokitOS: PokitOS
-    }
-    interface IRenderedObject {
-        x?: number,
-        y?: number,
-        z?: number,
-        height?: number,
-        width?: number,
-        depth?: number,
-        scaleX?: number,
-        scaleY?: number,
-        [any: string]: any
-    }
-    interface CullingFunction{
-        (entities: IRenderedObject[], cam: IRenderedObject):Set<IRenderedObject>|IRenderedObject[]
-    }
-}
-
 export default async function main(): Promise<PokitOS> {
     let pokitOS = await setup_pokitOS();
     await loadExtras(pokitOS)

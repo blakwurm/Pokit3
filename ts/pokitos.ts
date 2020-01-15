@@ -1,9 +1,48 @@
 import { SpatialHash, ISpatialEntity } from './spatialhash.js'
 import { ECS } from './ecs.js';
-import { InputManager } from './inputmanager.js';
 import { Renderer } from './jewls.js';
 import { AssetManager } from './assetmanager.js';
 import { Mixer } from './boombox.js';
+
+declare global {
+    interface Window {
+        pokitOS: PokitOS
+    }
+    interface IRenderedObject {
+        x?: number,
+        y?: number,
+        z?: number,
+        height?: number,
+        width?: number,
+        depth?: number,
+        scaleX?: number,
+        scaleY?: number,
+        [any: string]: any
+    }
+    interface CullingFunction{
+        (entities: IRenderedObject[], cam: IRenderedObject):Set<IRenderedObject>|IRenderedObject[]
+    }
+
+    interface IInputManager {
+        buttons: {
+            up: boolean,
+            down: boolean,
+            right: boolean,
+            left: boolean,
+            a: boolean,
+            b: boolean,
+            x: boolean,
+            y: boolean,
+            start: boolean,
+            select: boolean
+        }
+    }
+    
+    interface IRenderer {
+        init: (engine: PokitOS) => void,
+        render: (cullFunc: CullingFunction) => void
+    }
+}
 
 let shouldLog = true;
 export class PokitOS {
@@ -24,8 +63,8 @@ export class PokitOS {
     cullmap: SpatialHash;
     constructor(initbundle:{
         ecs: ECS,
-        inputmanager: InputManager,
-        renderer: Renderer,
+        inputmanager: IInputManager,
+        renderer: IRenderer,
         assets: AssetManager,
         mixer: Mixer
     }) {
