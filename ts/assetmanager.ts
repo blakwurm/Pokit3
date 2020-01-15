@@ -1,6 +1,29 @@
-export let Types = {};
+import { PokitOS } from "./pokitos";
 
-export class AssetManager{
+interface Enum {
+    [number: string]: any
+}
+
+export interface IAsset {
+    id: string,
+    type: number,
+    url: string,
+    data: any
+}
+
+export type Decoder = (id: string, data: Response) => any;
+export type Destructor = (asset: IAsset) => void;
+
+export let Types : Enum = {};
+
+export class AssetManager {
+    private _assets: Map<string, IAsset>;
+    private _urls: Map<string, IAsset>;
+    private _typedAssets: Map<number, Set<IAsset>>;
+    private _decoders: Map<number, Decoder>;
+    private _destructors: Map<number, Destructor>;
+    private _engine: PokitOS;
+
     constructor(){
         this._assets = new Map();
         this._urls = new Map();
@@ -20,24 +43,24 @@ export class AssetManager{
         })
     }
 
-    init(engine){
-        this.pokitOS = engine;
+    init(engine: PokitOS){
+        this._engine = engine;
     }
 
-    registerType(type){
+    registerType(type: string){
         Types[type] = Object.keys(Types).length;
         this._typedAssets.set(Types[type], new Set());
     }
 
-    registerDecoder(type, decoder){
+    registerDecoder(type: number, decoder: Decoder){
         this._decoders.set(type, decoder);
     }
 
-    registerDestructor(type, destructor){
+    registerDestructor(type: number, destructor: Destructor){
         this._destructors.set(type, destructor);
     }
 
-    async queueAsset(id, url, type) {
+    async queueAsset(id: string, url: string, type: number): Promise<any> {
         let asset = this._urls.get(url);
         if(!asset) {
             let response = await fetch(url);
@@ -50,15 +73,15 @@ export class AssetManager{
         return asset.data;
     }
 
-    getAsset(id){
+    getAsset(id: string): IAsset{
         return this._assets.get(id);
     }
 
-    cleanupAsset(id){
-        let assset = this._assets.get(id);
+    cleanupAsset(id: string){
+        let asset = this._assets.get(id);
         let destruct = this._destructors.get(asset.type);
         if(destruct){
-            destruct(id);
+            destruct(asset);
         }
         this._assets.delete(id);
         this._urls.delete(asset.url);

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "./js",
+        "allowJs": true,
+        "lib": ["ESNEXT", "DOM"],
+        "target": "ESNEXT",
+        "module": "ESNEXT"//,
+        //"allowSyntheticDefaultImports": true
+    },
+    "include": [
+        "./ts/**/*",
+        "./typedefs/**/*.ts"
+    ]
+}

@@ -1,4 +1,4 @@
-export function setImage(imgname, offx, offy, offwidth, offheight) {
+export function setImage(imgname: string, offx: number, offy: number, offwidth: number, offheight: number): Function {
     return () => {
         this.imgname = imgname;
         this.offx = offx;

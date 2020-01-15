@@ -1,6 +1,20 @@
-import {Types} from './assetmanager.mjs';
+import {Types, Decoder} from './assetmanager.js';
+import { PokitOS } from './pokitos.js';
+import { PokitEntity, ICog } from './ecs.js';
+
+interface IMixerAudioSource {
+    src: AudioBufferSourceNode,
+    pan: StereoPannerNode,
+    vol: GainNode
+}
 
 export class Mixer {
+    private _racks: AudioNode[][];
+    private _ctx: AudioContext;
+    private _started: boolean;
+    private _engine: PokitOS;
+    audioListener: AudioListener;
+
     constructor(){
         this._racks = [];
         this._ctx = new AudioContext();
@@ -9,15 +23,15 @@ export class Mixer {
         this.audioListener = null;
     }
 
-    async audioDecoder(_, response){
+    async audioDecoder (_, response: Response){
         let buffer = await response.arrayBuffer();
         console.log(buffer)
         let ctx = this._ctx;
         return await ctx.decodeAudioData(buffer);
     }
 
-    init(engine){
-        this.pokitOS = engine;
+    init(engine: PokitOS){
+        this._engine = engine;
 
         engine.assets.registerType('SOUND');
         engine.assets.registerDecoder(Types.SOUND, (_, response) => this.audioDecoder(_, response));
@@ -32,7 +46,7 @@ export class Mixer {
         engine.ecs.defaultCamera.addCog('audioListener', {});
     }
 
-    createRack(connectToMaster=true){
+    createRack(connectToMaster: boolean =true){
         let entryNode = new AnalyserNode(this._ctx);
         let exitNode = new AnalyserNode(this._ctx);
         entryNode.connect(exitNode);
@@ -43,7 +57,7 @@ export class Mixer {
         return this._racks.length -1;
     }
 
-    addToRack(node, dest = 0, rack = 0){
+    addToRack(node: AudioNode, dest: number = 0, rack: number = 0){
         let lowerNode = this.getNode(dest, rack);
         let upperNode = this.getNode(dest-1, rack);
         upperNode.disconnect(lowerNode);
@@ -52,21 +66,21 @@ export class Mixer {
         this._racks[rack].splice(dest, 0, node);
     }
 
-    removeFromRack(index, rack =0){
-        let lowerNode = this.getNode(dest + 1, rack);
-        let node = this.getNode(dest, rack);
-        let upperNode = this.getNode(dest-1, rack);
+    removeFromRack(index: number, rack: number =0){
+        let lowerNode = this.getNode(index + 1, rack);
+        let node = this.getNode(index, rack);
+        let upperNode = this.getNode(index-1, rack);
         upperNode.disconnect(node);
         upperNode.connect(lowerNode);
         node.disconnect(lowerNode);
         this._racks[rack].splice(index, 1);
     }
 
-    getNode(index, rack=0) {
+    getNode(index: number, rack: number=0): AudioNode {
         return this._racks[rack][index];
     }
 
-    async makeSource(buffer, rack = 0){
+    async makeSource(buffer: AudioBuffer, rack: number = 0): Promise<IMixerAudioSource>{
         if(!this._started){
             await this._ctx.resume();
             this._started = true;
@@ -82,19 +96,49 @@ export class Mixer {
     }
 }
 
-let AudioListener = class {
-    constructor(engine) {
+interface IAudioListener extends ICog {
+    entity?: PokitEntity,
+    maxHearingDistance?: number
+}
+
+class AudioListener implements IAudioListener {
+    entity: PokitEntity;
+    maxHearingDistance: number;
+
+    constructor(engine: PokitOS) {
         engine.mixer.audioListener = this;
     }
-    init(entity,initParams){
+    init(entity: PokitEntity,initParams: IAudioListener){
         Object.assign(this, {maxHearingDistance:13*20}, initParams);
         this.entity = entity;
     }
 }
 
-let AudioSource = class {
-    constructor(engine){
-        this.engine=engine
+interface IAudioSource extends ICog {
+    startOnInit?: boolean,
+    loop?: boolean,
+    pan?: number,
+    spatial?: boolean,
+    id?: string,
+    rack?: number,
+    speed?: number,
+    maxVolume?: number
+}
+
+class AudioSource implements IAudioSource{
+    private _engine: PokitOS;
+    private _volume: number;
+    private _src: IMixerAudioSource;
+    startOnInit: boolean;
+    loop: boolean;
+    pan: number;
+    spatial: boolean;
+    id: string;
+    rack: number;
+    speed: number;
+    maxVolume: number
+    constructor(engine: PokitOS){
+        this._engine=engine
         this.startOnInit = false;
         this.loop = false;
         this.pan = 0;
@@ -106,18 +150,18 @@ let AudioSource = class {
 
         this._volume = 1;
     };
-    async init(entity, audioData) {
+    async init(_, audioData: IAudioSource) {
         Object.assign(this, audioData)
-        let buffer = await this.engine.assets.getAsset(this.id).data;
-        this.engine.assets.getAsset(this.id).data = buffer;
+        let buffer = await this._engine.assets.getAsset(this.id).data;
+        this._engine.assets.getAsset(this.id).data = buffer;
         //console.log(buffer)
         //console.log(this.engine.assets)
-        let src = await this.engine.mixer.makeSource(buffer, this.rack);
+        let src = await this._engine.mixer.makeSource(buffer, this.rack);
         //console.log(src)
-        this.src = src;
+        this._src = src;
 
-        this.src.src.loop = this.loop;
-        this.src.src.playbackRate.value = this.speed;
+        this._src.src.loop = this.loop;
+        this._src.src.playbackRate.value = this.speed;
 
         if(this.spatial){
             //this._volume = 0;
@@ -127,8 +171,8 @@ let AudioSource = class {
             this.play();
         }
     }
-    update(entity){
-        let audioListener = this.engine.mixer.audioListener;
+    update(entity: PokitEntity){
+        let audioListener = this._engine.mixer.audioListener;
         if(this.spatial && audioListener){
             let atten =  (entity.distance(audioListener.entity)/audioListener.maxHearingDistance);
             if(atten > 1) atten = 1;
@@ -137,14 +181,14 @@ let AudioSource = class {
             this.pan = Math.sin(entity.deg2rad(audioListener.entity.bearing(entity)) * atten);
         }
         //console.log({pan:this.pan, volume: this._volume})
-        this.src.pan.pan.value = this.pan;
-        this.src.vol.gain.value = this.maxVolume * this._volume;
+        this._src.pan.pan.value = this.pan;
+        this._src.vol.gain.value = this.maxVolume * this._volume;
     }
-    getSide(b){
+    getSide(b: number): number{
         if(b === 0 || b === 180) return 0;
         return b < 180 ? 1 : -1;
     }
-    getHorizontalBearing(reference, compare){
+    getHorizontalBearing(reference: PokitEntity, compare: PokitEntity){
         let b = reference.bearing(compare);
         let s = this.getSide(b);
         switch(s){
@@ -157,9 +201,9 @@ let AudioSource = class {
         }
     }
     play() {
-        this.src.src.start();
+        this._src.src.start();
     }
     stop() {
-        this.src.src.stop();
+        this._src.src.stop();
     }
 }

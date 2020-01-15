@@ -42,20 +42,41 @@
 //     return pokitOS;
 // }
 
-import {InputManager} from './inputmanager.mjs'
-import {ECS} from './ecs.mjs';
+import {InputManager} from './inputmanager.js'
+import {ECS} from './ecs.js';
 // import {Renderer} from './smolrender.mjs';
-import {Renderer} from './jewls.mjs';
-import {Mixer} from './boombox.mjs'
-import {PokitOS} from './pokitos.mjs';
-import {Types,AssetManager} from './assetmanager.mjs';
-import {SpatialHash} from './spatialhash.mjs'
-import {doIntroAnim} from './introanim.mjs';
-import {addTileMapSupport} from './extras/tilemaps.mjs';
-import './smolworker.mjs'
-import * as cartloader from './cartloader.mjs'
+import {Renderer} from './jewls.js';
+import {Mixer} from './boombox.js'
+import {PokitOS} from './pokitos.js';
+import {Types,AssetManager} from './assetmanager.js';
+import {SpatialHash} from './spatialhash.js'
+import {doIntroAnim} from './introanim.js';
+import {addTileMapSupport} from './extras/tilemaps.js';
+import './smolworker.js'
+import * as cartloader from './cartloader.js'
+import * as screenfull from './lib/screenful/dev.js'
 
-export default async function main() {
+declare global {
+    interface Window {
+        pokitOS: PokitOS
+    }
+    interface IRenderedObject {
+        x?: number,
+        y?: number,
+        z?: number,
+        height?: number,
+        width?: number,
+        depth?: number,
+        scaleX?: number,
+        scaleY?: number,
+        [any: string]: any
+    }
+    interface CullingFunction{
+        (entities: IRenderedObject[], cam: IRenderedObject):Set<IRenderedObject>|IRenderedObject[]
+    }
+}
+
+export default async function main(): Promise<PokitOS> {
     let pokitOS = await setup_pokitOS();
     await loadExtras(pokitOS)
     let baseURL = cartloader.getBaseCartURL()
@@ -75,16 +96,16 @@ export default async function main() {
     return pokitOS;
 }
 
-async function preload_introanim_assets(pokitOS) {
+async function preload_introanim_assets(pokitOS: PokitOS): Promise<PokitOS> {
     await pokitOS.assets.queueAsset('load_text', '/img/bootscreen_text.svg', Types.IMAGE);
     await pokitOS.assets.queueAsset('load_top', '/img/bootscreen_top.svg', Types.IMAGE);
     await pokitOS.assets.queueAsset('load_bottom', '/img/bootscreen_bottom.svg', Types.IMAGE);
     return pokitOS;
 }
 
-async function setup_console_open(pokitOS) {
+async function setup_console_open(pokitOS: PokitOS): Promise<PokitOS> {
     return new Promise(resolve =>
-       document.querySelector('#onbutton').onclick = 
+       (<HTMLButtonElement>document.querySelector('#onbutton')).onclick = 
            async function() {
                console.log('doing')
                document.querySelector('#powercase_right').className = 'hidden'
@@ -96,12 +117,12 @@ async function setup_console_open(pokitOS) {
            })
 }
 
-async function setup_pokitOS() {
+async function setup_pokitOS(): Promise<PokitOS> {
     let ecs = new ECS();
     let e = ecs.makeEntity({width: 320, height: 320});
     ecs.update();
     let i = new InputManager();
-    let r = new Renderer(document.querySelector('#gamescreen'));
+    let r = new Renderer(document.querySelector<HTMLCanvasElement>('#gamescreen'));
     let a = new AssetManager();
     let m = new Mixer();
     let pokitOS = new PokitOS({inputmanager: i, ecs: ecs, renderer: r, assets: a, mixer: m});
@@ -110,13 +131,13 @@ async function setup_pokitOS() {
     return pokitOS;
 }
 
-async function loadExtras(pokitOS) {
+async function loadExtras(pokitOS: PokitOS) {
     addTileMapSupport(pokitOS)
 }
 
-async function enable_fullscreen_enabling(pokitOS) {
-    document.querySelector('#fullscreen').onclick = () => screenfull.toggle();
-    document.querySelector('#gamescreen').ondblclick = () => screenfull.toggle();
+async function enable_fullscreen_enabling(pokitOS: PokitOS) {
+    (<HTMLCanvasElement>document.querySelector('#fullscreen')).onclick = () => screenfull.toggle();
+    (<HTMLCanvasElement>document.querySelector('#gamescreen')).ondblclick = () => screenfull.toggle();
 }
 
 

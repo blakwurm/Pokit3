@@ -1,7 +1,32 @@
+import { PokitOS } from "./pokitos";
+
+export interface ICog {
+    exts?: {
+        [id: string]: any
+    },
+    init? (entity: PokitEntity, args: {
+        [any: string]: any
+    }): any,
+    update? (entity: PokitEntity):any,
+    destroy? (entity: PokitEntity):any,
+    runonce? (entity: PokitEntity):any,
+    onCollisionEnter? (entity: PokitEntity, collider: PokitEntity):any,
+    onCollisionExit? (entity: PokitEntity, collider: PokitEntity):any
+}
+
+export interface IEntityIdentity{
+    x?: number, y?: number, z?: number,
+    height?: number, width?: number, depth?: number,
+    rotation?: number,
+    scaleX?: number, scaleY?: number, scaleZ?: number,
+    velocity?: number,
+    flags?: Set<string>,
+    parent?: IEntityIdentity
+}
 
 let prisort = (a, b) => a.priority - b.priority
 function no_op(){}
-function prepCog(sys) {
+function prepCog(sys: ICog) {
     for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit']) {
         if (!sys[x]) {
             sys[x] = no_op
@@ -10,66 +35,106 @@ function prepCog(sys) {
     if (!sys.exts) (sys.exts = {})
     return sys
 }
-class PokitEntity{
-    constructor(ecs, identity, engine) {
+
+export class PokitEntity implements IEntityIdentity{
+    private _sorted: ICog[];
+    private _runonce: ICog[];
+    private _engine: PokitOS;
+    private _x: number;
+    private _y: number;
+    private _z: number;
+    private _rotation: number;
+
+    id: number;
+    ecs: ECS;
+    cogs: Map<string,ICog>;
+    exts: Map<string,any>;
+    
+    /* IEntityIdentity */
+    height: number;
+    width: number;
+    depth: number;
+    scaleX: number;
+    scaleY: number;
+    scaleZ: number;
+    velocity: number;
+    flags: Set<string>;
+    parent: IEntityIdentity;
+    /* IEntityIdentity */
+
+    constructor(ecs: ECS, identity: IEntityIdentity, engine: PokitOS) {
         Object.assign(this,
                 {_x:0,_y:0,_z:0,
                 height:0,width:0,depth:1,
-                rotation:0,
+                _rotation:0,
                 scaleX:1,scaleY:1,scaleZ:1,
                 velocity:0,
                 flags:new Set(),
-                parent:{x:0,y:0,z:0}},
+                parent:{x:0,y:0,z:0, rotation: 0}},
             identity);
             this.id = Math.random();
             this.ecs = ecs;
             this.cogs = new Map();
             this.exts = new Map();
             this._sorted = [];
-            this.runonce = [];
-            this.pokitOS = engine;
+            this._runonce = [];
+            this._engine = engine;
             console.log(engine);
     }
-    get x() {
-        return this.parent.x + this._x;
+    get x(): number {
+        let rad = this.deg2rad(-this.parent.rotation);
+        let s = Math.sin(rad);
+        let c = Math.cos(rad);
+        let rotX = this._x * c - this._y * s;
+        return this.parent.x + rotX;
     }
-    set x(value) {
+    set x(value: number) {
         this._x = value;
     }
-    get y() {
-        return this.parent.y + this._y;
+    get y(): number {
+        let rad = this.deg2rad(-this.parent.rotation);
+        let s = Math.sin(rad);
+        let c = Math.cos(rad);
+        let rotY = this._x * s + this._y * c;
+        return this.parent.y + rotY;
     }
-    set y(value) {
+    set y(value: number) {
         this._y = value;
     }
-    get z() {
+    get z(): number {
         return this.parent.z + this._z;
     }
-    set z(value) {
+    set z(value: number) {
         this._z = value;
+    }
+    get rotation(): number {
+        return this.parent.rotation + this._rotation;
+    }
+    set rotation(value: number) {
+        this._rotation = value;
     }
     update() {
         let self = this;
-        if (this.runonce.length) {
-            this.runonce.sort(prisort).forEach(a=>a.runonce(self))
-            this.runonce = [];
+        if (this._runonce.length) {
+            this._runonce.sort(prisort).forEach(a=>a.runonce(self))
+            this._runonce = [];
         }
         this._sorted.forEach(a=>a.update(self));
     }
-    runOnce(ro) {
-        this.runonce.push(ro);
+    runOnce(ro: ICog) {
+        this._runonce.push(ro);
     }
-    onCollisionEnter(collider, collision){
+    onCollisionEnter(collider: PokitEntity, collision: PokitEntity){
         this._sorted.forEach(a=>a.onCollisionEnter(collider, collision));
     }
-    onCollisionExit(collider, collision){
+    onCollisionExit(collider: PokitEntity, collision: PokitEntity){
         this._sorted.forEach(a=>a.onCollisionExit(collider, collision));
     }
-    addCog(systemName, props) {
+    addCog(systemName: string, props: any): PokitEntity {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
-            console.log(this.pokitOS);
-            sys = new sys(this.pokitOS);
+            console.log(this._engine);
+            sys = new sys(this._engine);
             prepCog(sys)
         }
         sys.init(this, props);
@@ -77,22 +142,22 @@ class PokitEntity{
         this.ecs.reverseSet(systemName, this)
         return this.sortSystems();
     }
-    addUniqueCog(systemName,sys) {
+    addUniqueCog(systemName: string, sys: ICog): PokitEntity {
         sys = prepCog(sys)
         this.cogs.set(systemName,sys)
         return this.sortSystems();
     }
-    removeCog(sn) {
+    removeCog(sn: string): PokitEntity {
         this.cogs.get(sn).destroy(this);
         this.cogs.delete(sn);
         this.ecs.reverseRemove(sn, this);
         return this.sortSystems();
     }
-    sortSystems() {
+    sortSystems(): PokitEntity {
         this._sorted = [...this.cogs.values()].sort(prisort)
         return this;
     }
-    hydrate(jsono) {
+    hydrate(jsono: string) {
         let o = JSON.parse(jsono);
     }
     destroy() {
@@ -101,26 +166,31 @@ class PokitEntity{
         }
         this.ecs.popEntity(this.id)
     }
-    distance(entity){
+    distance(entity: PokitEntity){
         return Math.sqrt(Math.abs((entity.x - this.x)**2 + (entity.y-this.y)**2));
     }
-    bearing(entity){
+    bearing(entity: PokitEntity){
         return this.rad2deg(Math.atan2(entity.y - this.y, entity.x - this.x)) + 90;
     }
-    deg2rad(angle){
+    deg2rad(angle: number){
         return (angle/360) * (Math.PI * 2);
     }
-    rad2deg(angle){
+    rad2deg(angle: number){
         return (angle/(Math.PI * 2)) * 360;
     }
 }
 
 export class ECS {
+    entities: Map<number, PokitEntity>;
+    systems: Map<string, ICog | {new (engine: PokitOS): ICog}>;
+    reverse_lookup: {[system: string]: Set<PokitEntity>};
+    pokitOS: PokitOS;
+    defaultCamera: PokitEntity;
+
     constructor() {
         this.entities = new Map();
         // TODO: Add cache array of entities
         this.systems = new Map();
-        this.supers = new Map();
         this.reverse_lookup = {}
         this.pokitOS = null;
     }
@@ -166,12 +236,11 @@ export class ECS {
     }
     update() {
         [...this.entities.values()].forEach(e=>e.update());
-        [...this.supers.values()].forEach(e=>e.update([...this.entities.values()]));
     }
     dumpall() {
-        this.entities.values().forEach(e=>e.destroy())
+        [...this.entities.values()].forEach(e=>e.destroy())
         this.reverse_lookup = {}
         this.entities = new Map()
-        this.systems = Map()
+        this.systems = new Map()
     }
 }

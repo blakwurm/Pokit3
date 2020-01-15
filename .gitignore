@@ -66,5 +66,8 @@ typings/
 # next.js build output
 .next
 
-#visual studio metadata stuff
+# visual studio metadata stuff
 .vs/
+
+# compiled typescript
+js/

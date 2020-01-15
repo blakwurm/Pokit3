@@ -1,9 +1,17 @@
+export interface ISpatialEntity{
+    x: number, y: number, z: number,
+    height: number, width: number, depth: number,
+    scaleX?: number, scaleY?: number, scaleZ?: number
+}
+
 export class SpatialHash {
+    private _map: Map<number, ISpatialEntity[]>;
+    cs: number;
     constructor(cellsize) {
         this.cs = cellsize;
         this._map = new Map();
     }
-    add(entity) {
+    add(entity: ISpatialEntity): SpatialHash {
         let spatialKeys = makeSpatialKey(this.cs, entity);
         for (let key of spatialKeys) {
             let bucket = this._map.get(key)
@@ -11,14 +19,14 @@ export class SpatialHash {
         }
         return this;
     }
-    addMany(entities) {
+    addMany(entities: ISpatialEntity[]): SpatialHash {
         entities.forEach(e=>this.add(e))
         return this;
     }
-    findNearby(entity) {
+    findNearby(entity: ISpatialEntity): Set<ISpatialEntity> {
         return new Set(makeSpatialKey(this.cs, entity).map(key=>this._map.get(key)).flat().filter(x=>x))
     }
-    findColliding(entity) {
+    findColliding(entity: ISpatialEntity): ISpatialEntity[] {
         return Array.prototype.filter(e=>
             entity.x < e.x + e.width &&
             entity.x + entity.width > e.x &&
@@ -27,11 +35,11 @@ export class SpatialHash {
             entity.y < e.y + e.height &&
             entity.y + entity.height > e.y,
             this.findNearby(entity))
-        }
-    clear() {this._map.clear();return this}
+    }
+    clear(): SpatialHash {this._map.clear();return this}
     
 }
-function makeSpatialKey(cs, e){
+function makeSpatialKey(cs: number, e: ISpatialEntity): number[]{
     let {x,y,z,width,height,depth,scaleX,scaleY,scaleZ} = e
     depth = depth || 1;
     // width *= scaleX || 1;

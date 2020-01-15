@@ -1,5 +1,5 @@
-import {Types} from './assetmanager.mjs';
-import { SpatialHash } from './spatialhash.mjs';
+import {Types} from './assetmanager.js';
+import { SpatialHash } from './spatialhash.js';
 
 export async function doIntroAnim(pokitOS) {
     let animrate = 4;

@@ -1,10 +1,11 @@
-import {SpatialHash} from 'spatialhash.mjs'
+import {SpatialHash} from 'spatialhash.js'
+import { PokitOS } from './pokitos';
 
 function getReference(obj1, obj2){
     return obj1.id + '.' + obj2.id;
 }
 export let collisionSystem = {
-    init:(engine)=>{
+    init:(engine: PokitOS)=>{
         this.engine = engine;
         this.map = new SpatialHash(120);
         this.collisions = new Map();
@@ -15,7 +16,7 @@ export let collisionSystem = {
         this.map.addMany(colliders);
         Array.prototype.forEach(x=>x.collided=false, this.collisions.values());
         for(let collider of colliders){
-            for(let collision of map.findColliding(collider)){
+            for(let collision of this.map.findColliding(collider)){
                 if(collider !== collision){
                     if(!this.collisions.get(getReference(collider, collision))){
                         collider.onCollisionEnter(collider, collision);

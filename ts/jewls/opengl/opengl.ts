@@ -1,13 +1,80 @@
 ﻿"use strict";
 
-let _programs = [];
-let _gl = null;
-let _textures = null;
-let _cameras = null;
-let _actors = null;
-let _actor_dirty_flag = true;
+let _programs: IProgram[] = [];
+let _gl: WebGL2RenderingContext = null;
+let _textures: Map<string,ITexture> = null;
+let _cameras: Map<string, ICamera> = null;
+let _actors: Map<string, IActor> = null;
+let _actor_dirty_flag: boolean = true;
 
-function createShader(gl, type, source) {
+interface IProgram {
+    program: WebGLProgram,
+    attributes: {
+        [number: string]: any
+    },
+    uniforms: {
+        [WebGLUniformLocation: string]: any
+    }
+}
+
+interface ITexture {
+    texture: WebGLTexture,
+    width: number,
+    height: number,
+    id?: string
+}
+
+interface ICamera {
+    x: number,
+    y: number
+    angle: number,
+    width: number,
+    height: number,
+    main: boolean,
+    frameBuffer: WebGLFramebuffer,
+    texture: ITexture,
+    views: string[],
+    clear: {
+        r: number,
+        g: number,
+        b: number,
+        a: number
+    }
+}
+
+interface IActor {
+    _tilemapData?: {
+        numSpritesRow: number,
+        numTilesRow: number,
+        tileWidth: number,
+        tileHeight: number,
+        zWidth: number,
+        alphaTile: number,
+        layers: number[][]
+    },
+    name: string,
+    texture: WebGLTexture,
+    texture_id: string,
+    vertexBuffer: WebGLBuffer,
+    vertexArray: WebGLVertexArrayObject,
+    uvBuffer: WebGLBuffer,
+    passes: number,
+    width: number,
+    height: number,
+    sheetWidth: number,
+    sheetHeight: number,
+    spriteWidth: number,
+    spriteHeight: number,
+    sprite_x: number,
+    sprite_y: number,
+    x_translation: number,
+    y_translation: number,
+    x_scale: number,
+    y_scale: number,
+    angle: number,
+    priority: number
+}
+function createShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
     let shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
@@ -20,7 +87,7 @@ function createShader(gl, type, source) {
     gl.deleteShader(shader);
 }
 
-function createProgram(gl, vertexShader, fragmentShader) {
+function createProgram(gl: WebGL2RenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram {
     let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
@@ -37,7 +104,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 /** Initialize WebGL context and prepare renderer
  * @param {HTMLCanvasElement} canvas - The canvas to render to
  */
-export async function initContext(canvas) {
+export async function initContext(canvas: HTMLCanvasElement): Promise<boolean> {
     _gl = canvas.getContext("webgl2", { premultipliedAlpha: true, alpha: true });
     _textures = new Map();
     _actors = new Map();
@@ -98,7 +165,7 @@ export async function initContext(canvas) {
  * @param {String} name - The ID to save the texture under
  * @param {HTMLImageElement} image - The image to send to the GPU
  */
-export function createImageTexture(name, image) {
+export function createImageTexture(name: string, image: HTMLImageElement) {
     let tex = createTexture(image.width, image.height, image);
     tex.id = name;
     _textures.set(name, tex);
@@ -110,16 +177,17 @@ export function createImageTexture(name, image) {
  * @param {Number} height - The height of the image
  * @param {Uint8Array} data - The image data in RGBA format
  */
-export function createRawTexture(name, width, height, data) {
+export function createRawTexture(name: string, width: number, height: number, data: Uint8Array) {
     let tex = createTexture(width, height, data);
     _textures.set(name, tex);
 }
 
-function createTexture(width, height, data) {
+function createTexture(width: number, height: number, data: HTMLImageElement | Uint8Array): ITexture {
     let texture = _gl.createTexture();
 
     _gl.bindTexture(_gl.TEXTURE_2D, texture);
     _gl.pixelStorei(_gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    //@ts-ignore
     _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, width, height, 0, _gl.RGBA, _gl.UNSIGNED_BYTE, data);
 
     _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.NEAREST);
@@ -138,12 +206,12 @@ function createTexture(width, height, data) {
 /** Delete texture
  * @param {String} name - The ID of the texture to be deleted
  */
-export function deleteTexture(name){
+export function deleteTexture(name: string){
     _gl.deleteTexture(_textures.get(name).texture);
     _textures.delete(name);
 }
 
-function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
+function parseTileMap(numSpritesRow: number, numTilesRow: number, tileWidth: number, tileHeight: number, zWidth: number, alphaTile: number, layers: number[][]): [number[],number[]] {
 
     //console.log(layers);
 
@@ -177,28 +245,28 @@ function parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth,
     return [positions, uvs];
 }
 
-export function setTileWithCoords(actor, x, y, tile, layers){
+export function setTileWithCoords(actor: string, x: number, y: number, tile: number, layer: number){
     let tilemap = _actors.get(actor)._tilemapData;
-    setTile(actor, y*tilemap.numtilesRow + x, tile, layer);
+    setTile(actor, y*tilemap.numTilesRow + x, tile, layer);
 }
 
-export function setTile(actor, index, tile, layer){
+export function setTile(actor: string, index: number, tile: number, layer: number){
     _actors.get(actor)._tilemapData.layers[layer][index] = tile;
 }
 
-export function updateTileMap(actor){
+export function updateTileMap(actorID: string){
     let uvs = []
-    let actor = _actors.get(actor);
+    let actor = _actors.get(actorID);
     let tilemap = actor._tilemapData;
     for (let layer of tilemap.layers) {
         for (let i = 0; i < layer.length; i++) {
-            let tile = alphaTile;
+            let tile = tilemap.alphaTile;
 
             if (layer[i] > 0)
                 tile = layer[i] - 1;
 
-            let spriteX = tile % numSpritesRow;
-            let spriteY = Math.floor(tile / numSpritesRow);
+            let spriteX = tile % tilemap.numSpritesRow;
+            let spriteY = Math.floor(tile / tilemap.numSpritesRow);
 
             //console.log({ i: i, x: x, y: y, spriteX: spriteX, spriteY: spriteY })
 
@@ -208,10 +276,10 @@ export function updateTileMap(actor){
     }
 
     let uvCoords = _programs[0].attributes.uvCoords;
-    bufferUvs(uvs, uvCoords, actor.coordBuffer);
+    bufferUvs(uvs, uvCoords, actor.uvBuffer);
 }
 
-function createSquare(positions, width, height, x, y, layer) {
+function createSquare(positions: number[], width: number, height: number, x: number, y: number, layer: number) {
     positions.push(x, y, layer);
     positions.push(x + width, y, layer);
     positions.push(x, y + height, layer);
@@ -220,7 +288,7 @@ function createSquare(positions, width, height, x, y, layer) {
     positions.push(x + width, y + width, layer);
 }
 
-function createUvSquare(uvs, spriteX, spriteY){
+function createUvSquare(uvs: number[], spriteX: number, spriteY: number){
     uvs.push(spriteX, spriteY);
     uvs.push(spriteX + 1, spriteY);
     uvs.push(spriteX, spriteY + 1);
@@ -239,7 +307,7 @@ function createUvSquare(uvs, spriteX, spriteY){
  * @param {Number} alphaTile - A number pointing to an empty sprite in the sprite map
  * @param {Array} layers - An array of arrays containing layer data for the tile map
  */
-export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers) {
+export function createTileMap(name: string, texture: string, numSpritesRow: number, numTilesRow: number, tileWidth: number, tileHeight: number, zWidth: number, alphaTile: number, layers: number[][]) {
 
     let [positions, uvs] = parseTileMap(numSpritesRow, numTilesRow, tileWidth, tileHeight, zWidth, alphaTile, layers);
 
@@ -263,13 +331,15 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
             alphaTile: alphaTile,
             layers: layers,
         },
+        name: name,
         texture: tex.texture,
+        texture_id: tex.id,
         vertexBuffer: positionBuffer,
         vertexArray: vao,
         uvBuffer: coordBuffer,
         passes: positions.length/3,
         width: numTilesRow * tileWidth,
-        height: Math.floor(layers[0] / numTilesRow) * tileHeight,
+        height: Math.floor(layers[0].length / numTilesRow) * tileHeight,
         sheetWidth: tex.width,
         sheetHeight: tex.height,
         spriteWidth: tileWidth / tex.width,
@@ -292,9 +362,9 @@ export function createTileMap(name, texture, numSpritesRow, numTilesRow, tileWid
  * @param {Number} height - The height of the sprite
  * @param {Boolean} textureLiteral - Parameter for internal use only, should always be false
  */
-export function createActor(name, texture, width, height, textureLiteral = false) {
-    let tex = _textures.get(texture);
-    if (textureLiteral) tex = texture;
+export function createActor(name: string, texture: string | ITexture, width: number, height: number, textureLiteral: boolean = false) {
+    let tex = _textures.get(<string>texture);
+    if (textureLiteral) tex = <ITexture>texture;
     //console.log(_programs);
     let vertexPosition = _programs[0].attributes.vertexPosition;
     let uvCoords = _programs[0].attributes.uvCoords;
@@ -351,7 +421,7 @@ export function createActor(name, texture, width, height, textureLiteral = false
     });
 }
 
-function bufferObject(positions, vertexPosition) {
+function bufferObject(positions: number[], vertexPosition: number): [WebGLBuffer, WebGLVertexArrayObject] {
     let positionBuffer = _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, positionBuffer);
 
@@ -366,7 +436,7 @@ function bufferObject(positions, vertexPosition) {
     return [positionBuffer, vao];
 }
 
-function bufferUvs(uvs, uvCoords, coordBuffer){
+function bufferUvs(uvs: Iterable<number>, uvCoords: number, coordBuffer?: WebGLBuffer): WebGLBuffer {
     coordBuffer = coordBuffer || _gl.createBuffer();
     _gl.bindBuffer(_gl.ARRAY_BUFFER, coordBuffer);
     _gl.bufferData(_gl.ARRAY_BUFFER, new Float32Array(uvs), _gl.STATIC_DRAW);
@@ -380,7 +450,7 @@ function bufferUvs(uvs, uvCoords, coordBuffer){
 /** Delete actor
  * @param {String} name - The ID of the actor to be deleted
  */
-export function deleteActor(name) {
+export function deleteActor(name: string) {
     let actor = _actors.get(name);
     _gl.deleteVertexArray(actor.vertexArray);
     _gl.deleteBuffer(actor.vertexBuffer);
@@ -393,7 +463,7 @@ export function deleteActor(name) {
  * @param {Number} x - The x coordinate of the sprite in the sprite map
  * @param {Number} y - The y coordinate of the sprite in the sprite map
  */
-export function setActorSprite(actor, x, y) {
+export function setActorSprite(actor: string, x: number, y: number) {
     _actors.get(actor).sprite_x = x;
     _actors.get(actor).sprite_y = y;
 }
@@ -408,7 +478,7 @@ export function setActorSprite(actor, x, y) {
  * @param {Number} clearB - The blue value of the viewport clear color (default 0)
  * @param {Number} clearA - The alpha value of the viewport clear color (default 0)
  */
-export function createCamera(name, width, height, isMainCamera = false, clearR = 0, clearG = 0, clearB = 0, clearA = 0) {
+export function createCamera(name: string, width: number, height: number, isMainCamera: boolean = false, clearR: number = 0, clearG: number = 0, clearB: number = 0, clearA: number = 0) {
 
     const fb = _gl.createFramebuffer();
     _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
@@ -438,7 +508,7 @@ export function createCamera(name, width, height, isMainCamera = false, clearR =
 /** Delete camera
  * @param {String} name - The ID of the camera to be deleted
 */
-export function deleteCamera(name){
+export function deleteCamera(name: string){
     let camera = _cameras.get(name);
     for(let cv of camera.views){
         deleteActor(cv);
@@ -452,7 +522,7 @@ export function deleteCamera(name){
  * @param {String} name - The ID to save the actor under
  * @param {String} camera - The ID of the camera to be displayed
  */
-export function createCameraView(name, camera) {
+export function createCameraView(name: string, camera: string) {
     let tex = _cameras.get(camera).texture;
     createActor(name, tex, tex.width, tex.height, true);
     _cameras.get(camera).views.push(name);
@@ -464,12 +534,12 @@ export function createCameraView(name, camera) {
  * @param {Number} b - The blue value of the viewport clear color (default 0)
  * @param {Number} a - The alpha value of the viewport clear color (default 0)
  */
-export function clear(r = 0, g = 0, b = 0, a = 0) {
+export function clear(r: number = 0, g: number = 0, b: number = 0, a: number = 0) {
     _gl.clearColor(r, g, b, a)
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 }
 
-function toRad(deg) {
+function toRad(deg: number) {
     return deg / 360 * 2 * Math.PI;
 }
 
@@ -477,7 +547,7 @@ function toRad(deg) {
  * @param {String} actor - The ID of the actor to be modified
  * @param {Number} degrees - The rotation offset
  */
-export function rotateActor(actor, degrees) {
+export function rotateActor(actor: string, degrees: number) {
     _actors.get(actor).angle = degrees;
 }
 
@@ -485,7 +555,7 @@ export function rotateActor(actor, degrees) {
  * @param {String} camera - The ID of the camera to be modified
  * @param {Number} degrees - The rotation offset
  */
-export function rotateCamera(camera, degrees) {
+export function rotateCamera(camera: string, degrees: number) {
     _cameras.get(camera).angle = degrees;
 }
 
@@ -495,7 +565,7 @@ export function rotateCamera(camera, degrees) {
  * @param {Number} y - The y value offset (default 0)
  * @param {Number} z - The z value offset (default 0)
  */
-export function translateActor(actor, x = 0, y = 0, z = 0) {
+export function translateActor(actor: string, x: number = 0, y: number = 0, z: number = 0) {
     _actors.get(actor).x_translation = x;
     _actors.get(actor).y_translation = y;
     _actors.get(actor).priority = z;
@@ -506,7 +576,7 @@ export function translateActor(actor, x = 0, y = 0, z = 0) {
  * @param {Number} x - The x value offset (default 0)
  * @param {Number} y - The y value offset (default 0)
  */
-export function translateCamera(camera, x = 0, y = 0) {
+export function translateCamera(camera: string, x: number = 0, y: number = 0) {
     _cameras.get(camera).x = x;
     _cameras.get(camera).y = y;
 }
@@ -516,13 +586,13 @@ export function translateCamera(camera, x = 0, y = 0) {
  * @param {Number} x - The width value offset
  * @param {Number} y - The height value offset
  */
-export function scaleActor(actor, x = 1, y = 1) {
+export function scaleActor(actor: string, x: number = 1, y: number = 1) {
     _actors.get(actor).x_scale = x;
     _actors.get(actor).y_scale = y;
 }
 
 /** Renders all viewports */
-export function render(sortFunc) {
+export function render(sortFunc: CullingFunction) {
     sortFunc = sortFunc || ((entities) => entities);
 
     _gl.colorMask(true, true, true, true);
@@ -545,7 +615,7 @@ export function render(sortFunc) {
 
         let cam = Object.assign({z:-200, depth:400}, camera)
         
-        let comprehended = [..._actors.values()];
+        let comprehended: IRenderedObject[] = [..._actors.values()];
         comprehended.forEach(x=>{
             x.x = x.x_translation
             x.y=x.y_translation

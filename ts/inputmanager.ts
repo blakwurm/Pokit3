@@ -57,6 +57,31 @@ const gamepaddpadaxis = new Map([
  * call full_setup().
  */
 export class InputManager {
+    buttons: {
+        up: boolean,
+        down: boolean,
+        right: boolean,
+        left: boolean,
+        a: boolean,
+        b: boolean,
+        x: boolean,
+        y: boolean,
+        start: boolean,
+        select: boolean
+    }
+    current_touches: Map<number, Touch>;
+    current_keys: Set<string>;
+    debug_callback: Function;
+    cust_keymap: {[key:string]: string};
+    cust_gamepadbuttonmap: Map<string, string>;
+    cust_gamepaddpadaxeis: Map<number, {
+        '-1': string,
+        '1': string
+    }>
+    dirty_keys: boolean;
+    dirty_touch: boolean;
+
+    
     constructor () {
         this.buttons = {
             'up': false,
@@ -108,7 +133,7 @@ export class InputManager {
      * 
      * @returns this
      */
-    full_setup() {
+    full_setup(): InputManager {
         this.setup_touch();
         this.setup_keyboard();
         this.setup_button_polling();
@@ -153,9 +178,9 @@ export class InputManager {
             }
         }
         this.current_touches.forEach(function (a) {
-            if (validbuttons.has(a.target.name)) {
-                if (rightbuttons.has(a.target.name)) {
-                    buttons[a.target.name] = true;
+            if (validbuttons.has((<HTMLButtonElement>a.target).name)) {
+                if (rightbuttons.has((<HTMLButtonElement>a.target).name)) {
+                    buttons[(<HTMLButtonElement>a.target).name] = true;
                 }
                 buttons[append_with_current(a).current.name] = true;
             }
@@ -182,47 +207,47 @@ export class InputManager {
 
 }
 
-function make_handle_touchpresent(inputmanager) {
-        return function(ev) {
-            map_touchlist(function (t) {
+function make_handle_touchpresent(inputmanager: InputManager): (ev: TouchEvent)=>void {
+        return function(ev: TouchEvent) {
+            map_touchlist(function (t: Touch) {
                 inputmanager.current_touches.set(t.identifier, t)
             },
             ev.changedTouches)
             inputmanager.dirty_touch = true;
         }
 }
-function make_handle_touchstopped(inputmanager) { 
-    return function(ev) {
-        map_touchlist(function (t) {
+function make_handle_touchstopped(inputmanager: InputManager): (ev: TouchEvent)=>void { 
+    return function(ev: TouchEvent) {
+        map_touchlist(function (t: Touch) {
            inputmanager.current_touches.delete(t.identifier);
         }, ev.changedTouches);
         inputmanager.dirty_touch = true;
     }
 }
-function make_handle_keydown(inputmanager) {
-    return function(ev) {
+function make_handle_keydown(inputmanager: InputManager): (ev: KeyboardEvent)=>void {
+    return function(ev: KeyboardEvent) {
         inputmanager.current_keys.add(ev.code);
         inputmanager.dirty_keys = true;
     }
 }
 
-function make_handle_keyup(inputmanager) {
-    return function(ev) {
+function make_handle_keyup(inputmanager: InputManager): (ev: KeyboardEvent)=>void {
+    return function(ev: KeyboardEvent) {
         inputmanager.current_keys.delete(ev.code);
         inputmanager.dirty_keys = true;
     }
 }
 
 
-function append_with_current(touch) {
+function append_with_current(touch: Touch): Touch {
     if (!touch.current) {
-        let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        let elem = <HTMLButtonElement>document.elementFromPoint(touch.clientX, touch.clientY);
         touch.current = elem;
     }
     return touch;
 }
 
-async function map_touchlist(fn, touchlist) {
+async function map_touchlist(fn: (touch: Touch)=>void, touchlist: TouchList) {
     for (let i = 0; i < touchlist.length; i++) {
         fn(touchlist.item(i));
     }
