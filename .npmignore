@@ -1,0 +1,20 @@
+#vscode config
+.vs/
+
+#test code
+carts/
+imgpreview/
+minimal.html
+old.index.html
+
+#node modules
+node_modules/
+
+#uncompiled source
+ts/
+tsconfig.json
+
+#github files
+.gitignore
+.nojekyll
+build.sh

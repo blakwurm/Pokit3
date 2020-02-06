@@ -1,4 +1,4 @@
-import {SpatialHash} from 'spatialhash.js'
+import {SpatialHash} from './spatialhash.js'
 import { PokitOS } from './pokitos';
 
 function getReference(obj1, obj2){

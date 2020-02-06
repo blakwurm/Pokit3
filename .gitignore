@@ -71,3 +71,4 @@ typings/
 
 # compiled typescript
 js/
+node/dist

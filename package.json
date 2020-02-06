@@ -1,0 +1,18 @@
+{
+    "main": "./server.js",
+    "name": "pokit-server",
+    "version": "1.0.0",
+    "displayName": "Pokit Engine Server",
+    "description": "Server for running games made in Pokit",
+    "license": "MIT",
+    "bin": {
+        "start-pokit": "./start-pokit.js"
+    },
+    "devDependencies": {
+        "@types/express": "4.17.2"
+    },
+    "dependencies": {
+        "express": "4.17.1",
+        "open": "7.0.2"
+    }
+}
