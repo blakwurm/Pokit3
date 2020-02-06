@@ -4,6 +4,7 @@
     "version": "1.0.0",
     "displayName": "Pokit Engine Server",
     "description": "Server for running games made in Pokit",
+    "license": "MIT",
     "bin": {
         "start-pokit": "./start-pokit.js"
     },
