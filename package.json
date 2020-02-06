@@ -1,13 +1,17 @@
 {
     "main": "./server.js",
-    "name": "pokit-dev",
+    "name": "pokit-server",
     "version": "1.0.0",
-    "displayName": "Pokit Development Environment",
-    "description": "Test server and engine api for Pokit TypeScript game engine",
+    "displayName": "Pokit Engine Server",
+    "description": "Server for running games made in Pokit",
+    "bin": {
+        "start-pokit": "./start-pokit.js"
+    },
     "devDependencies": {
         "@types/express": "4.17.2"
     },
     "dependencies": {
-        "express": "4.17.1"
+        "express": "4.17.1",
+        "open": "7.0.2"
     }
 }
