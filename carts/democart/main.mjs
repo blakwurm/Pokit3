@@ -1,5 +1,5 @@
 export function main(pokitOS) {
-    console.log('loaded');
+    console.log('changed');
     let sun = pokitOS.ecs.makeEntity({height: 320, width: 320, depth: 10, x: 0, y: 0, z: 10, scaleX: .2, scaleY: .2})
             .addCog("img", {id: "offensive"})
             .addCog('spriteActor')

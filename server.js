@@ -5,6 +5,7 @@ const fs = require('fs');
 
 let index = path.join(__dirname, 'index.html')
 let cart = "";
+let supported = [];
 
 
 function use(middleware){
@@ -17,19 +18,29 @@ app.get('/', function(req, res){
     res.sendFile(index);
 });
 
-app.get('/cart/*', function(req, res){
+app.use(function(req, res, next){
+    if(!req.path.startsWith('/cart/')){
+        next();
+        return null;
+    }
     let fPath = path.join(cart,req.path.slice('/cart/'.length));
     if(!fs.existsSync(fPath)){
         res.status(404).send('Not found');
         return null;
     }
-    res.sendFile(fPath);
+    if(!supported.includes(path.extname(fPath))){
+        res.sendFile(fPath);
+    }else{
+        next();
+    }
 });
 
-function start(port, cartPath=process.cwd()){
+function start(port, cartPath=process.cwd(), ignore=[]){
     cart = cartPath;
+    supported = ignore;
     app.listen(port);
 }
 
+module.exports.path = __dirname;
 module.exports.start = start;
 module.exports.use = use;
