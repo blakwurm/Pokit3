@@ -194,8 +194,8 @@ export class ECS {
         this.reverse_lookup = {}
         this.pokitOS = null;
     }
-    init(pokitOS) {this.pokitOS = pokitOS}
-    reverseSet(systemName, entity) {
+    init(pokitOS: PokitOS) {this.pokitOS = pokitOS}
+    reverseSet(systemName: string, entity: PokitEntity) {
         let s = this.reverse_lookup[systemName]
         if (s) {
             s.add(entity)
@@ -206,30 +206,30 @@ export class ECS {
         console.log(this.reverse_lookup)
         return this;
     }
-    reverseRemove(systemName, entity) {
+    reverseRemove(systemName: string, entity: PokitEntity) {
         let s = this.reverse_lookup[systemName]
         if (s) {
             s.delete(entity)
         }
         return this;
     }
-    setCog(systemName, newsystem) {
+    setCog(systemName: string, newsystem: any) {
         if (typeof newsystem === "object") {
             prepCog(newsystem)
         }
         this.systems.set(systemName, newsystem)
         return this;
     }
-    removeCog(systemName) {
+    removeCog(systemName: string) {
         this.systems.delete(systemName)
         delete this.reverse_lookup[systemName]
     }
-    makeEntity(identity) {
+    makeEntity(identity: IEntityIdentity) {
         let e = new PokitEntity(this, identity, this.pokitOS);
         this.entities.set(e.id, e);
         return e;
     }
-    popEntity(id) {
+    popEntity(id: number) {
         let e = this.entities.get(id);
         this.entities.delete(id);
         return e;
