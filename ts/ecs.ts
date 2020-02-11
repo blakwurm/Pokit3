@@ -178,7 +178,7 @@ export class PokitEntity implements IEntityIdentity{
             if(this.cogs.get(sys).hydrate != no_op)
                 this.cogs.get(sys).hydrate(obj);
             else
-                console.warn(`Entity${this.id} has savedata for cog: ${sys} however cog does not export proper hydrate function
+                console.warn(`Entity${this.id} has savedata for cog: ${sys} however cog does not export a hydrate function.
                 was it created in a different game version?`);
         }
     }
