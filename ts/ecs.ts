@@ -24,6 +24,14 @@ export interface IEntityIdentity{
     parent?: IEntityIdentity
 }
 
+export interface IEntityPrefab {
+    identity: IEntityIdentity,
+    systems: {
+        name: string,
+        data: any
+    }[]
+}
+
 let prisort = (a, b) => a.priority - b.priority
 function no_op(){}
 function prepCog(sys: ICog) {
@@ -182,6 +190,7 @@ export class PokitEntity implements IEntityIdentity{
 
 export class ECS {
     entities: Map<number, PokitEntity>;
+    prefabs: Map<string, IEntityPrefab>;
     systems: Map<string, ICog | {new (engine: PokitOS): ICog}>;
     reverse_lookup: {[system: string]: Set<PokitEntity>};
     pokitOS: PokitOS;
@@ -190,6 +199,7 @@ export class ECS {
     constructor() {
         this.entities = new Map();
         // TODO: Add cache array of entities
+        this.prefabs = new Map();
         this.systems = new Map();
         this.reverse_lookup = {}
         this.pokitOS = null;
@@ -224,9 +234,21 @@ export class ECS {
         this.systems.delete(systemName)
         delete this.reverse_lookup[systemName]
     }
-    makeEntity(identity: IEntityIdentity) {
-        let e = new PokitEntity(this, identity, this.pokitOS);
+    makeEntity(identity: IEntityIdentity, usePrefab: string | undefined = undefined) {
+        let prefab = this.prefabs.get(usePrefab) || {
+            identity: {},
+            systems: []
+        };
+        let values: IEntityIdentity = {};
+        Object.assign(values, prefab.identity, identity)
+        console.log(prefab.identity)
+        let e = new PokitEntity(this, values, this.pokitOS);
         this.entities.set(e.id, e);
+
+        for(let sys of prefab.systems) {
+            e.addCog(sys.name, sys.data);
+        }
+
         return e;
     }
     popEntity(id: number) {

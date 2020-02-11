@@ -9,5 +9,29 @@
         "santasprites":["IMAGE", "./assets/santasprites.png"],
         "cali":["SOUND", "./assets/testtone.flac"],
         "sampmap":["TILED", "./assets/sampmap.json"]
+    },
+    "prefabs": {
+        "angry":{
+            "identity": {
+                "height": 320,
+                "width": 320,
+                "depth": 10,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "systems": [
+                {
+                    "name": "img",
+                    "data": {
+                        "id": "offensive"
+                    }
+                },
+                {
+                    "name": "spriteActor",
+                    "data": {}
+                }
+            ]
+        }
     }
 }

@@ -1,5 +1,6 @@
 import {Types} from "./assetmanager.js"
 import { PokitOS } from "./pokitos.js";
+import { IEntityPrefab } from "./ecs.js";
 
 export interface ICartManifest {
     name: string,
@@ -11,6 +12,9 @@ export interface ICartManifest {
     },
     assets: {
         [asset: string]: [string, string]
+    }
+    prefabs: {
+        [prefab: string]: IEntityPrefab
     }
 }
 
@@ -42,10 +46,14 @@ export async function preloadCartAssets(cartinfo: ICartManifest, pokitOS: PokitO
         let newurl = new URL(url, cartinfo.baseURL.href)
         promises.push(pokitOS.assets.queueAsset(k, newurl.toString(), Types[type]))
     }
+
+    for(let [k,v] of Object.entries(cartinfo.prefabs)){
+        pokitOS.ecs.prefabs.set(k,v);
+    }
+
     for (let p in promises) {
         await p
     }
-
 }
 export async function loadCartModule(cartinfo: ICartManifest, pokitOS: PokitOS) {
     let modurl = new URL(cartinfo.main, cartinfo.baseURL.href)
