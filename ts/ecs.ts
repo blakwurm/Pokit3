@@ -175,7 +175,11 @@ export class PokitEntity implements IEntityIdentity{
         Object.assign(this, data);
         this.flags = new Set(this.flags);
         for(let [sys, obj] of Object.entries(data.cogData)) {
-            this.cogs.get(sys).hydrate(obj);
+            if(this.cogs.get(sys).hydrate != no_op)
+                this.cogs.get(sys).hydrate(obj);
+            else
+                console.warn(`Entity${this.id} has savedata for cog: ${sys} however cog does not export proper hydrate function
+                was it created in a different game version?`);
         }
     }
     dehydrate() {
@@ -191,7 +195,8 @@ export class PokitEntity implements IEntityIdentity{
             cogData: {}
         }
         for(let [k,v] of this.cogs.entries()) {
-            data.cogData[k] = v.dehydrate();
+            if(v.dehydrate != no_op)
+                data.cogData[k] = v.dehydrate();
         }
         return data;
     }
