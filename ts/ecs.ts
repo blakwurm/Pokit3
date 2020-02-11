@@ -266,13 +266,17 @@ export class ECS {
             identity: {},
             systems: {}
         };
+        let flags = new Set<string>();
 
         for(let str of templates) {
             let val = this.prefabs.get(str);
             Object.assign(prefab.identity, val.identity);
             Object.assign(prefab.systems, val.systems);
+            if(val.identity.flags){
+                val.identity.flags.forEach(flags.add, flags);
+            }
         }
-
+        prefab.identity.flags = flags;
         Object.assign(prefab.identity, identity);
 
         let e = new PokitEntity(this, prefab.identity, this.pokitOS);
