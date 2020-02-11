@@ -222,7 +222,7 @@ export class ECS {
         }
         return this;
     }
-    setCog(systemName: string, newsystem: ICog | ObjectConstructor) {
+    setCog(systemName: string, newsystem: {new (engine: PokitOS): ICog} | ICog) {
         if (typeof newsystem === "object") {
             prepCog(newsystem)
         }

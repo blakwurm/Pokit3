@@ -21,7 +21,7 @@ export interface ICartManifest {
 export interface ICart {
     main: (engine: PokitOS)=>void,
     systems?: {
-        [name: string]: ObjectConstructor | ICog;
+        [name: string]: {new (engine: PokitOS): ICog} | ICog;
     }
 }
 

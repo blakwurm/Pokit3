@@ -1,3 +1,7 @@
+export interface PokitTouch extends Touch {
+    current?: HTMLButtonElement
+}
+
 const rightbuttons = new Set(['a', 'b', 'y', 'x']);
 
 const validbuttons = new Set(['a', 'b', 'x', 'y', 'start', 'select', 'up', 'down', 'left', 'right'])
@@ -69,7 +73,7 @@ export class InputManager implements IInputManager{
         start: boolean,
         select: boolean
     }
-    current_touches: Map<number, Touch>;
+    current_touches: Map<number, PokitTouch>;
     current_keys: Set<string>;
     debug_callback: Function;
     cust_keymap: {[key:string]: string};
@@ -239,7 +243,7 @@ function make_handle_keyup(inputmanager: InputManager): (ev: KeyboardEvent)=>voi
 }
 
 
-function append_with_current(touch: Touch): Touch {
+function append_with_current(touch: PokitTouch): PokitTouch {
     if (!touch.current) {
         let elem = <HTMLButtonElement>document.elementFromPoint(touch.clientX, touch.clientY);
         touch.current = elem;
