@@ -15,7 +15,7 @@ export function main(pokitOS) {
                 }
             });
 
-    pokitOS.ecs.makeEntity({}, "stupid");
+    //pokitOS.ecs.makeEntity({}, "stupid");
 
     planet.parent = sun;
 }

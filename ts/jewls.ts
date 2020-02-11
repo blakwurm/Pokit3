@@ -105,11 +105,10 @@ let alexIsStupid = class extends actorSystem {
     async init (entity: PokitEntity, data: IJsonSerializableObject){
         let id = uuidv4();
         entity.addCog("img", {id: id})
-        let imgData: number[] = [];
-        for(let i = 0; i < entity.height*entity.width; i++) {
-            imgData = imgData.concat(<number[]>data.color)
-        }
-        jewls.createRawTexture(id, entity.width, entity.height, new Uint8Array(imgData))
+        let imgData = new Array<number[]>(entity.width * entity.height);
+        imgData.fill(<number[]>data.color);
+        let flat: number[] = [].concat.apply([], imgData);
+        jewls.createRawTexture(id, entity.width, entity.height, new Uint8Array(flat))
         super.init(entity, data);
     }
     destroy(entity: PokitEntity){
