@@ -27,9 +27,8 @@ export interface IEntityIdentity{
 export interface IEntityPrefab {
     identity: IEntityIdentity,
     systems: {
-        name: string,
-        data: any
-    }[]
+        [name: string]: any
+    }
 }
 
 let prisort = (a, b) => a.priority - b.priority
@@ -234,19 +233,25 @@ export class ECS {
         this.systems.delete(systemName)
         delete this.reverse_lookup[systemName]
     }
-    makeEntity(identity: IEntityIdentity, usePrefab: string | undefined = undefined) {
-        let prefab = this.prefabs.get(usePrefab) || {
+    makeEntity(identity: IEntityIdentity, ...templates: string[]) {
+        let prefab = <IEntityPrefab>{
             identity: {},
-            systems: []
+            systems: {}
         };
-        let values: IEntityIdentity = {};
-        Object.assign(values, prefab.identity, identity)
-        console.log(prefab.identity)
-        let e = new PokitEntity(this, values, this.pokitOS);
+
+        for(let str of templates) {
+            let val = this.prefabs.get(str);
+            Object.assign(prefab.identity, val.identity);
+            Object.assign(prefab.systems, val.systems);
+        }
+
+        Object.assign(prefab.identity, identity);
+
+        let e = new PokitEntity(this, prefab.identity, this.pokitOS);
         this.entities.set(e.id, e);
 
-        for(let sys of prefab.systems) {
-            e.addCog(sys.name, sys.data);
+        for(let [sys, data] of Object.entries(prefab.systems)) {
+            e.addCog(sys, data);
         }
 
         return e;

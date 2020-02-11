@@ -20,18 +20,23 @@
                 "y": 0,
                 "z": 0
             },
-            "systems": [
-                {
-                    "name": "img",
-                    "data": {
-                        "id": "offensive"
-                    }
+            "systems": {
+                "img": {
+                    "id":"offensive"
                 },
-                {
-                    "name": "spriteActor",
-                    "data": {}
+                "spriteActor": {}
+            }
+        },
+        "planet":{
+            "identity": {},
+            "systems": {
+                "audioSource": {
+                    "startOnInit": true,
+                    "loop": true,
+                    "spatial": true,
+                    "id": "cali"
                 }
-            ]
+            }
         }
     }
 }

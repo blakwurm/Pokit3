@@ -6,8 +6,7 @@ export function main(pokitOS) {
                     sun.rotation += 1;
                 }
             });
-    let planet = pokitOS.ecs.makeEntity({}, "angry")
-            .addCog("audioSource", {startOnInit: true, loop:true, spatial: true, id: 'cali'})
+    let planet = pokitOS.ecs.makeEntity({}, "angry", "planet")
             .addUniqueCog('inc', {
                 c: 0,
                 update () {
