@@ -42,6 +42,11 @@ declare global {
         init: (engine: PokitOS) => void,
         render: (cullFunc: CullingFunction) => void
     }
+
+    interface IJsonSerializableObject {
+        [key: string]: string | number | boolean | null | IJsonSerializableObject,
+        [key: number]: string | number | boolean | null | IJsonSerializableObject
+    }
 }
 
 let shouldLog = true;

@@ -4,14 +4,13 @@ export interface ICog {
     exts?: {
         [id: string]: any
     },
-    init? (entity: PokitEntity, args: {
-        [any: string]: any
-    }): any,
-    update? (entity: PokitEntity):any,
-    destroy? (entity: PokitEntity):any,
-    runonce? (entity: PokitEntity):any,
-    onCollisionEnter? (entity: PokitEntity, collider: PokitEntity):any,
-    onCollisionExit? (entity: PokitEntity, collider: PokitEntity):any
+    init? (entity: PokitEntity, args: IJsonSerializableObject): void,
+    update? (entity: PokitEntity):void,
+    destroy? (entity: PokitEntity):void,
+    runonce? (entity: PokitEntity):void,
+    onCollisionEnter? (entity: PokitEntity, collider: PokitEntity):void,
+    onCollisionExit? (entity: PokitEntity, collider: PokitEntity):void,
+    hydrate? (data: any):void
 }
 
 export interface IEntityIdentity{
@@ -28,6 +27,13 @@ export interface IEntityPrefab {
     identity: IEntityIdentity,
     systems: {
         [name: string]: any
+    }
+}
+
+export interface ISaveData {
+    identity: IEntityIdentity,
+    cogData: {
+        [id: string]: any
     }
 }
 
@@ -137,7 +143,7 @@ export class PokitEntity implements IEntityIdentity{
     onCollisionExit(collider: PokitEntity, collision: PokitEntity){
         this._sorted.forEach(a=>a.onCollisionExit(collider, collision));
     }
-    addCog(systemName: string, props: any): PokitEntity {
+    addCog(systemName: string, props: IJsonSerializableObject): PokitEntity {
         let sys = this.ecs.systems.get(systemName);
         if(typeof sys === "function") {
             console.log(this._engine);
@@ -164,8 +170,11 @@ export class PokitEntity implements IEntityIdentity{
         this._sorted = [...this.cogs.values()].sort(prisort)
         return this;
     }
-    hydrate(jsono: string) {
-        let o = JSON.parse(jsono);
+    hydrate(data: ISaveData) {
+        Object.assign(this, data);
+        for(let [sys, obj] of Object.entries(data.cogData)) {
+            this.cogs.get(sys).hydrate(obj);
+        }
     }
     destroy() {
         for (let [n,x] of this.cogs) {

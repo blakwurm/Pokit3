@@ -3,7 +3,7 @@ import {Types, IAsset} from './assetmanager.js';
 import { ICog, PokitEntity } from './ecs.js';
 import { PokitOS } from './pokitos.js';
 
-export interface ITextureSystem extends ICog {
+export interface ITextureSystem extends ICog{
     id: string,
     spriteX?: number,
     spriteY?: number,
@@ -16,7 +16,7 @@ let textureSystem = class implements ITextureSystem {
     spriteX: number;
     sprityY: number;
     constructor(engine: PokitOS) {this._engine=engine}
-    init (_, imgdata: ITextureSystem) {
+    init (_, imgdata: IJsonSerializableObject) {
         console.log(this)
         Object.assign(this, {
             spriteX:0,
@@ -33,8 +33,8 @@ let cameraSystem = class implements ICameraSystem{
     private _engine: PokitOS;
     isMainCamera: boolean;
     constructor(engine: PokitOS) {this._engine=engine}
-    init (entity: PokitEntity, camData: ICameraSystem) {
-        jewls.createCamera(entity.id.toString(), entity.width, entity.height, camData.isMainCamera);
+    init (entity: PokitEntity, camData: IJsonSerializableObject) {
+        jewls.createCamera(entity.id.toString(), entity.width, entity.height, <boolean>camData.isMainCamera);
     }
     update (entity: PokitEntity) {
         jewls.translateCamera(entity.id.toString(), entity.x, entity.y);
@@ -85,7 +85,7 @@ let tileMapSystem = class extends actorSystem implements ITileMapSystem {
     constructor(engine: PokitOS){
         super(engine);
     }
-    async init(entity: PokitEntity, info: ITileMapSystem){
+    async init(entity: PokitEntity, info: IJsonSerializableObject){
         Object.assign(this, {zPad:0.1}, info);
         let tileMap = <ITileMap>await super._engine.assets.getAsset(this.id);
         this._tex = <ITextureSystem>entity.cogs.get('img');
