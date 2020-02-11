@@ -94,6 +94,30 @@ let tileMapSystem = class extends actorSystem implements ITileMapSystem {
     }
 }
 
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+}
+
+let alexIsStupid = class extends actorSystem {
+    async init (entity: PokitEntity, data: IJsonSerializableObject){
+        let id = uuidv4();
+        entity.addCog("img", {id: id})
+        let imgData: number[] = [];
+        for(let i = 0; i < entity.height*entity.width; i++) {
+            imgData = imgData.concat(<number[]>data.color)
+        }
+        jewls.createRawTexture(id, entity.width, entity.height, new Uint8Array(imgData))
+        super.init(entity, data);
+    }
+    destroy(entity: PokitEntity){
+        jewls.deleteTexture(this._tex.id);
+        super.destroy(entity);
+    }
+}
+
 export interface IGpuImage extends IAsset{
     id: string,
     height: number,
@@ -137,6 +161,7 @@ export class Renderer implements IRenderer {
         engine.ecs.setCog('img', textureSystem);
         engine.ecs.setCog('spriteActor', actorSystem);
         engine.ecs.setCog('camera', cameraSystem);
+        engine.ecs.setCog('alexIsStupid', alexIsStupid);
 
         engine.ecs.defaultCamera = engine.ecs.makeEntity({width:320, height:320})
                     .addCog('camera', {isMainCamera:true});

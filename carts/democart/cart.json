@@ -37,6 +37,20 @@
                     "id": "cali"
                 }
             }
+        },
+        "stupid": {
+            "identity":{
+                "x":0,
+                "y":0,
+                "z":0,
+                "height": 100,
+                "width": 100
+            },
+            "systems": {
+                "alexIsStupid": {
+                    "color":[0,0,255,125]
+                }
+            }
         }
     }
 }

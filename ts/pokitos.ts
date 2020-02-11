@@ -44,9 +44,12 @@ declare global {
     }
 
     interface IJsonSerializableObject {
-        [key: string]: string | number | boolean | null | IJsonSerializableObject,
-        [key: number]: string | number | boolean | null | IJsonSerializableObject
+        [index: string] : IJsonTypes,
+        [index: number] : IJsonTypes
     }
+
+    type IJsonPrimitives = string | number | boolean | null
+    type IJsonTypes = IJsonPrimitives | Array<IJsonPrimitives> | IJsonSerializableObject
 }
 
 let shouldLog = true;
