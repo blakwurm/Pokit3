@@ -1,6 +1,6 @@
 import {Types} from "./assetmanager.js"
 import { PokitOS } from "./pokitos.js";
-import { IEntityPrefab } from "./ecs.js";
+import { IEntityPrefab, ICog } from "./ecs.js";
 
 export interface ICartManifest {
     name: string,
@@ -19,7 +19,10 @@ export interface ICartManifest {
 }
 
 export interface ICart {
-    main: (engine: PokitOS)=>void;
+    main: (engine: PokitOS)=>void,
+    systems?: {
+        [name: string]: ObjectConstructor | ICog;
+    }
 }
 
 export function getBaseCartURL(): URL {
@@ -66,5 +69,10 @@ export async function loadCartModule(cartinfo: ICartManifest, pokitOS: PokitOS) 
 }
 export async function startCart(cartinfo: ICartManifest, pokitOS: PokitOS) {
     console.log('loading')
+    if(cartinfo.module.systems){
+        for(let [name, sys] of Object.entries(cartinfo.module.systems)){
+            pokitOS.ecs.setCog(name, sys);
+        }
+    }
     cartinfo.module.main(pokitOS);
 }

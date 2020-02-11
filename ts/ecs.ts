@@ -222,7 +222,7 @@ export class ECS {
         }
         return this;
     }
-    setCog(systemName: string, newsystem: any) {
+    setCog(systemName: string, newsystem: ICog | ObjectConstructor) {
         if (typeof newsystem === "object") {
             prepCog(newsystem)
         }
