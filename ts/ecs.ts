@@ -10,7 +10,8 @@ export interface ICog {
     runonce? (entity: PokitEntity):void,
     onCollisionEnter? (entity: PokitEntity, collider: PokitEntity):void,
     onCollisionExit? (entity: PokitEntity, collider: PokitEntity):void,
-    hydrate? (data: any):void
+    hydrate? (data: IJsonSerializableObject):void,
+    dehydrate? (): IJsonSerializableObject
 }
 
 export interface IEntityIdentity{
@@ -19,7 +20,7 @@ export interface IEntityIdentity{
     rotation?: number,
     scaleX?: number, scaleY?: number, scaleZ?: number,
     velocity?: number,
-    flags?: Set<string>,
+    flags?: Set<string> | string[],
     parent?: IEntityIdentity
 }
 
@@ -33,14 +34,14 @@ export interface IEntityPrefab {
 export interface ISaveData {
     identity: IEntityIdentity,
     cogData: {
-        [id: string]: any
+        [id: string]: IJsonSerializableObject
     }
 }
 
 let prisort = (a, b) => a.priority - b.priority
 function no_op(){}
 function prepCog(sys: ICog) {
-    for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit']) {
+    for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit', 'hydrate', 'dehydrate']) {
         if (!sys[x]) {
             sys[x] = no_op
         }
@@ -172,9 +173,27 @@ export class PokitEntity implements IEntityIdentity{
     }
     hydrate(data: ISaveData) {
         Object.assign(this, data);
+        this.flags = new Set(this.flags);
         for(let [sys, obj] of Object.entries(data.cogData)) {
             this.cogs.get(sys).hydrate(obj);
         }
+    }
+    dehydrate() {
+        let data: ISaveData = {
+            identity: {
+                x: this._x, y: this._y, z:this._z,
+                height: this.height, width: this.width, depth: this.depth,
+                rotation: this._rotation,
+                scaleX: this.scaleX, scaleY: this.scaleY, scaleZ: this.scaleZ,
+                velocity: this.velocity,
+                flags: Array.from(this.flags)
+            },
+            cogData: {}
+        }
+        for(let [k,v] of this.cogs.entries()) {
+            data.cogData[k] = v.dehydrate();
+        }
+        return data;
     }
     destroy() {
         for (let [n,x] of this.cogs) {
