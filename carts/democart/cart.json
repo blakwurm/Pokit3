@@ -21,9 +21,10 @@
                 "z": 0
             },
             "systems": {
-                "alexIsStupid":{
-                    "color":[0,0,255,255]
-                }
+                "img": {
+                    "id":"offensive"
+                },
+                "spriteActor": {}
             }
         },
         "planet":{
@@ -47,7 +48,7 @@
             },
             "systems": {
                 "alexIsStupid": {
-                    "color":[0,0,255,255]
+                    "color":[0,0,255,125]
                 }
             }
         }

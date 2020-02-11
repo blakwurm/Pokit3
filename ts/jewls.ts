@@ -33,8 +33,11 @@ let cameraSystem = class implements ICameraSystem{
     private _engine: PokitOS;
     isMainCamera: boolean;
     constructor(engine: PokitOS) {this._engine=engine}
-    init (entity: PokitEntity, camData: IJsonSerializableObject) {
-        jewls.createCamera(entity.id.toString(), entity.width, entity.height, <boolean>camData.isMainCamera);
+    init(_, camData: IJsonSerializableObject){
+        this.isMainCamera = <boolean>camData.isMainCamera;
+    }
+    onLoad (entity: PokitEntity) {
+        jewls.createCamera(entity.id.toString(), entity.width, entity.height, this.isMainCamera);
     }
     update (entity: PokitEntity) {
         jewls.translateCamera(entity.id.toString(), entity.x, entity.y);
@@ -48,8 +51,10 @@ let actorSystem = class implements ICog {
     _engine: PokitOS;
     _tex: ITextureSystem;
     constructor(engine: PokitOS) {this._engine=engine}
-    async init (entity: PokitEntity,_) {
+    async init(entity: PokitEntity,_){
         this._tex = <ITextureSystem>entity.cogs.get('img');
+    }
+    async onLoad (entity: PokitEntity) {
         jewls.createActor(entity.id.toString(), this._tex.id, this._tex.width, this._tex.height);
     }
     update (entity: PokitEntity) {
@@ -81,15 +86,19 @@ let tileMapSystem = class extends actorSystem implements ITileMapSystem {
     private _img: IGpuImage;
     id: string;
     zPad: number;
+    tileMap: ITileMap;
 
     constructor(engine: PokitOS){
         super(engine);
     }
     async init(entity: PokitEntity, info: IJsonSerializableObject){
         Object.assign(this, {zPad:0.1}, info);
-        let tileMap = <ITileMap>await super._engine.assets.getAsset(this.id);
+        this.tileMap = <ITileMap>await super._engine.assets.getAsset(this.id);
         this._tex = <ITextureSystem>entity.cogs.get('img');
         this._img = <IGpuImage>await super._engine.assets.getAsset(this._tex.id);
+    }
+    async onLoad(entity: PokitEntity) {
+        let tileMap = this.tileMap;
         jewls.createTileMap(entity.id.toString(), this._tex.id, tileMap.width, this._img.width/tileMap.tilewidth, tileMap.tilewidth, tileMap.tileheight, this.zPad, tileMap.alphaTile, tileMap.tilelayers)
     }
 }

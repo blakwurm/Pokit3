@@ -5,13 +5,15 @@ export interface ICog {
         [id: string]: any
     },
     init? (entity: PokitEntity, args: IJsonSerializableObject): void,
+    onLoad? (entity: PokitEntity): void,
+    onReload? (entity: PokitEntity): void,
     update? (entity: PokitEntity):void,
     destroy? (entity: PokitEntity):void,
     runonce? (entity: PokitEntity):void,
     onCollisionEnter? (entity: PokitEntity, collider: PokitEntity):void,
     onCollisionExit? (entity: PokitEntity, collider: PokitEntity):void,
     hydrate? (data: IJsonSerializableObject):void,
-    dehydrate? (): IJsonSerializableObject
+    dehydrate? (entity: PokitEntity): IJsonSerializableObject
 }
 
 export interface IEntityIdentity{
@@ -39,9 +41,9 @@ export interface ISaveData {
 }
 
 let prisort = (a, b) => a.priority - b.priority
-function no_op(){}
+function no_op(any:any):any{}
 function prepCog(sys: ICog) {
-    for (let x of ['init', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit', 'hydrate', 'dehydrate']) {
+    for (let x of ['init', 'onLoad', 'onReload', 'update', 'destroy', 'runonce', 'onCollisionEnter', 'onCollisionExit', 'hydrate', 'dehydrate']) {
         if (!sys[x]) {
             sys[x] = no_op
         }
@@ -127,6 +129,17 @@ export class PokitEntity implements IEntityIdentity{
     set rotation(value: number) {
         this._rotation = value;
     }
+    activate() {
+        this.ecs.entities.set(this.id, this);
+        this.cogs.forEach((_,v)=>this.ecs.reverseSet(v, this));
+        this._sorted.forEach(a=>a.onLoad(this));
+        this.flags.add('active');
+    }
+    reactivate() {
+        this.ecs.entities.set(this.id, this);
+        this.cogs.forEach((_,v)=>this.ecs.reverseSet(v, this));
+        this._sorted.forEach(a=>a.onReload(this));
+    }
     update() {
         let self = this;
         if (this._runonce.length) {
@@ -153,12 +166,17 @@ export class PokitEntity implements IEntityIdentity{
         }
         sys.init(this, props);
         this.cogs.set(systemName, sys)
-        this.ecs.reverseSet(systemName, this)
+        if(this.flags.has('active')){
+            this.ecs.reverseSet(systemName, this);
+            sys.onLoad(this);
+        }
         return this.sortSystems();
     }
     addUniqueCog(systemName: string, sys: ICog): PokitEntity {
         sys = prepCog(sys)
         this.cogs.set(systemName,sys)
+        if(this.flags.has('active'))
+            sys.onLoad(this);
         return this.sortSystems();
     }
     removeCog(sn: string): PokitEntity {
@@ -196,7 +214,7 @@ export class PokitEntity implements IEntityIdentity{
         }
         for(let [k,v] of this.cogs.entries()) {
             if(v.dehydrate != no_op)
-                data.cogData[k] = v.dehydrate();
+                data.cogData[k] = v.dehydrate(this);
         }
         return data;
     }
@@ -267,6 +285,11 @@ export class ECS {
         delete this.reverse_lookup[systemName]
     }
     makeEntity(identity: IEntityIdentity, ...templates: string[]) {
+        let e = this.makeShadow(identity, ...templates);
+        e.activate();
+        return e;
+    }
+    makeShadow(identity: IEntityIdentity, ...templates: string[]) {
         let prefab = <IEntityPrefab>{
             identity: {},
             systems: {}
@@ -281,11 +304,12 @@ export class ECS {
                 val.identity.flags.forEach(flags.add, flags);
             }
         }
+        if(flags.has('active'))
+            flags.delete('active');
         prefab.identity.flags = flags;
         Object.assign(prefab.identity, identity);
 
         let e = new PokitEntity(this, prefab.identity, this.pokitOS);
-        this.entities.set(e.id, e);
 
         for(let [sys, data] of Object.entries(prefab.systems)) {
             e.addCog(sys, data);
@@ -300,6 +324,14 @@ export class ECS {
     }
     update() {
         [...this.entities.values()].forEach(e=>e.update());
+    }
+    clear() {
+        [...this.entities.values()].filter(x=>!x.flags.has('persistent')).forEach(e=>e.destroy());
+        let keep = [...this.entities.values()].filter(x=>x.flags.has('persistent'))
+        this.reverse_lookup = {}
+        this.entities = new Map()
+        this.systems = new Map()
+        keep.forEach(x=>x.reactivate());
     }
     dumpall() {
         [...this.entities.values()].forEach(e=>e.destroy())
