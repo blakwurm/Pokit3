@@ -1,6 +1,7 @@
 import {Types} from "./assetmanager.js"
 import { PokitOS } from "./pokitos.js";
 import { IEntityPrefab, ICog } from "./ecs.js";
+import { IStages } from "./stagemanager.js";
 
 export interface ICartManifest {
     name: string,
@@ -12,10 +13,11 @@ export interface ICartManifest {
     },
     assets: {
         [asset: string]: [string, string]
-    }
+    },
     prefabs: {
         [prefab: string]: IEntityPrefab
-    }
+    },
+    stages: IStages
 }
 
 export interface ICart {
@@ -53,6 +55,8 @@ export async function preloadCartAssets(cartinfo: ICartManifest, pokitOS: PokitO
     for(let [k,v] of Object.entries(cartinfo.prefabs)){
         pokitOS.ecs.prefabs.set(k,v);
     }
+
+    pokitOS.stageManager.init(cartinfo.stages);
 
     for (let p in promises) {
         await p

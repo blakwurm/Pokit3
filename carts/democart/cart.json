@@ -52,5 +52,21 @@
                 }
             }
         }
+    },
+    "stages": {
+        "main": {
+            "sun": {
+                "prefab":["angry"],
+                "identity": {
+                    "z": 10,
+                    "scaleX": 0.2,
+                    "scaleY": 0.2
+                }
+            },
+            "planet": {
+                "prefab":["angry", "planet"],
+                "identity": {}
+            }
+        }
     }
 }

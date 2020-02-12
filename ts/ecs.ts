@@ -330,7 +330,6 @@ export class ECS {
         let keep = [...this.entities.values()].filter(x=>x.flags.has('persistent'))
         this.reverse_lookup = {}
         this.entities = new Map()
-        this.systems = new Map()
         keep.forEach(x=>x.reactivate());
     }
     dumpall() {

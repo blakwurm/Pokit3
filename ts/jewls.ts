@@ -173,5 +173,6 @@ export class Renderer implements IRenderer {
 
         engine.ecs.defaultCamera = engine.ecs.makeEntity({width:320, height:320})
                     .addCog('camera', {isMainCamera:true});
+        engine.ecs.defaultCamera.flags.add('persistent');
     }
 }

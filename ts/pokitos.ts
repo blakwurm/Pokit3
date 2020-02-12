@@ -3,6 +3,7 @@ import { ECS } from './ecs.js';
 import { Renderer } from './jewls.js';
 import { AssetManager } from './assetmanager.js';
 import { Mixer } from './boombox.js';
+import { StageManager } from './stagemanager.js';
 
 declare global {
     interface Window {
@@ -68,6 +69,7 @@ export class PokitOS {
     ecs: ECS;
     assets: AssetManager;
     mixer: Mixer;
+    stageManager: StageManager;
     cullmap: SpatialHash;
     constructor(initbundle:{
         ecs: ECS,
@@ -82,6 +84,7 @@ export class PokitOS {
         this.ecs = null;
         this.assets = null;
         this.mixer = null;
+        this.stageManager = new StageManager(this);
         this.cullmap = new SpatialHash(320);
         Object.assign(this, initbundle);
     }
